@@ -1,9 +1,11 @@
 // src/component/pages/Login.jsx
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Login() {
   const navigate = useNavigate();
+
   const [role, setRole] = useState(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -17,20 +19,30 @@ function Login() {
       return;
     }
 
+    // ✅ ADMIN LOGIN
     if (role === "admin") {
       if (email.trim() === "admin@gmail.com" && password.trim() === "1234") {
+        localStorage.setItem("role", "admin"); // store login role
         navigate("/admin");
       } else {
         setError("Invalid Admin Credentials");
       }
-    } else if (role === "manager") {
+    }
+
+    // ✅ MANAGER LOGIN
+    else if (role === "manager") {
       if (email.trim() === "manager@gmail.com" && password.trim() === "1234") {
+        localStorage.setItem("role", "manager");
         navigate("/manager");
       } else {
         setError("Invalid Manager Credentials");
       }
-    } else if (role === "member") {
+    }
+
+    // ✅ MEMBER LOGIN
+    else if (role === "member") {
       if (email.trim() === "member@gmail.com" && password.trim() === "1234") {
+        localStorage.setItem("role", "member");
         navigate("/member");
       } else {
         setError("Invalid Member Credentials");
@@ -38,10 +50,18 @@ function Login() {
     }
   };
 
+  const handleBack = () => {
+    setRole(null);
+    setEmail("");
+    setPassword("");
+    setError("");
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white shadow-xl rounded-2xl p-10 w-96 text-center">
 
+        {/* Role Selection */}
         {!role ? (
           <>
             <h2 className="text-2xl font-bold mb-6">Select Dashboard</h2>
@@ -69,6 +89,7 @@ function Login() {
           </>
         ) : (
           <>
+            {/* Login Form */}
             <h2 className="text-2xl font-bold mb-6 capitalize">
               {role} Login
             </h2>
@@ -99,12 +120,7 @@ function Login() {
             </button>
 
             <button
-              onClick={() => {
-                setRole(null);
-                setEmail("");
-                setPassword("");
-                setError("");
-              }}
+              onClick={handleBack}
               className="text-sm text-gray-500"
             >
               ← Back
