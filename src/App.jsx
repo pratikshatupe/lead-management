@@ -3,20 +3,13 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import Login from "./component/pages/Login";
 import AdminDashboard from "./component/pages/AdminDashboard";
 import ManagerDashboard from "./component/pages/ManagerDashboard";
-import User from "./component/pages/User";
+import MemberDashboard from "./component/pages/MemberDashboard"; // ✅ import add
 
-
-// 🔐 Protected Route
 const ProtectedRoute = ({ children, role }) => {
   const userRole = localStorage.getItem("role");
 
-  if (!userRole) {
-    return <Navigate to="/" />;
-  }
-
-  if (role && userRole !== role) {
-    return <Navigate to="/" />;
-  }
+  if (!userRole) return <Navigate to="/" />;
+  if (role && userRole !== role) return <Navigate to="/" />;
 
   return children;
 };
@@ -46,19 +39,14 @@ function App() {
           }
         />
 
+        {/* ✅ FIXED MEMBER ROUTE */}
         <Route
           path="/member"
           element={
             <ProtectedRoute role="member">
-              <User />
+              <MemberDashboard />
             </ProtectedRoute>
           }
-        />
-
-        {/* Tailwind test */}
-        <Route
-          path="/test"
-          element={<h1 className="text-5xl text-red-500">Tailwind Working</h1>}
         />
 
         <Route path="*" element={<h1>404 Page Not Found</h1>} />

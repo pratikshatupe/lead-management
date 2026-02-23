@@ -1,10 +1,12 @@
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import Sidebar from "../admin/SideBar";
 
 export default function MemberDashboard() {
   const navigate = useNavigate();
+  const [openSidebar, setOpenSidebar] = useState(false);
 
-  // 🔐 Page Protection
+  // ✅ Page protection
   useEffect(() => {
     const role = localStorage.getItem("role");
     if (role !== "member") {
@@ -12,49 +14,61 @@ export default function MemberDashboard() {
     }
   }, [navigate]);
 
+  const handleLogout = () => {
+    localStorage.removeItem("role");
+    navigate("/");
+  };
+
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-gray-100">
 
-      {/* Sidebar */}
-      <div className="w-64 bg-purple-700 text-white p-5">
-        <h2 className="text-2xl font-bold mb-8">Member Panel</h2>
+      {/* ✅ Mobile Toggle Button */}
+      <button
+        onClick={() => setOpenSidebar(!openSidebar)}
+        className="md:hidden fixed top-4 left-4 z-50 bg-purple-700 text-white px-3 py-2 rounded shadow"
+      >
+        ☰
+      </button>
 
-        <ul className="space-y-4">
-          <li className="hover:bg-purple-600 p-2 rounded cursor-pointer">
-            Dashboard
-          </li>
-          <li className="hover:bg-purple-600 p-2 rounded cursor-pointer">
-            My Leads
-          </li>
-          <li className="hover:bg-purple-600 p-2 rounded cursor-pointer">
-            Profile
-          </li>
-
-          <li
-            onClick={() => {
-              localStorage.removeItem("role");
-              navigate("/");
-            }}
-            className="hover:bg-red-600 p-2 rounded cursor-pointer mt-10 bg-red-500"
-          >
-            Logout
-          </li>
-        </ul>
+      {/* ✅ Sidebar */}
+      <div
+        className={`
+          fixed md:static top-0 left-0 h-full z-40
+          transform ${openSidebar ? "translate-x-0" : "-translate-x-full"}
+          md:translate-x-0 transition-transform duration-300
+        `}
+      >
+        <Sidebar />
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 p-6">
+      {/* ✅ Overlay (mobile only) */}
+      {openSidebar && (
+        <div
+          onClick={() => setOpenSidebar(false)}
+          className="fixed inset-0 bg-black/40 md:hidden z-30"
+        />
+      )}
 
-        {/* Top Section */}
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">Member Dashboard</h1>
-          <div className="bg-white px-4 py-2 rounded shadow">
-            Welcome, Member
-          </div>
+      {/* ✅ Main Content */}
+      {/* pl-14 → toggle overlap fix */}
+      <div className="flex-1 p-4 md:p-6 w-full md:ml-64 pl-14 md:pl-6">
+
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
+          <h1 className="text-2xl md:text-3xl font-bold">
+            Member Dashboard
+          </h1>
+
+          <button
+            onClick={handleLogout}
+            className="bg-red-500 text-white px-4 py-2 rounded w-fit"
+          >
+            Logout
+          </button>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-3 gap-6 mb-6">
+        {/* ✅ Stats Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
 
           <div className="bg-white p-6 rounded-xl shadow">
             <h3 className="text-lg font-semibold">My Leads</h3>
@@ -73,11 +87,13 @@ export default function MemberDashboard() {
 
         </div>
 
-        {/* Recent Leads Table */}
-        <div className="bg-white rounded-xl shadow p-6">
-          <h3 className="text-xl font-semibold mb-4">My Recent Leads</h3>
+        {/* ✅ Table */}
+        <div className="bg-white rounded-xl shadow p-6 overflow-x-auto">
+          <h3 className="text-xl font-semibold mb-4">
+            My Recent Leads
+          </h3>
 
-          <table className="w-full text-left border-collapse">
+          <table className="min-w-full text-left border-collapse">
             <thead>
               <tr className="border-b">
                 <th className="p-2">Name</th>
