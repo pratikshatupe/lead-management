@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Sidebar from "../../component/admin/SideBar";
+import SideBar from "../../component/admin/SideBar";
 import Navbar from "../../component/admin/Navbar";
 
 export default function Layout({ children }) {
