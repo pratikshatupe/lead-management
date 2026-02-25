@@ -42,7 +42,6 @@ function Leads() {
   );
 
   return (
-    <Layout>
       <div className="p-4 md:p-6 bg-[#f8f9fa] dark:bg-slate-900 min-h-screen">
         
         {/* PAGE TITLE & TOGGLE */}
@@ -209,7 +208,6 @@ function Leads() {
           </div>
         </div>
       </div>
-    </Layout>
   );
 }
 

@@ -67,7 +67,7 @@ function Products() {
   };
 
   return (
-    <Layout>
+    
       <div className="min-h-screen bg-[#f8f9fa] dark:bg-slate-900 pb-10">
         
         {isDrawerOpen && <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" onClick={() => {
@@ -199,7 +199,7 @@ function Products() {
 
         </div>
       </div>
-    </Layout>
+    
   );
 }
 
