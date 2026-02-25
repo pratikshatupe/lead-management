@@ -27,7 +27,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, collapsed }) {
         icon: <FaMoneyBill />,
         children: [
           { label: "Expense Categories", path: "/expense-categories" },
-          { label: "Expenses", path: "/expenses" },
+          { label: "Expenses", path: "/expense" },
         ],
       },
       { label: "User Management", icon: <FaUsers />, path: "/users" },
