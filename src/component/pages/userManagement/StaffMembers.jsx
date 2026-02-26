@@ -40,7 +40,6 @@ function StaffMembers() {
     });
   };
 
-  // 📌 Image Upload Handler
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -56,6 +55,8 @@ function StaffMembers() {
     const newStaff = {
       id: staffList.length + 1,
       ...formData,
+      profileImage:
+        formData.profileImage || "https://via.placeholder.com/40",
     };
 
     setStaffList([...staffList, newStaff]);
@@ -74,20 +75,20 @@ function StaffMembers() {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-4 sm:p-6">
       {/* Header */}
-      <div className="flex justify-between items-center mb-5">
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-5 gap-3">
         <h2 className="text-2xl font-semibold">Users</h2>
         <button
           onClick={() => setShowDrawer(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 w-full sm:w-auto"
         >
           + Add New Staff Member
         </button>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto bg-white shadow rounded-lg">
+      {/* Desktop Table */}
+      <div className="hidden md:block overflow-x-auto bg-white shadow rounded-lg">
         <table className="w-full text-sm text-left">
           <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
             <tr>
@@ -100,14 +101,13 @@ function StaffMembers() {
               <th className="p-3">Address</th>
             </tr>
           </thead>
-
           <tbody>
             {staffList.map((staff) => (
               <tr key={staff.id} className="border-t">
                 <td className="p-3">
                   <img
                     src={staff.profileImage}
-                    alt="profile"
+                    alt=""
                     className="w-10 h-10 rounded-full object-cover"
                   />
                 </td>
@@ -133,7 +133,47 @@ function StaffMembers() {
         </table>
       </div>
 
-      {/* Drawer */}
+      {/* Mobile Cards */}
+      <div className="md:hidden space-y-4">
+        {staffList.map((staff) => (
+          <div
+            key={staff.id}
+            className="bg-white shadow rounded-xl p-4"
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <img
+                src={staff.profileImage}
+                alt=""
+                className="w-12 h-12 rounded-full object-cover"
+              />
+              <div>
+                <h3 className="font-semibold">{staff.name}</h3>
+                <p className="text-sm text-gray-500">{staff.role}</p>
+              </div>
+            </div>
+
+            <div className="text-sm space-y-1">
+              <p><strong>Email:</strong> {staff.email}</p>
+              <p><strong>Phone:</strong> {staff.phone}</p>
+              <p>
+                <strong>Status:</strong>{" "}
+                <span
+                  className={`px-2 py-1 text-xs rounded-full ${
+                    staff.status === "Enabled"
+                      ? "bg-green-100 text-green-600"
+                      : "bg-red-100 text-red-600"
+                  }`}
+                >
+                  {staff.status}
+                </span>
+              </p>
+              <p><strong>Address:</strong> {staff.address}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Drawer (same as before — no change) */}
       {showDrawer && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-end">
           <div className="w-full sm:w-[400px] bg-white h-full p-6 overflow-y-auto">
@@ -141,7 +181,6 @@ function StaffMembers() {
               Add New Staff Member
             </h3>
 
-            {/* Image Upload */}
             <div className="mb-4">
               <label className="block mb-2 text-sm font-medium">
                 Profile Image
@@ -150,7 +189,7 @@ function StaffMembers() {
               {formData.profileImage && (
                 <img
                   src={formData.profileImage}
-                  alt="preview"
+                  alt=""
                   className="w-20 h-20 rounded-full mb-3 object-cover"
                 />
               )}
