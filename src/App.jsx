@@ -12,6 +12,7 @@ import LeadFollowup from "./component/pages/leadFollowUp/LeadFollowup";
 import Products from "./component/pages/products/Products";
 import ExpenseCategories from "./component/pages/expenseManager/ExpenseCategories";
 import Expenses from "./component/pages/expenseManager/Expenses";
+import StaffMembers from "./component/pages/userManagement/StaffMembers";
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
           <Route path="lead-notes" element={<LeadNotes />} />
           <Route path="follow-up" element={<LeadFollowup />} />
           <Route path="expense" element ={<Expenses/>}/>
+          <Route path="staff" element={<StaffMembers/>}/>
 
         </Route>
 
