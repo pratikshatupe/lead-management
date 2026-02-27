@@ -13,6 +13,8 @@ import Products from "./component/pages/products/Products";
 import ExpenseCategories from "./component/pages/expenseManager/ExpenseCategories";
 import Expenses from "./component/pages/expenseManager/Expenses";
 import StaffMembers from "./component/pages/userManagement/StaffMembers";
+import Salesman from "./component/pages/userManagement/salesmans/Salesmans";
+import SalesmanBookings from "./component/pages/userManagement/salesmans/SalesmanBookings";
 
 function App() {
   return (
@@ -35,7 +37,8 @@ function App() {
           <Route path="follow-up" element={<LeadFollowup />} />
           <Route path="expense" element ={<Expenses/>}/>
           <Route path="staff" element={<StaffMembers/>}/>
-
+          <Route path="Salesmans" element = {<Salesman/>}/>
+<Route path="salesman-bookings" element={<SalesmanBookings />} />
         </Route>
 
         {/* 404 */}
