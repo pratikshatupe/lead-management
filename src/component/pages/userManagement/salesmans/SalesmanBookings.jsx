@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { FaEye, FaTrash } from "react-icons/fa";
 
 function SalesmanBookings() {
+
   const [campaignFilter, setCampaignFilter] = useState("");
   const [salesmanFilter, setSalesmanFilter] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
 
   const bookings = [
     {
@@ -131,10 +133,15 @@ function SalesmanBookings() {
 
                 <td className="p-3 flex gap-2">
 
-                  <button className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded">
+                  {/* Eye Button */}
+                  <button
+                    onClick={() => setShowPopup(true)}
+                    className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded"
+                  >
                     <FaEye size={14} />
                   </button>
 
+                  {/* Delete Button */}
                   <button className="bg-red-500 hover:bg-red-600 text-white p-2 rounded">
                     <FaTrash size={14} />
                   </button>
@@ -180,7 +187,10 @@ function SalesmanBookings() {
 
             <div className="flex gap-2">
 
-              <button className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded flex justify-center items-center gap-2">
+              <button
+                onClick={() => setShowPopup(true)}
+                className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded flex justify-center items-center gap-2"
+              >
                 <FaEye size={14} />
                 View
               </button>
@@ -197,6 +207,43 @@ function SalesmanBookings() {
         ))}
 
       </div>
+
+      {/* Popup Modal */}
+      {showPopup && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40">
+
+          <div className="bg-white rounded-lg shadow-lg p-6 w-80 text-center">
+
+            <div className="text-yellow-500 text-3xl mb-2">⚠️</div>
+
+            <h3 className="text-lg font-semibold mb-2">Are you sure?</h3>
+
+            <p className="text-gray-600 mb-4">
+              Are you sure you want to resume this lead?
+            </p>
+
+            <div className="flex justify-center gap-4">
+
+              <button
+                onClick={() => setShowPopup(false)}
+                className="px-4 py-2 border rounded"
+              >
+                No
+              </button>
+
+              <button
+                onClick={() => setShowPopup(false)}
+                className="px-4 py-2 bg-red-500 text-white rounded"
+              >
+                Yes
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+      )}
 
     </div>
   );
