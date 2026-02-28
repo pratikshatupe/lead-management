@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { FaEye, FaTrash } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 function SalesmanBookings() {
+
+  const navigate = useNavigate();
 
   const [campaignFilter, setCampaignFilter] = useState("");
   const [salesmanFilter, setSalesmanFilter] = useState("");
@@ -58,6 +61,14 @@ function SalesmanBookings() {
       (salesmanFilter === "" || item.salesman === salesmanFilter)
     );
   });
+
+  // YES button click
+  const handleResumeLead = () => {
+    setShowPopup(false);
+
+    // navigate to Lead Details page
+    navigate("/lead-details");
+  };
 
   return (
     <div className="p-6">
@@ -158,56 +169,6 @@ function SalesmanBookings() {
 
       </div>
 
-      {/* Mobile Card View */}
-      <div className="md:hidden space-y-4">
-
-        {filteredBookings.map((item) => (
-
-          <div key={item.id} className="bg-white shadow rounded-lg p-4">
-
-            <div className="flex justify-between mb-2">
-              <span className="text-gray-500 text-sm">Reference</span>
-              <span className="text-blue-600 font-medium">{item.ref}</span>
-            </div>
-
-            <div className="flex justify-between mb-2">
-              <span className="text-gray-500 text-sm">Campaign</span>
-              <span>{item.campaign}</span>
-            </div>
-
-            <div className="flex justify-between mb-2">
-              <span className="text-gray-500 text-sm">Booking Time</span>
-              <span>{item.time}</span>
-            </div>
-
-            <div className="flex justify-between mb-3">
-              <span className="text-gray-500 text-sm">Salesman</span>
-              <span>{item.salesman}</span>
-            </div>
-
-            <div className="flex gap-2">
-
-              <button
-                onClick={() => setShowPopup(true)}
-                className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded flex justify-center items-center gap-2"
-              >
-                <FaEye size={14} />
-                View
-              </button>
-
-              <button className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded flex justify-center items-center gap-2">
-                <FaTrash size={14} />
-                Delete
-              </button>
-
-            </div>
-
-          </div>
-
-        ))}
-
-      </div>
-
       {/* Popup Modal */}
       {showPopup && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40">
@@ -232,7 +193,7 @@ function SalesmanBookings() {
               </button>
 
               <button
-                onClick={() => setShowPopup(false)}
+                onClick={handleResumeLead}
                 className="px-4 py-2 bg-red-500 text-white rounded"
               >
                 Yes
