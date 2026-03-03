@@ -24,6 +24,9 @@ import SalesmanBookings from "./component/pages/userManagement/salesmans/Salesma
 
 import WebsiteDevelopmentCampagines from "./component/pages/WebsiteDevelopmentCampagines";
 import WebsiteDeevelopmentCampagines2 from "./component/pages/WebsiteDeevelopmentCampagines2";
+import CallManager from "./component/pages/leadManager/CallManager";
+import Campaigns from "./component/pages/leadManager/Campaigns";
+import SocialMediaCampagiens from "./component/pages/SocialMediaCampagiens";
 
 function App() {
   return (
@@ -33,11 +36,10 @@ function App() {
         {/* LOGIN PAGE */}
         <Route path="/" element={<Login />} />
 
-        {/* CALL MANAGER FULL PAGE */}
+        {/* FULL SCREEN PAGES (NO SIDEBAR) */}
         <Route path="/lead-details" element={<WebsiteDevelopmentCampagines />} />
-
-        {/* NEXT LEAD PAGE */}
         <Route path="/WebsiteDeevelopmentCampagines2" element={<WebsiteDeevelopmentCampagines2 />} />
+        <Route path="/socialmedia" element={<SocialMediaCampagiens />} />
 
         {/* ADMIN SECTION WITH SIDEBAR */}
         <Route path="/" element={<Layout />}>
@@ -60,6 +62,9 @@ function App() {
           <Route path="lead-notes" element={<LeadNotes />} />
 
           <Route path="follow-up" element={<LeadFollowup />} />
+
+          <Route path="Calls" element={<CallManager />} />
+          <Route path="campaigns" element={<Campaigns />} />
 
         </Route>
 

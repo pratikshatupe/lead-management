@@ -3,8 +3,11 @@ import {
   FaHome, FaBox, FaMoneyBill, FaUsers, FaUserTie, FaPhone,
   FaBullhorn, FaEnvelope, FaFileAlt, FaCog, FaSignOutAlt,
   FaChevronDown, FaChevronRight, FaTimes, 
-  FaCalendarCheck, // Fix for the error
-  FaWpforms
+  FaCalendarCheck,
+  FaWpforms,
+  FaUserPlus,
+  FaHeadset,
+  FaPhoneAlt
 } from "react-icons/fa";
 import { useState } from "react";
 
@@ -40,18 +43,23 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, collapsed }) {
           { label: "Salesmans Bookings", path: "/salesman-bookings" },
         ],
       },
-      { label: "Lead Management", icon: <FaPhone />, path: "/leads" },
-      { label: "Call Manager", icon: <FaPhone />, path: "/calls" },
+
+      { label: "Lead Management", icon: <FaUserPlus />, path: "/leads" },
+
+      { label: "Call Manager", icon: <FaHeadset />, path: "/calls" },
+
       { label: "Campaigns", icon: <FaBullhorn />, path: "/campaigns" },
+
       {
         label: "Lead & Calls",
-        icon: <FaPhone />,
+        icon: <FaPhoneAlt />,
         children: [
           { label: "Leads", path: "/leads" },
           { label: "Call Logs", path: "/call-logs" },
           { label: "Lead Notes", path: "/lead-notes" },
         ],
       },
+
       { label: "Lead Follow Up", icon: <FaCalendarCheck />, path: "/follow-up" },
       {
         label: "Settings",

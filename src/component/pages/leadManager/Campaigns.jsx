@@ -1,0 +1,525 @@
+import React, { useState, useRef } from "react";
+import {
+  FaPlus,
+  FaEdit,
+  FaTrash,
+  FaCloudUploadAlt,
+  FaTimes,
+  FaEye,
+  FaEyeSlash,
+  FaMinus,
+  FaBold,
+  FaItalic,
+  FaUnderline,
+  FaLink,
+  FaListUl,
+  FaListOl,
+  FaTextHeight,
+} from "react-icons/fa";
+
+function Campaigns() {
+  const [activeTab, setActiveTab] = useState("active");
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [staffModalOpen, setStaffModalOpen] = useState(false);
+  const [roleModalOpen, setRoleModalOpen] = useState(false);
+  const [formModalOpen, setFormModalOpen] = useState(false);
+  const [emailTemplateModalOpen, setEmailTemplateModalOpen] = useState(false);
+
+  const [perPage, setPerPage] = useState(10);
+  const [step, setStep] = useState(1);
+  const [showPassword, setShowPassword] = useState(false);
+
+  // --- IMAGE UPLOAD STATE ---
+  const [selectedImage, setSelectedImage] = useState(null);
+  const fileInputRef = useRef(null);
+
+  // --- DATA STATES ---
+  const [roles, setRoles] = useState(["Admin", "Manager", "Salesman"]);
+  const [staffMembers, setStaffMembers] = useState(["Ted Sipes", "John Doe", "Admin"]);
+  
+  // Dynamic Lists for Dropdowns
+  const [forms, setForms] = useState(["Default Form", "Software Development Form"]);
+  const [emailTemplates, setEmailTemplates] = useState(["Welcome Email", "Follow-up Template"]);
+
+  const [campaignList, setCampaignList] = useState([
+    { id: 1, name: "Make New Mobile Application", progress: 22, leads: "16/70", form: "Software Development Form", date: "07-02-2026 01:25 am", user: "Admin" },
+    { id: 2, name: "Live Event Campaign", progress: 30, leads: "22/73", form: "Default Form", date: "16-02-2026 08:43 am", user: "Ted Sipes" },
+    { id: 3, name: "Electronic Item Sell Campaign", progress: 50, leads: "25/50", form: "Default Form", date: "15-02-2026 05:03 pm", user: "Manager" },
+  ]);
+
+  // --- NEW ITEM INPUT STATES ---
+  const [newRoleName, setNewRoleName] = useState("");
+  const [newStaffName, setNewStaffName] = useState("");
+  const [newCampaignName, setNewCampaignName] = useState("");
+  const [newFormName, setNewFormName] = useState("");
+  const [newTemplateName, setNewTemplateName] = useState("");
+  const [newSubject, setNewSubject] = useState("");
+  const [formFields, setFormFields] = useState([]);
+
+  // --- FUNCTIONS ---
+  const addFormField = () => {
+    setFormFields([...formFields, { id: Date.now(), name: "", type: "Text" }]);
+  };
+
+  const removeFormField = (id) => {
+    setFormFields(formFields.filter((field) => field.id !== id));
+  };
+
+  const handleFieldChange = (id, value, key) => {
+    const updatedFields = formFields.map((field) =>
+      field.id === id ? { ...field, [key]: value } : field
+    );
+    setFormFields(updatedFields);
+  };
+
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setSelectedImage(URL.createObjectURL(file));
+    }
+  };
+
+  const handleAddRole = () => {
+    if (newRoleName.trim()) {
+      setRoles([...roles, newRoleName]);
+      setNewRoleName("");
+      setRoleModalOpen(false);
+    }
+  };
+
+  const handleAddStaff = () => {
+    if (newStaffName.trim()) {
+      setStaffMembers([...staffMembers, newStaffName]);
+      setNewStaffName("");
+      setSelectedImage(null);
+      setStaffModalOpen(false);
+    }
+  };
+
+  const handleCreateForm = () => {
+    if (newFormName.trim()) {
+      setForms([...forms, newFormName]);
+      setNewFormName("");
+      setFormFields([]);
+      setFormModalOpen(false);
+    }
+  };
+
+  const handleCreateTemplate = () => {
+    if (newTemplateName.trim()) {
+      setEmailTemplates([...emailTemplates, newTemplateName]);
+      setNewTemplateName("");
+      setNewSubject("");
+      setEmailTemplateModalOpen(false);
+    }
+  };
+
+  const handleFinishCampaign = () => {
+    const newEntry = {
+      id: campaignList.length + 1,
+      name: newCampaignName || "New Campaign",
+      progress: 0,
+      leads: "0/100",
+      form: "Default Form",
+      date: new Date().toLocaleString(),
+      user: "Admin",
+    };
+    setCampaignList([newEntry, ...campaignList]);
+    setNewCampaignName("");
+    setDrawerOpen(false);
+    setStep(1);
+  };
+
+  const nextStep = () => { if (step < 3) setStep(step + 1); };
+  const prevStep = () => { if (step > 1) setStep(step - 1); };
+
+  return (
+    <div className="p-4 md:p-6 bg-gray-50 min-h-screen font-sans">
+      {/* HEADER */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+        <div>
+          <h1 className="text-2xl font-semibold">Campaigns</h1>
+          <p className="text-sm text-gray-500">Dashboard - Campaigns</p>
+        </div>
+        <button
+          onClick={() => { setDrawerOpen(true); setStep(1); }}
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded mt-3 md:mt-0 shadow-md transition-all"
+        >
+          <FaPlus /> Add New Campaign
+        </button>
+      </div>
+
+      {/* TABS */}
+      <div className="flex gap-6 border-b mb-4 text-sm">
+        <button onClick={() => setActiveTab("active")} className={`pb-2 transition-all ${activeTab === "active" ? "border-b-2 border-blue-600 text-blue-600 font-medium" : "text-gray-500 hover:text-blue-400"}`}>Active Campaign</button>
+        <button onClick={() => setActiveTab("completed")} className={`pb-2 transition-all ${activeTab === "completed" ? "border-b-2 border-blue-600 text-blue-600 font-medium" : "text-gray-500 hover:text-blue-400"}`}>Completed Campaign</button>
+      </div>
+
+      {/* DESKTOP TABLE */}
+      <div className="hidden md:block overflow-auto border rounded bg-white shadow-sm">
+        <table className="min-w-[900px] w-full text-sm text-left">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="p-3">Name</th>
+              <th className="p-3">Progress</th>
+              <th className="p-3">Members</th>
+              <th className="p-3">Form</th>
+              <th className="p-3">Started On</th>
+              <th className="p-3">Last Actioner</th>
+              <th className="p-3">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {campaignList.map((item) => (
+              <tr key={item.id} className="border-t hover:bg-gray-50">
+                <td className="p-3 font-medium">{item.name}</td>
+                <td className="p-3">
+                  <div className="w-full bg-gray-200 h-2 rounded"><div className="bg-blue-500 h-2 rounded" style={{ width: `${item.progress}%` }}></div></div>
+                  <p className="text-xs text-gray-500 mt-1">Remaining Leads: {item.leads}</p>
+                </td>
+                <td className="p-3 flex -space-x-2">
+                  <div className="w-8 h-8 bg-blue-300 rounded-full border border-white"></div>
+                  <div className="w-8 h-8 bg-blue-400 rounded-full border border-white"></div>
+                </td>
+                <td className="p-3">{item.form}</td>
+                <td className="p-3">{item.date}</td>
+                <td className="p-3">{item.user}</td>
+                <td className="p-3 flex gap-2">
+                  <button className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors"><FaCloudUploadAlt /></button>
+                  <button className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors"><FaPlus /></button>
+                  <button className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors"><FaEdit /></button>
+                  <button className="bg-red-500 text-white p-2 rounded hover:bg-red-600 transition-colors"><FaTrash /></button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* MOBILE CARD VIEW */}
+      <div className="grid gap-4 md:hidden">
+        {campaignList.map((item) => (
+          <div key={item.id} className="border rounded-lg p-4 shadow-sm bg-white">
+            <h3 className="font-semibold text-lg mb-2">{item.name}</h3>
+            <div className="mb-2">
+              <div className="w-full bg-gray-200 h-2 rounded"><div className="bg-blue-500 h-2 rounded" style={{ width: `${item.progress}%` }}></div></div>
+              <p className="text-xs text-gray-500 mt-1">Remaining Leads: {item.leads}</p>
+            </div>
+            <p className="text-sm font-medium">Form : <span className="font-normal">{item.form}</span></p>
+            <p className="text-sm font-medium">Started : <span className="font-normal">{item.date}</span></p>
+            <p className="text-sm font-medium mb-3">User : <span className="font-normal">{item.user}</span></p>
+            <div className="flex gap-2">
+                <button className="bg-blue-500 text-white p-2 rounded flex-1 flex justify-center"><FaCloudUploadAlt /></button>
+                <button className="bg-blue-500 text-white p-2 rounded flex-1 flex justify-center"><FaPlus /></button>
+                <button className="bg-blue-500 text-white p-2 rounded flex-1 flex justify-center"><FaEdit /></button>
+                <button className="bg-red-500 text-white p-2 rounded flex-1 flex justify-center"><FaTrash /></button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* PAGINATION */}
+      <div className="flex justify-between items-center mt-4 text-sm">
+        <div className="flex items-center gap-2">
+          <select value={perPage} onChange={(e) => setPerPage(e.target.value)} className="border px-2 py-1 rounded outline-none text-xs">
+            <option>10</option><option>20</option><option>50</option>
+          </select>
+          <span className="text-xs">/ page</span>
+        </div>
+        <button className="border px-3 py-1 rounded bg-blue-500 text-white text-xs">1</button>
+      </div>
+
+      {/* DRAWER (Add New Campaign) */}
+      {drawerOpen && (
+        <div className="fixed inset-0 bg-black/40 flex justify-end z-40">
+          <div className="bg-white w-full md:w-[650px] h-full overflow-auto p-6 shadow-2xl transition-all">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-lg font-semibold">Add New Campaign</h2>
+              <button onClick={() => setDrawerOpen(false)} className="text-gray-500 hover:text-black"><FaTimes /></button>
+            </div>
+
+            <div className="flex items-center justify-between mb-8 text-xs md:text-sm border-b">
+              <div className={step === 1 ? "text-blue-600 font-semibold border-b-2 border-blue-600 pb-2" : "text-gray-400 pb-2"}>Basic Settings</div>
+              <div className={step === 2 ? "text-blue-600 font-semibold border-b-2 border-blue-600 pb-2" : "text-gray-400 pb-2"}>About Campaign</div>
+              <div className={step === 3 ? "text-blue-600 font-semibold border-b-2 border-blue-600 pb-2" : "text-gray-400 pb-2"}>Import Data</div>
+            </div>
+
+            {step === 1 && (
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium">Name *</label>
+                  <input value={newCampaignName} onChange={(e)=>setNewCampaignName(e.target.value)} type="text" placeholder="Please Enter Name" className="w-full border p-2 rounded mt-1 outline-none focus:border-blue-500" />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Members *</label>
+                  <div className="flex gap-2 mt-1">
+                    <select className="w-full border p-2 rounded outline-none focus:border-blue-500">
+                        <option>Select Members...</option>
+                        {staffMembers.map((m, idx) => <option key={idx} value={m}>{m}</option>)}
+                    </select>
+                    <button type="button" onClick={() => setStaffModalOpen(true)} className="bg-white border text-blue-600 p-2 rounded hover:bg-blue-50"><FaPlus /></button>
+                  </div>
+                </div>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium">Form *</label>
+                    <div className="flex gap-2 mt-1">
+                      <select className="w-full border p-2 rounded outline-none">
+                        <option>Select Form...</option>
+                        {forms.map((f, idx) => <option key={idx} value={f}>{f}</option>)}
+                      </select>
+                      <button type="button" onClick={() => {setFormFields([]); setFormModalOpen(true);}} className="bg-white border text-blue-600 p-2 rounded hover:bg-blue-50">
+                        <FaPlus size={14}/>
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Email Template *</label>
+                    <div className="flex gap-2 mt-1">
+                      <select className="w-full border p-2 rounded outline-none">
+                        <option>Select Email Template...</option>
+                        {emailTemplates.map((t, idx) => <option key={idx} value={t}>{t}</option>)}
+                      </select>
+                      <button type="button" onClick={() => setEmailTemplateModalOpen(true)} className="bg-white border text-blue-600 p-2 rounded hover:bg-blue-50">
+                        <FaPlus size={14}/>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {step === 2 && (
+              <div className="space-y-4">
+                <p className="text-gray-500">Campaign description and details settings go here.</p>
+                <textarea className="w-full border p-2 rounded h-32 outline-none" placeholder="Describe your campaign..."></textarea>
+              </div>
+            )}
+
+            {step === 3 && (
+              <div className="space-y-4">
+                <p className="text-gray-500">Upload CSV or Lead data for this campaign.</p>
+                <div className="border-2 border-dashed p-10 text-center rounded-md text-gray-400">
+                   <FaCloudUploadAlt className="mx-auto mb-2 text-3xl" />
+                   <span>Upload Leads File</span>
+                </div>
+              </div>
+            )}
+            
+            <div className="flex justify-between mt-10">
+              {step > 1 && <button onClick={prevStep} className="border px-4 py-2 rounded hover:bg-gray-50 transition-all">Previous</button>}
+              <div className="flex gap-3 ml-auto">
+                <button onClick={() => setDrawerOpen(false)} className="border px-4 py-2 rounded hover:bg-gray-50 transition-all">Cancel</button>
+                {step < 3 ? (
+                  <button onClick={nextStep} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 shadow-md">Next Step</button>
+                ) : (
+                  <button onClick={handleFinishCampaign} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 shadow-md">Finish</button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: Add New Form */}
+      {formModalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[70] p-4">
+          <div className="bg-white w-full max-w-2xl rounded-lg shadow-2xl flex flex-col max-h-[90vh]">
+            <div className="p-4 border-b flex justify-between items-center">
+              <h2 className="text-lg font-semibold">Add New Form</h2>
+              <button onClick={() => setFormModalOpen(false)} className="text-gray-500 hover:text-black transition-colors"><FaTimes /></button>
+            </div>
+            <div className="p-6 overflow-y-auto space-y-6">
+              <div>
+                <label className="text-xs font-semibold text-red-500 uppercase">* Name</label>
+                <input value={newFormName} onChange={(e) => setNewFormName(e.target.value)} type="text" placeholder="Please Enter Name" className="w-full border p-2 rounded text-sm mt-1 outline-none focus:border-blue-500" />
+              </div>
+              <div>
+                <label className="text-xs font-semibold block mb-2 uppercase text-gray-700">Status</label>
+                <div className="flex gap-0">
+                  <button className="bg-blue-600 text-white px-4 py-1.5 rounded-l text-xs font-medium border border-blue-600">Active</button>
+                  <button className="bg-gray-100 text-gray-600 px-4 py-1.5 rounded-r text-xs font-medium border border-l-0">Inactive</button>
+                </div>
+              </div>
+              <div>
+                <label className="text-sm font-bold block mb-3 border-b pb-1 text-gray-800">Form Fields</label>
+                <div className="space-y-3 mb-4">
+                  {formFields.map((field) => (
+                    <div key={field.id} className="flex flex-col md:flex-row gap-3 items-end md:items-center bg-gray-50 p-3 rounded-md border">
+                      <div className="flex-1 w-full">
+                        <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Field Name</label>
+                        <input type="text" placeholder="Field Name" value={field.name} onChange={(e) => handleFieldChange(field.id, e.target.value, "name")} className="w-full border p-2 rounded text-sm bg-white outline-none focus:border-blue-500" />
+                      </div>
+                      <div className="w-full md:w-40">
+                        <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Type</label>
+                        <select className="w-full border p-2 rounded text-sm bg-white outline-none" value={field.type} onChange={(e) => handleFieldChange(field.id, e.target.value, "type")}>
+                          <option>Text</option><option>Number</option><option>Email</option><option>Date</option><option>Dropdown</option>
+                        </select>
+                      </div>
+                      <button onClick={() => removeFormField(field.id)} className="bg-red-50 text-red-500 p-2.5 rounded-md hover:bg-red-500 hover:text-white transition-all border border-red-100"><FaMinus size={12}/></button>
+                    </div>
+                  ))}
+                </div>
+                <button onClick={addFormField} className="w-full border-2 border-dashed border-gray-300 p-4 rounded-md text-gray-500 text-sm flex items-center justify-center gap-2 hover:bg-blue-50 transition-all font-medium"><FaPlus size={12}/> Add Form Field</button>
+              </div>
+            </div>
+            <div className="p-4 border-t flex justify-end gap-3 bg-gray-50">
+              <button onClick={() => setFormModalOpen(false)} className="px-6 py-2 border rounded text-sm font-medium bg-white">Cancel</button>
+              <button onClick={handleCreateForm} className="px-6 py-2 bg-blue-600 text-white rounded text-sm font-medium flex items-center gap-2 hover:bg-blue-700 shadow-md transition-all"><FaCloudUploadAlt size={14} /> Create</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: Add New Email Template */}
+      {emailTemplateModalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[80] p-4">
+          <div className="bg-white w-full max-w-2xl rounded-lg shadow-2xl flex flex-col max-h-[95vh]">
+            <div className="p-4 border-b flex justify-between items-center">
+              <h2 className="text-lg font-semibold">Add New Email Template</h2>
+              <button onClick={() => setEmailTemplateModalOpen(false)} className="text-gray-500 hover:text-black"><FaTimes /></button>
+            </div>
+            <div className="p-6 overflow-y-auto space-y-5">
+              <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
+                <div className="flex-1 w-full">
+                  <label className="text-xs font-semibold text-red-500 uppercase">* Name</label>
+                  <input value={newTemplateName} onChange={(e) => setNewTemplateName(e.target.value)} type="text" placeholder="Please Enter Name" className="w-full border p-2 rounded text-sm mt-1 outline-none focus:border-blue-500" />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-gray-700 uppercase flex items-center gap-1">Sharable <span className="text-gray-400 bg-gray-100 rounded-full w-4 h-4 flex items-center justify-center text-[10px]">i</span></label>
+                  <div className="flex gap-0 mt-1">
+                    <button className="bg-white text-gray-600 px-4 py-1.5 rounded-l text-xs font-medium border">Yes</button>
+                    <button className="bg-blue-600 text-white px-4 py-1.5 rounded-r text-xs font-medium border border-blue-600">No</button>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-red-500 uppercase">* Subject</label>
+                <input value={newSubject} onChange={(e) => setNewSubject(e.target.value)} type="text" placeholder="Please Enter Subject" className="w-full border p-2 rounded text-sm mt-1 outline-none focus:border-blue-500" />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-gray-700 uppercase">Body</label>
+                <div className="border rounded-md mt-1 overflow-hidden">
+                  <div className="bg-gray-50 border-b p-2 flex flex-wrap gap-4 text-gray-500">
+                    <div className="flex items-center gap-2 border-r pr-4">
+                      <span className="text-xs font-medium">Normal</span>
+                      <FaTextHeight size={12} />
+                    </div>
+                    <FaBold className="cursor-pointer hover:text-blue-600" />
+                    <FaItalic className="cursor-pointer hover:text-blue-600" />
+                    <FaUnderline className="cursor-pointer hover:text-blue-600" />
+                    <FaLink className="cursor-pointer hover:text-blue-600" />
+                    <FaListUl className="cursor-pointer hover:text-blue-600" />
+                    <FaListOl className="cursor-pointer hover:text-blue-600" />
+                  </div>
+                  <textarea placeholder="Please Enter Body" className="w-full p-4 text-sm h-32 outline-none italic text-gray-400"></textarea>
+                </div>
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-gray-700 uppercase">Form</label>
+                <select className="w-full border p-2 rounded text-sm mt-1 outline-none focus:border-blue-500">
+                  <option>Select Form...</option>
+                  {forms.map((f, idx) => <option key={idx} value={f}>{f}</option>)}
+                </select>
+              </div>
+            </div>
+            <div className="p-4 border-t flex justify-end gap-3 bg-gray-50">
+              <button onClick={() => setEmailTemplateModalOpen(false)} className="px-6 py-2 border rounded text-sm font-medium bg-white hover:bg-gray-100">Cancel</button>
+              <button onClick={handleCreateTemplate} className="px-6 py-2 bg-blue-600 text-white rounded text-sm font-medium flex items-center gap-2 hover:bg-blue-700 shadow-md"><FaCloudUploadAlt size={14} /> Create</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: Add New Staff Member */}
+      {staffModalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white w-full max-w-2xl rounded-lg shadow-xl flex flex-col max-h-[90vh]">
+            <div className="p-4 border-b flex justify-between items-center">
+              <h2 className="text-lg font-semibold">Add New Staff Member</h2>
+              <button onClick={() => setStaffModalOpen(false)}><FaTimes /></button>
+            </div>
+            <div className="p-6 overflow-y-auto grid grid-cols-1 md:grid-cols-12 gap-6">
+              <div className="md:col-span-3 text-center">
+                <label className="text-xs font-semibold mb-2 block text-left">Profile Image</label>
+                <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleImageChange} />
+                <div onClick={() => fileInputRef.current.click()} className="border-2 border-dashed rounded-md p-4 h-32 flex flex-col items-center justify-center text-gray-400 cursor-pointer overflow-hidden hover:bg-gray-50 transition-all">
+                  {selectedImage ? <img src={selectedImage} alt="Preview" className="h-full w-full object-cover" /> : <><FaPlus className="mb-1" /> <span className="text-xs font-medium">Upload</span></>}
+                </div>
+              </div>
+              <div className="md:col-span-9 space-y-4">
+                <div>
+                  <label className="text-xs font-semibold text-red-500">* Role</label>
+                  <div className="flex gap-2 mt-1">
+                    <select className="w-full border p-2 rounded text-sm outline-none focus:border-blue-500">
+                        <option>Select Role...</option>
+                        {roles.map((r, idx) => <option key={idx} value={r}>{r}</option>)}
+                    </select>
+                    <button onClick={() => setRoleModalOpen(true)} className="border p-2 rounded bg-white text-blue-600 hover:bg-blue-50 transition-all"><FaPlus size={12} /></button>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div><label className="text-xs font-semibold text-red-500">* Name</label><input value={newStaffName} onChange={(e)=>setNewStaffName(e.target.value)} type="text" className="w-full border p-2 rounded text-sm outline-none focus:border-blue-500" /></div>
+                  <div><label className="text-xs font-semibold text-red-500">* Phone</label><input type="text" className="w-full border p-2 rounded text-sm outline-none focus:border-blue-500" /></div>
+                </div>
+                <div>
+                    <label className="text-xs font-semibold text-red-500">* Password</label>
+                    <div className="relative"><input type={showPassword ? "text" : "password"} className="w-full border p-2 rounded text-sm outline-none focus:border-blue-500" />
+                    <button onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-2.5 text-gray-400">{showPassword ? <FaEyeSlash /> : <FaEye />}</button></div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div><label className="text-xs font-semibold text-red-500">* Email</label><input type="email" className="w-full border p-2 rounded text-sm outline-none focus:border-blue-500" /></div>
+                  <div><label className="text-xs font-semibold text-red-500">* Status</label><select className="w-full border p-2 rounded text-sm outline-none"><option>Enabled</option><option>Disabled</option></select></div>
+                </div>
+              </div>
+            </div>
+            <div className="p-4 border-t flex justify-end gap-3 bg-gray-50">
+              <button onClick={() => setStaffModalOpen(false)} className="px-4 py-2 border rounded text-sm font-medium bg-white">Cancel</button>
+              <button onClick={handleAddStaff} className="px-4 py-2 bg-blue-600 text-white rounded text-sm font-medium flex items-center gap-2 hover:bg-blue-700 shadow-md transition-all"><FaEdit size={12} /> Create</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: Add New Role */}
+      {roleModalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4">
+          <div className="bg-white w-full max-w-2xl rounded-lg shadow-2xl flex flex-col max-h-[90vh]">
+            <div className="p-4 border-b flex justify-between items-center">
+              <h2 className="text-lg font-semibold">Add New Role</h2>
+              <button onClick={() => setRoleModalOpen(false)}><FaTimes /></button>
+            </div>
+            <div className="p-6 overflow-y-auto space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div><label className="text-xs font-semibold text-red-500">* Display Name</label><input value={newRoleName} onChange={(e)=>setNewRoleName(e.target.value)} type="text" placeholder="Manager" className="w-full border p-2 rounded text-sm outline-none focus:border-blue-500" /></div>
+                <div><label className="text-xs font-semibold text-red-500">* Role Name</label><input type="text" placeholder="manager" className="w-full border p-2 rounded text-sm outline-none focus:border-blue-500" /></div>
+              </div>
+              <div><label className="text-xs font-semibold text-gray-700">Description</label><textarea placeholder="Description..." className="w-full border p-2 rounded text-sm h-20 outline-none focus:border-blue-500"></textarea></div>
+              <div>
+                <h3 className="text-sm font-bold mb-3 border-b pb-1 text-gray-800">Permissions</h3>
+                <div className="space-y-3">
+                    {["Staff Members", "Campaigns", "Leads"].map((module) => (
+                        <div key={module} className="flex flex-col md:flex-row md:items-center justify-between p-2.5 border-b border-gray-50 gap-2 text-xs">
+                            <span className="font-semibold text-gray-700 w-32">{module}</span>
+                            <div className="flex gap-4">
+                                {["View", "Add", "Edit", "Delete"].map((perm) => (
+                                    <label key={perm} className="flex items-center gap-1.5 cursor-pointer hover:text-blue-600 transition-all"><input type="checkbox" className="w-3.5 h-3.5 accent-blue-600" /> {perm}</label>
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+              </div>
+            </div>
+            <div className="p-4 border-t flex justify-end gap-3 bg-gray-50">
+              <button onClick={() => setRoleModalOpen(false)} className="px-6 py-2 border rounded text-sm font-medium bg-white">Cancel</button>
+              <button onClick={handleAddRole} className="px-6 py-2 bg-blue-600 text-white rounded text-sm font-medium flex items-center gap-2 hover:bg-blue-700 shadow-md transition-all"><FaCloudUploadAlt size={16} /> Create</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default Campaigns;
