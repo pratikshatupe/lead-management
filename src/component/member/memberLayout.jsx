@@ -1,23 +1,15 @@
 import { useState } from "react";
-import Sidebar from "../../component/admin/SideBar";
-import MemberNavbar from "../../component/member/memberNavBar";
+import { Outlet } from "react-router-dom";
+import MemberSidebar from "./MemberSidebar";
+import MemberNavbar from "./memberNavBar";
 
-export default function MemberLayout({ children }) {
+// ✅ Outlet वापरतो — children नाही
+// ✅ Admin चा Sidebar नाही — Member चा स्वतःचा Sidebar
+export default function MemberLayout() {
   const [openSidebar, setOpenSidebar] = useState(false);
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-
-      {/* Sidebar */}
-      <div
-        className={`
-          fixed md:static top-0 left-0 h-full z-40
-          transform ${openSidebar ? "translate-x-0" : "-translate-x-full"}
-          md:translate-x-0 transition-transform duration-300
-        `}
-      >
-        <Sidebar />
-      </div>
 
       {/* Mobile Overlay */}
       {openSidebar && (
@@ -27,15 +19,27 @@ export default function MemberLayout({ children }) {
         />
       )}
 
+      {/* Sidebar */}
+      <div
+        className={`
+          fixed md:static top-0 left-0 h-full z-40
+          transform transition-transform duration-300
+          ${openSidebar ? "translate-x-0" : "-translate-x-full"}
+          md:translate-x-0 md:flex-shrink-0
+        `}
+      >
+        <MemberSidebar onClose={() => setOpenSidebar(false)} />
+      </div>
+
       {/* Main Section */}
-      <div className="flex-1 w-full md:ml-64">
+      <div className="flex-1 flex flex-col w-full min-w-0">
 
         {/* Navbar */}
         <MemberNavbar toggleSidebar={() => setOpenSidebar(!openSidebar)} />
 
-        {/* Page Content */}
+        {/* ✅ Outlet — nested routes इथे render होतात */}
         <div className="p-4 md:p-6">
-          {children}
+          <Outlet />
         </div>
 
       </div>

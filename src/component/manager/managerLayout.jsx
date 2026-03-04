@@ -1,8 +1,11 @@
 import { useState } from "react";
-import Sidebar from "../admin/SideBar";
-import Navbar from "../admin/Navbar";
+import { Outlet } from "react-router-dom";
+import ManagerSidebar from "./ManagerSidebar";
+import ManagerNavbar from "./ManagerNavbar";
 
-export default function ManagerLayout({ children }) {
+// ✅ Outlet वापरतो — children नाही
+// ✅ Admin चा Sidebar नाही, Manager चा स्वतःचा Sidebar वापरतो
+export default function ManagerLayout() {
   const [openSidebar, setOpenSidebar] = useState(false);
 
   return (
@@ -11,7 +14,7 @@ export default function ManagerLayout({ children }) {
       {/* MOBILE MENU BUTTON */}
       <button
         onClick={() => setOpenSidebar(true)}
-        className="md:hidden fixed top-4 left-4 z-50 bg-blue-900 text-white p-2 rounded"
+        className="md:hidden fixed top-4 left-4 z-50 bg-green-700 text-white p-2 rounded shadow"
       >
         ☰
       </button>
@@ -22,10 +25,10 @@ export default function ManagerLayout({ children }) {
           fixed top-0 left-0 h-full z-40
           transform transition-transform duration-300
           ${openSidebar ? "translate-x-0" : "-translate-x-full"}
-          md:translate-x-0 md:static
+          md:translate-x-0 md:static md:flex-shrink-0
         `}
       >
-        <Sidebar />
+        <ManagerSidebar onClose={() => setOpenSidebar(false)} />
       </div>
 
       {/* OVERLAY MOBILE */}
@@ -37,10 +40,14 @@ export default function ManagerLayout({ children }) {
       )}
 
       {/* MAIN CONTENT */}
-      <div className="flex-1 flex flex-col w-full pt-16 md:pt-0">
-        <Navbar />
-        <main className="p-4 md:p-6">{children}</main>
+      <div className="flex-1 flex flex-col w-full min-w-0 pt-14 md:pt-0">
+        <ManagerNavbar />
+        <main className="p-4 md:p-6">
+          {/* ✅ Outlet — nested routes इथे render होतात */}
+          <Outlet />
+        </main>
       </div>
+
     </div>
   );
 }

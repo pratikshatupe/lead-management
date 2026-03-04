@@ -9,6 +9,8 @@ function CallManager() {
 
   const [showModal, setShowModal] = useState(false);
   const [stopModal, setStopModal] = useState(false);
+  // ✅ कोणत्या campaign साठी Resume/Stop clicked ते track करतो
+  const [selectedCampaign, setSelectedCampaign] = useState(null);
 
   const campaigns = [
     {
@@ -56,23 +58,18 @@ function CallManager() {
   ];
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
+    <div className="p-4 md:p-6 bg-gray-100 min-h-screen">
 
-      <h1 className="text-2xl font-semibold mb-6">Call Manager</h1>
+      <h1 className="text-xl md:text-2xl font-semibold mb-6">Call Manager</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
         {campaigns.map((item, index) => (
-
           <div key={index} className="bg-white rounded-lg shadow p-5">
 
-            <h2 className="text-lg font-semibold mb-4">
-              {item.title}
-            </h2>
+            <h2 className="text-base md:text-lg font-semibold mb-4">{item.title}</h2>
 
             <div className="flex justify-between items-center mb-4">
               <span className="text-gray-500 text-sm">Members</span>
-
               <div className="flex space-x-1 text-blue-400 text-2xl">
                 <FaUserCircle />
                 <FaUserCircle />
@@ -88,9 +85,9 @@ function CallManager() {
 
             <div className="w-full bg-gray-200 h-2 rounded-full mb-2">
               <div
-                className="bg-blue-500 h-2 rounded-full"
+                className="bg-blue-500 h-2 rounded-full transition-all"
                 style={{ width: `${item.progress}%` }}
-              ></div>
+              />
             </div>
 
             <p className="text-sm text-gray-600 mb-4">
@@ -98,121 +95,116 @@ function CallManager() {
             </p>
 
             <div className="text-sm text-gray-600 space-y-1 mb-4">
-              <p>
-                <span className="text-gray-400">Last Actioner</span>{" "}
-                {item.actioner}
-              </p>
-
-              <p>
-                <span className="text-gray-400">Started On</span>{" "}
-                {item.started}
-              </p>
+              <p><span className="text-gray-400">Last Actioner</span> {item.actioner}</p>
+              <p><span className="text-gray-400">Started On</span> {item.started}</p>
             </div>
 
             <div className="flex justify-between pt-3 border-t">
 
+              {/* ✅ Resume button — campaign store करतो, modal उघडतो */}
               <button
-                onClick={() => setShowModal(true)}
-                className="flex items-center gap-2 text-green-600 hover:text-green-700 text-sm"
+                onClick={() => {
+                  setSelectedCampaign(item);
+                  setShowModal(true);
+                }}
+                className="flex items-center gap-2 text-green-600 hover:text-green-700 text-sm font-medium transition-colors"
               >
                 <FaRedoAlt />
                 Resume
               </button>
 
+              {/* Stop button */}
               <button
-                onClick={() => setStopModal(true)}
-                className="flex items-center gap-2 text-red-600 hover:text-red-700 text-sm"
+                onClick={() => {
+                  setSelectedCampaign(item);
+                  setStopModal(true);
+                }}
+                className="flex items-center gap-2 text-red-600 hover:text-red-700 text-sm font-medium transition-colors"
               >
                 <FaStopCircle />
                 Stop
               </button>
 
             </div>
-
           </div>
-
         ))}
-
       </div>
 
-      {/* Resume Modal */}
-
+      {/* ✅ Resume Modal */}
       {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40">
-
-          <div className="bg-white rounded-lg shadow-lg w-[420px] p-6">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50 p-4">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
 
             <div className="flex items-center gap-3 mb-4">
-              <IoWarningOutline className="text-yellow-500 text-2xl" />
+              <IoWarningOutline className="text-yellow-500 text-2xl flex-shrink-0" />
               <h2 className="text-lg font-semibold">Are you sure?</h2>
             </div>
 
-            <p className="text-gray-600 text-sm mb-6">
-              Are you sure you want to create new lead for this campaign
+            <p className="text-gray-600 text-sm mb-1">
+              Are you sure you want to resume
+            </p>
+            <p className="text-gray-800 text-sm font-semibold mb-6">
+              "{selectedCampaign?.title}"?
             </p>
 
             <div className="flex justify-end gap-3">
-
               <button
                 onClick={() => setShowModal(false)}
-                className="px-4 py-1 border rounded text-gray-600 hover:bg-gray-100"
+                className="px-4 py-1.5 border rounded text-gray-600 hover:bg-gray-100 text-sm"
               >
                 No
               </button>
 
+              {/* ✅ Yes → /socialmedia route वर navigate करतो */}
               <button
                 onClick={() => {
                   setShowModal(false);
                   navigate("/socialmedia");
                 }}
-                className="px-4 py-1 border border-red-500 text-red-500 rounded hover:bg-red-50"
+                className="px-4 py-1.5 border border-red-500 text-red-500 rounded hover:bg-red-50 text-sm"
               >
                 Yes
               </button>
-
             </div>
-
           </div>
-
         </div>
       )}
 
       {/* Stop Modal */}
-
       {stopModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40">
-
-          <div className="bg-white rounded-lg shadow-lg w-[450px] p-6">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50 p-4">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
 
             <div className="flex items-center gap-3 mb-4">
-              <IoWarningOutline className="text-yellow-500 text-2xl" />
+              <IoWarningOutline className="text-yellow-500 text-2xl flex-shrink-0" />
               <h2 className="text-lg font-semibold">Stop Campaign?</h2>
             </div>
 
-            <p className="text-gray-600 text-sm mb-6">
-              Are you sure you want to stop campaign? After stoping campaign all remaining unactioned leads will be deleted.
+            <p className="text-gray-600 text-sm mb-1">
+              Are you sure you want to stop
+            </p>
+            <p className="text-gray-800 text-sm font-semibold mb-2">
+              "{selectedCampaign?.title}"?
+            </p>
+            <p className="text-gray-500 text-xs mb-6">
+              After stopping, all remaining unactioned leads will be deleted.
             </p>
 
             <div className="flex justify-end gap-3">
-
               <button
                 onClick={() => setStopModal(false)}
-                className="px-4 py-1 border rounded text-gray-600 hover:bg-gray-100"
+                className="px-4 py-1.5 border rounded text-gray-600 hover:bg-gray-100 text-sm"
               >
                 No
               </button>
-
               <button
                 onClick={() => setStopModal(false)}
-                className="px-4 py-1 border border-red-500 text-red-500 rounded hover:bg-red-50"
+                className="px-4 py-1.5 border border-red-500 text-red-500 rounded hover:bg-red-50 text-sm"
               >
                 Yes
               </button>
-
             </div>
-
           </div>
-
         </div>
       )}
 

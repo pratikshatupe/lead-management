@@ -28,6 +28,14 @@ import CallManager from "./component/pages/leadManager/CallManager";
 import Campaigns from "./component/pages/leadManager/Campaigns";
 import SocialMediaCampagiens from "./component/pages/SocialMediaCampagiens";
 
+// ✅ Manager imports
+import ManagerLayout from "./component/manager/ManagerLayout";
+import ManagerDashboard from "./component/pages/ManagerDashboard";
+
+// ✅ Member imports
+import MemberLayout from "./component/member/MemberLayout";
+import MemberDashboard from "./component/pages/MemberDashboard";
+
 function App() {
   return (
     <Router>
@@ -41,9 +49,8 @@ function App() {
         <Route path="/WebsiteDeevelopmentCampagines2" element={<WebsiteDeevelopmentCampagines2 />} />
         <Route path="/socialmedia" element={<SocialMediaCampagiens />} />
 
-        {/* ADMIN SECTION WITH SIDEBAR */}
+        {/* ── ADMIN SECTION ────────────────────────────────────────── */}
         <Route path="/" element={<Layout />}>
-
           <Route path="admin" element={<AdminDashboard />} />
           <Route path="admin/profile" element={<AdminProfile />} />
 
@@ -65,11 +72,32 @@ function App() {
 
           <Route path="Calls" element={<CallManager />} />
           <Route path="campaigns" element={<Campaigns />} />
+        </Route>
 
+        {/* ── MANAGER SECTION ──────────────────────────────────────── */}
+        <Route path="/manager" element={<ManagerLayout />}>
+          <Route index element={<ManagerDashboard />} />
+          <Route path="calls"     element={<CallManager />} />
+          <Route path="campaigns" element={<Campaigns />} />
+          <Route path="leads"     element={<Leads />} />
+          <Route path="follow-up" element={<LeadFollowup />} />
+        </Route>
+
+        {/* ── MEMBER SECTION ───────────────────────────────────────── */}
+        <Route path="/member" element={<MemberLayout />}>
+          <Route index element={<MemberDashboard />} />
+          <Route path="calls"     element={<CallManager />} />
+          <Route path="leads"     element={<Leads />} />
+          <Route path="follow-up" element={<LeadFollowup />} />
+          <Route path="notes"     element={<LeadNotes />} />
         </Route>
 
         {/* 404 PAGE */}
-        <Route path="*" element={<div>404 Page Not Found</div>} />
+        <Route path="*" element={
+          <div className="flex items-center justify-center min-h-screen text-xl text-gray-400">
+            404 — Page Not Found
+          </div>
+        } />
 
       </Routes>
     </Router>

@@ -1,79 +1,66 @@
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import Sidebar from "../admin/SideBar";
+import { useEffect } from "react";
+import {
+  FaPhoneAlt, FaBullhorn, FaListAlt, FaCalendarCheck,
+} from "react-icons/fa";
 
+// ✅ Admin चा Sidebar नाही — ManagerLayout मधूनच sidebar येतो
 export default function ManagerDashboard() {
   const navigate = useNavigate();
-  const [openSidebar, setOpenSidebar] = useState(false);
 
-  // ✅ login check
+  // ✅ Role check — manager नसेल तर login वर redirect
   useEffect(() => {
     const role = localStorage.getItem("role");
-
     if (role !== "manager") {
       navigate("/");
     }
   }, [navigate]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("role");
-    navigate("/");
-  };
+  const stats = [
+    { label: "Total Leads",      value: "248", color: "bg-green-500",  icon: <FaListAlt /> },
+    { label: "Calls Today",      value: "34",  color: "bg-blue-500",   icon: <FaPhoneAlt /> },
+    { label: "Follow Ups",       value: "12",  color: "bg-yellow-500", icon: <FaCalendarCheck /> },
+    { label: "Active Campaigns", value: "5",   color: "bg-purple-500", icon: <FaBullhorn /> },
+  ];
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div>
+      <h1 className="text-xl md:text-2xl font-bold mb-6 text-gray-800">
+        Welcome, Manager 👋
+      </h1>
 
-      {/* ✅ Mobile Menu Button (fixed top-left) */}
-      <button
-        onClick={() => setOpenSidebar(!openSidebar)}
-        className="md:hidden fixed top-4 left-4 z-50 bg-purple-700 text-white px-3 py-2 rounded shadow"
-      >
-        ☰
-      </button>
-
-      {/* ✅ Sidebar */}
-      <div
-        className={`
-          fixed md:static top-0 left-0 h-full z-40
-          transform ${openSidebar ? "translate-x-0" : "-translate-x-full"}
-          md:translate-x-0 transition-transform duration-300
-        `}
-      >
-        <Sidebar />
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+        {stats.map((s) => (
+          <div key={s.label} className={`${s.color} text-white rounded-xl p-5 shadow-md flex items-center gap-4`}>
+            <div className="text-3xl opacity-80">{s.icon}</div>
+            <div>
+              <p className="text-sm font-medium opacity-90">{s.label}</p>
+              <p className="text-3xl font-bold">{s.value}</p>
+            </div>
+          </div>
+        ))}
       </div>
 
-      {/* ✅ Overlay (mobile only) */}
-      {openSidebar && (
-        <div
-          onClick={() => setOpenSidebar(false)}
-          className="fixed inset-0 bg-black/40 md:hidden z-30"
-        />
-      )}
-
-      {/* ✅ MAIN CONTENT */}
-      <div className="flex-1 w-full md:ml-64">
-
-        {/* ✅ Header (extra top padding for mobile button space) */}
-        <div className="bg-white shadow p-4 md:p-6 pt-16 md:pt-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-          <h1 className="text-2xl md:text-3xl font-bold">
-            Manager Dashboard
-          </h1>
-
-          <button
-            onClick={handleLogout}
-            className="bg-red-500 text-white px-4 py-2 rounded w-fit"
-          >
-            Logout
-          </button>
+      {/* Recent Activity */}
+      <div className="bg-white rounded-xl shadow p-5">
+        <h2 className="text-base font-semibold text-gray-700 mb-4 border-b pb-2">
+          Recent Activity
+        </h2>
+        <div className="space-y-3 text-sm text-gray-600">
+          {[
+            "Lead #245 was updated by Admin",
+            "Campaign 'Social Media' resumed",
+            "Follow up scheduled for Lead #231",
+            "New lead added: John Doe",
+            "Call log saved for Lead #198",
+          ].map((activity, i) => (
+            <div key={i} className="flex items-center gap-3 py-2 border-b last:border-0">
+              <div className="w-2 h-2 rounded-full bg-green-400 flex-shrink-0" />
+              {activity}
+            </div>
+          ))}
         </div>
-
-        {/* ✅ Page Content */}
-        <div className="p-4 md:p-6">
-          <div className="bg-white p-6 rounded-xl shadow">
-            Welcome Manager 🚀
-          </div>
-        </div>
-
       </div>
     </div>
   );
