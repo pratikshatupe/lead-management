@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import MemberSidebar from "./MemberSidebar";
+import MemberSidebar from "./memberSidebar";
 import MemberNavbar from "./memberNavBar";
 
 // ✅ Outlet वापरतो — children नाही

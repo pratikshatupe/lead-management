@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import ManagerSidebar from "./ManagerSidebar";
-import ManagerNavbar from "./ManagerNavbar";
+import ManagerSidebar from "./managerSidebar";
+import ManagerNavbar from "./managerNavbar";
 
 // ✅ Outlet वापरतो — children नाही
 // ✅ Admin चा Sidebar नाही, Manager चा स्वतःचा Sidebar वापरतो

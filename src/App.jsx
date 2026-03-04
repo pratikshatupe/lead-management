@@ -28,11 +28,11 @@ import CallManager from "./component/pages/leadManager/CallManager";
 import Campaigns from "./component/pages/leadManager/Campaigns";
 import SocialMediaCampagiens from "./component/pages/SocialMediaCampagiens";
 
-// ✅ Manager imports
-import ManagerLayout from "./component/manager/ManagerLayout";
+// ✅ Manager imports — lowercase filenames
+import ManagerLayout from "./component/manager/managerLayout";
 import ManagerDashboard from "./component/pages/ManagerDashboard";
 
-// ✅ Member imports
+// ✅ Member imports — lowercase filenames
 import MemberLayout from "./component/member/memberLayout";
 import MemberDashboard from "./component/pages/MemberDashboard";
 
