@@ -33,7 +33,7 @@ import ManagerLayout from "./component/manager/ManagerLayout";
 import ManagerDashboard from "./component/pages/ManagerDashboard";
 
 // ✅ Member imports
-import MemberLayout from "./component/member/MemberLayout";
+import MemberLayout from "./component/member/memberLayout";
 import MemberDashboard from "./component/pages/MemberDashboard";
 
 function App() {
