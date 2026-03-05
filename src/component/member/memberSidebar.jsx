@@ -1,19 +1,24 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import {
-  FaTachometerAlt, FaPhoneAlt, FaListAlt,
-  FaCalendarCheck, FaStickyNote, FaSignOutAlt, FaTimes,
+  FaTachometerAlt,
+  FaListAlt,
+  FaCalendarCheck,
+  FaEnvelope,
+  FaWpforms,
+  FaCog,
+  FaSignOutAlt,
+  FaTimes,
+  FaChevronDown,
+  FaChevronRight
 } from "react-icons/fa";
+import { useState } from "react";
 
-const navItems = [
-  { label: "Dashboard",      path: "/member",             icon: <FaTachometerAlt />, end: true },
-  { label: "Call Manager",   path: "/member/calls",       icon: <FaPhoneAlt /> },
-  { label: "Leads & Calls",  path: "/member/leads",       icon: <FaListAlt /> },
-  { label: "Lead Follow Up", path: "/member/follow-up",   icon: <FaCalendarCheck /> },
-  { label: "Lead Notes",     path: "/member/notes",       icon: <FaStickyNote /> },
-];
+export default function MemberSidebar({ onClose, collapsed }) {
 
-export default function MemberSidebar({ onClose }) {
   const navigate = useNavigate();
+
+  const [leadMenu, setLeadMenu] = useState(false);
+  const [messageMenu, setMessageMenu] = useState(false);
 
   const handleLogout = () => {
     localStorage.clear();
@@ -21,52 +26,187 @@ export default function MemberSidebar({ onClose }) {
   };
 
   return (
-    <div className="w-64 h-full bg-blue-900 dark:bg-slate-900 text-white flex flex-col border-r border-blue-800 dark:border-slate-800">
 
-      {/* Header — Admin sidebar सारखाच style */}
-      <div className="flex justify-between items-center p-5 border-b border-blue-800 dark:border-slate-800 sticky top-0 bg-blue-900 dark:bg-slate-900 z-10">
-        <h1 className="text-xl font-bold tracking-wider">LEADPRO</h1>
+    <div
+      className={`
+        ${collapsed ? "w-20" : "w-64"}
+        min-h-screen bg-blue-900 text-white
+        flex flex-col
+        transition-all duration-300
+      `}
+    >
+
+      {/* HEADER */}
+      <div className="flex justify-between items-center p-5 border-b border-blue-800">
+
+        <h1 className="text-xl font-bold tracking-wider">
+          {collapsed ? "LP" : "LEADPRO"}
+        </h1>
+
         <button
           onClick={onClose}
-          className="md:hidden text-white hover:text-blue-300 transition-colors"
+          className="md:hidden"
         >
-          <FaTimes size={20} />
+          <FaTimes />
         </button>
+
       </div>
 
-      {/* Nav Links */}
-      <ul className="space-y-1 p-3 text-sm flex-1 overflow-y-auto">
-        {navItems.map((item) => (
-          <li key={item.path}>
-            <NavLink
-              to={item.path}
-              end={item.end}
-              onClick={onClose}
-              className={({ isActive }) =>
-                `flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all font-medium
-                ${isActive
-                  ? "bg-blue-800 text-white"
-                  : "hover:bg-blue-800 dark:hover:bg-slate-800 text-white"
-                }`
-              }
-            >
-              <span className="text-lg">{item.icon}</span>
-              <span>{item.label}</span>
-            </NavLink>
-          </li>
-        ))}
-      </ul>
 
-      {/* Logout */}
-      <ul className="p-3 text-sm border-t border-blue-800 dark:border-slate-800">
-        <li
-          onClick={handleLogout}
-          className="flex items-center gap-3 hover:bg-blue-800 dark:hover:bg-slate-800 p-3 rounded-lg cursor-pointer transition-all font-medium"
+      <div className="flex-1 overflow-y-auto">
+
+        {/* DASHBOARD */}
+        <NavLink
+          to="/member"
+          end
+          className={({ isActive }) =>
+            `flex items-center gap-3 p-3 mx-2 mt-2 rounded-lg
+            ${isActive ? "bg-blue-700" : "hover:bg-blue-800"}`
+          }
         >
-          <span className="text-lg"><FaSignOutAlt /></span>
-          <span>Logout</span>
-        </li>
-      </ul>
+          <FaTachometerAlt />
+          {!collapsed && "Dashboard"}
+        </NavLink>
+
+
+        {/* LEAD MANAGEMENT */}
+        <div
+          onClick={() => setLeadMenu(!leadMenu)}
+          className="flex items-center justify-between p-3 mx-2 cursor-pointer hover:bg-blue-800 rounded-lg mt-2"
+        >
+
+          <div className="flex items-center gap-3">
+            <FaListAlt />
+            {!collapsed && "Lead Management"}
+          </div>
+
+          {!collapsed && (
+            leadMenu ? <FaChevronDown /> : <FaChevronRight />
+          )}
+
+        </div>
+
+
+        {leadMenu && !collapsed && (
+
+          <div className="ml-6">
+
+            <NavLink
+              to="/member/calls"
+              className="block p-2 hover:bg-blue-800 rounded"
+            >
+              Call Manager
+            </NavLink>
+
+            <NavLink
+              to="/member/leads"
+              className="block p-2 hover:bg-blue-800 rounded"
+            >
+              Leads & Calls
+            </NavLink>
+
+            <NavLink
+              to="/member/notes"
+              className="block p-2 hover:bg-blue-800 rounded"
+            >
+              Lead Notes
+            </NavLink>
+
+          </div>
+
+        )}
+
+
+        {/* FOLLOW UP */}
+        <NavLink
+          to="/member/follow-up"
+          className="flex items-center gap-3 p-3 mx-2 rounded-lg hover:bg-blue-800"
+        >
+
+          <FaCalendarCheck />
+
+          {!collapsed && "Lead Follow Up"}
+
+        </NavLink>
+
+
+        {/* MESSAGING */}
+        <div
+          onClick={() => setMessageMenu(!messageMenu)}
+          className="flex items-center justify-between p-3 mx-2 cursor-pointer hover:bg-blue-800 rounded-lg"
+        >
+
+          <div className="flex items-center gap-3">
+            <FaEnvelope />
+            {!collapsed && "Messaging"}
+          </div>
+
+          {!collapsed && (
+            messageMenu ? <FaChevronDown /> : <FaChevronRight />
+          )}
+
+        </div>
+
+
+        {messageMenu && !collapsed && (
+
+          <div className="ml-6">
+
+            <NavLink
+              to="/member/email-templates"
+              className="block p-2 hover:bg-blue-800 rounded"
+            >
+              Email Templates
+            </NavLink>
+
+          </div>
+
+        )}
+
+
+        {/* FORMS */}
+        <NavLink
+          to="/member/forms"
+          className="flex items-center gap-3 p-3 mx-2 rounded-lg hover:bg-blue-800"
+        >
+
+          <FaWpforms />
+
+          {!collapsed && "Forms"}
+
+        </NavLink>
+
+
+        {/* SETTINGS */}
+        <NavLink
+          to="/member/lead-table-fields"
+          className="flex items-center gap-3 p-3 mx-2 rounded-lg hover:bg-blue-800"
+        >
+
+          <FaCog />
+
+          {!collapsed && "Settings"}
+
+        </NavLink>
+
+      </div>
+
+
+      {/* LOGOUT */}
+      <div className="p-3 border-t border-blue-800">
+
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 w-full p-3 hover:bg-blue-800 rounded-lg"
+        >
+
+          <FaSignOutAlt />
+
+          {!collapsed && "Logout"}
+
+        </button>
+
+      </div>
 
     </div>
   );

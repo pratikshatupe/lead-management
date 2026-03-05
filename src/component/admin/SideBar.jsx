@@ -1,19 +1,19 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
-  FaHome, FaBox, FaMoneyBill, FaUsers, FaUserTie, FaPhone,
-  FaBullhorn, FaEnvelope, FaFileAlt, FaCog, FaSignOutAlt,
-  FaChevronDown, FaChevronRight, FaTimes, 
-  FaCalendarCheck,
-  FaWpforms,
-  FaUserPlus,
-  FaHeadset,
-  FaPhoneAlt
+  FaHome, FaBox, FaMoneyBill, FaUserTie,
+  FaBullhorn, FaEnvelope, FaCog, FaSignOutAlt,
+  FaChevronDown, FaChevronRight, FaTimes,
+  FaCalendarCheck, FaWpforms, FaUserPlus,
+  FaHeadset, FaPhoneAlt
 } from "react-icons/fa";
 import { useState } from "react";
 
 export default function Sidebar({ sidebarOpen, setSidebarOpen, collapsed }) {
+
   const navigate = useNavigate();
+  const location = useLocation();
   const role = localStorage.getItem("role");
+
   const [openMenu, setOpenMenu] = useState(null);
 
   const handleLogout = () => {
@@ -21,63 +21,74 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, collapsed }) {
     navigate("/");
   };
 
+  const isActive = (path) => location.pathname === path;
+
   const menuByRole = {
+
     admin: [
+
       { label: "Dashboard", icon: <FaHome />, path: "/admin" },
-      { label: "Products", icon: <FaBox />, path: "/products" },
+
+      { label: "Products", icon: <FaBox />, path: "/admin/products" },
+
       {
         label: "Expense Manager",
         icon: <FaMoneyBill />,
         children: [
-          { label: "Expense Categories", path: "/expense-categories" },
-          { label: "Expenses", path: "/expense" },
+          { label: "Expense Categories", path: "/admin/expense-categories" },
+          { label: "Expenses", path: "/admin/expense" },
         ],
       },
-      { label: "User Management", icon: <FaUsers />, path: "/users" },
-      { label: "Staff Members", icon: <FaUserTie />, path: "/staff" },
+
+      { label: "Staff Members", icon: <FaUserTie />, path: "/admin/staff" },
+
       {
         label: "Salesmans",
         icon: <FaUserTie />,
         children: [
-          { label: "Salesmans", path: "/salesmans" },
-          { label: "Salesmans Bookings", path: "/salesman-bookings" },
+          { label: "Salesmans", path: "/admin/salesmans" },
+          { label: "Salesman Bookings", path: "/admin/salesman-bookings" },
         ],
       },
-
-      { label: "Lead Management", icon: <FaUserPlus />, path: "/leads" },
-
-      { label: "Call Manager", icon: <FaHeadset />, path: "/calls" },
-
-      { label: "Campaigns", icon: <FaBullhorn />, path: "/campaigns" },
 
       {
-        label: "Lead & Calls",
-        icon: <FaPhoneAlt />,
+        label: "Lead Management",
+        icon: <FaUserPlus />,
         children: [
-          { label: "Leads", path: "/leads" },
-          { label: "Call Logs", path: "/call-logs" },
-          { label: "Lead Notes", path: "/lead-notes" },
+          { label: "Leads", path: "/admin/leads" },
+          { label: "Call Logs", path: "/admin/call-logs" },
+          { label: "Lead Notes", path: "/admin/lead-notes" },
         ],
       },
 
-      { label: "Lead Follow Up", icon: <FaCalendarCheck />, path: "/follow-up" },
+      { label: "Call Manager", icon: <FaHeadset />, path: "/admin/calls" },
+
+      { label: "Campaigns", icon: <FaBullhorn />, path: "/admin/campaigns" },
+
+      { label: "Lead Follow Up", icon: <FaCalendarCheck />, path: "/admin/follow-up" },
+
       {
         label: "Settings",
         icon: <FaCog />,
         children: [
-          { label: "Lead Table Fields", path: "/lead-table-fields" },
+          { label: "Lead Table Fields", path: "/admin/lead-table-fields" },
         ],
       },
+
       {
         label: "Messaging",
         icon: <FaEnvelope />,
         children: [
-          { label: "Email Templates", path: "/email-templates" },
+          { label: "Email Templates", path: "/admin/email-templates" },
         ],
       },
-      { label: "Forms Settings", icon: <FaWpforms />, path: "/forms-settings" },
+
+      { label: "Forms", icon: <FaWpforms />, path: "/admin/forms" },
+
       { label: "Logout", icon: <FaSignOutAlt />, logout: true },
+
     ],
+
   };
 
   const menu = menuByRole[role] || [];
@@ -85,60 +96,111 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, collapsed }) {
   return (
     <>
       {sidebarOpen && (
-        <div className="fixed inset-0 bg-black/60 z-40 md:hidden" onClick={() => setSidebarOpen(false)} />
+        <div
+          className="fixed inset-0 bg-black/60 z-40 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
       )}
 
       <div
-        className={`fixed md:static top-0 left-0 h-screen bg-blue-900 dark:bg-slate-900 text-white overflow-y-auto z-50
-        transition-all duration-300 transform border-r dark:border-slate-800
+        className={`fixed md:static top-0 left-0 h-screen bg-blue-900 text-white overflow-y-auto z-50
+        transition-all duration-300 transform
         ${collapsed ? "w-20" : "w-64"}
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
       >
-        <div className="flex justify-between items-center p-5 border-b border-blue-800 dark:border-slate-800 sticky top-0 bg-blue-900 dark:bg-slate-900 z-10">
-          {!collapsed && <h1 className="text-xl font-bold tracking-wider">LEADPRO</h1>}
-          <button className="md:hidden text-white" onClick={() => setSidebarOpen(false)}>
-            <FaTimes size={20} />
+
+        {/* LOGO */}
+        <div className="flex justify-between items-center p-5 border-b border-blue-800">
+          {!collapsed && (
+            <h1 className="text-xl font-bold tracking-wider">LEADPRO</h1>
+          )}
+
+          <button
+            className="md:hidden"
+            onClick={() => setSidebarOpen(false)}
+          >
+            <FaTimes />
           </button>
         </div>
 
+        {/* MENU */}
         <ul className="space-y-1 p-3 text-sm">
+
           {menu.map((item, i) => (
+
             <div key={i}>
+
               <li
                 onClick={() => {
+
                   if (item.logout) return handleLogout();
-                  if (item.children) setOpenMenu(openMenu === i ? null : i);
-                  else if (item.path) { navigate(item.path); setSidebarOpen(false); }
+
+                  if (item.children) {
+                    setOpenMenu(openMenu === i ? null : i);
+                  }
+
+                  else if (item.path) {
+                    navigate(item.path);
+                    setSidebarOpen(false);
+                  }
+
                 }}
-                className={`flex justify-between items-center hover:bg-blue-800 dark:hover:bg-slate-800 p-3 rounded-lg cursor-pointer transition-all ${openMenu === i ? 'bg-blue-800/50' : ''}`}
+                className={`flex justify-between items-center p-3 rounded-lg cursor-pointer
+                ${item.path && isActive(item.path) ? "bg-blue-700" : "hover:bg-blue-800"}`}
               >
+
                 <div className="flex items-center gap-3">
+
                   <span className="text-lg">{item.icon}</span>
-                  {!collapsed && <span className="font-medium">{item.label}</span>}
+
+                  {!collapsed && (
+                    <span>{item.label}</span>
+                  )}
+
                 </div>
+
                 {!collapsed && item.children && (
-                  <span className="transition-transform duration-200">
-                    {openMenu === i ? <FaChevronDown size={12} /> : <FaChevronRight size={12} />}
-                  </span>
+                  openMenu === i ? <FaChevronDown /> : <FaChevronRight />
                 )}
+
               </li>
-              
+
+
+              {/* SUB MENU */}
+
               {item.children && openMenu === i && !collapsed && (
-                <ul className="ml-9 mt-1 space-y-1 border-l border-blue-700 dark:border-slate-700">
+
+                <ul className="ml-9 mt-1 space-y-1">
+
                   {item.children.map((child, j) => (
-                    <li 
-                      key={j} 
-                      onClick={() => { navigate(child.path); setSidebarOpen(false); }} 
-                      className="hover:text-white text-gray-300 dark:text-slate-400 cursor-pointer py-2 px-4 text-xs hover:bg-blue-800/30 rounded-r-md transition-colors"
+
+                    <li
+                      key={j}
+                      onClick={() => {
+                        navigate(child.path);
+                        setSidebarOpen(false);
+                      }}
+                      className={`cursor-pointer py-2 px-3 rounded
+                      ${isActive(child.path)
+                          ? "bg-blue-700"
+                          : "hover:bg-blue-800"
+                        }`}
                     >
                       {child.label}
                     </li>
+
                   ))}
+
                 </ul>
+
               )}
+
             </div>
+
           ))}
+
         </ul>
+
       </div>
     </>
   );

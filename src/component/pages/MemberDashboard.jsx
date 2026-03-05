@@ -1,12 +1,33 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-import { FaListAlt, FaCheckCircle, FaExchangeAlt } from "react-icons/fa";
+import {
+  FaBullhorn,
+  FaCalendarCheck,
+  FaPhone,
+  FaClock,
+  FaCalendarAlt,
+  FaChevronRight,
+} from "react-icons/fa";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Legend,
+} from "recharts";
 
-// ✅ Admin चा Sidebar नाही — MemberLayout मधूनच sidebar येतो
 export default function MemberDashboard() {
   const navigate = useNavigate();
 
-  // ✅ Role check — member नसेल तर login वर redirect
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+
   useEffect(() => {
     const role = localStorage.getItem("role");
     if (role !== "member") {
@@ -14,60 +35,182 @@ export default function MemberDashboard() {
     }
   }, [navigate]);
 
-  const stats = [
-    { label: "My Leads",   value: "25", color: "bg-blue-500",   icon: <FaListAlt /> },
-    { label: "Active",     value: "15", color: "bg-green-500",  icon: <FaCheckCircle /> },
-    { label: "Converted",  value: "5",  color: "bg-purple-500", icon: <FaExchangeAlt /> },
+  const pieData = [
+    { name: "Job Applications", value: 40, color: "#3f6212" },
+    { name: "Website Development Campaign", value: 30, color: "#4ade80" },
+    { name: "Make New Mobile Application", value: 30, color: "#a3e635" },
   ];
 
-  const leads = [
-    { name: "Rahul Patil",  phone: "9876543210", status: "Active",    statusColor: "text-green-600" },
-    { name: "Sneha More",   phone: "9123456780", status: "Pending",   statusColor: "text-yellow-600" },
-    { name: "Amit Jadhav",  phone: "9988776655", status: "Converted", statusColor: "text-blue-600" },
+  const barData = [
+    { date: "2026-02-15", calls: 1 },
+    { date: "2026-02-19", calls: 2 },
+    { date: "2026-02-20", calls: 1 },
+    { date: "2026-02-21", calls: 3 },
+    { date: "2026-02-22", calls: 6 },
+    { date: "2026-02-23", calls: 9 },
+    { date: "2026-02-24", calls: 1 },
   ];
 
   return (
-    <div>
-      <h1 className="text-xl md:text-2xl font-bold mb-6 text-gray-800">
-        Welcome, Member 👋
-      </h1>
+    <div className="w-full">
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        {stats.map((s) => (
-          <div key={s.label} className={`${s.color} text-white rounded-xl p-5 shadow-md flex items-center gap-4`}>
-            <div className="text-3xl opacity-80">{s.icon}</div>
-            <div>
-              <p className="text-sm font-medium opacity-90">{s.label}</p>
-              <p className="text-3xl font-bold">{s.value}</p>
+      {/* HEADER */}
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-3">
+        <h1 className="text-lg md:text-xl font-semibold dark:text-white">
+          Member Dashboard Overview
+        </h1>
+      </div>
+
+      {/* DATE FILTER */}
+      <div className="mb-6">
+        <div className="flex flex-wrap items-center gap-2 bg-white dark:bg-slate-800 border dark:border-slate-700 rounded-md px-3 md:px-4 py-2 shadow-sm w-fit">
+
+          <input
+            type="text"
+            placeholder="Start Date"
+            className="bg-transparent outline-none text-sm text-gray-500 dark:text-slate-300 w-28 md:w-32"
+            onFocus={(e) => (e.target.type = "date")}
+            onBlur={(e) => (e.target.type = "text")}
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+          />
+
+          <span className="text-gray-300">→</span>
+
+          <input
+            type="text"
+            placeholder="End Date"
+            className="bg-transparent outline-none text-sm text-gray-500 dark:text-slate-300 w-28 md:w-32"
+            onFocus={(e) => (e.target.type = "date")}
+            onBlur={(e) => (e.target.type = "text")}
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+          />
+
+          <FaCalendarAlt className="text-gray-300 ml-1" size={16} />
+        </div>
+      </div>
+
+      {/* STATS */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6 mb-8">
+
+        {[
+          {
+            label: "Active Campaigns",
+            val: "3",
+            icon: <FaBullhorn />,
+            color: "bg-[#14b8a6]",
+          },
+          {
+            label: "Total Follow Up",
+            val: "2",
+            icon: <FaCalendarCheck />,
+            color: "bg-[#22c55e]",
+          },
+          {
+            label: "Call Made",
+            val: "23",
+            icon: <FaPhone />,
+            color: "bg-[#ea580c]",
+          },
+          {
+            label: "Total Duration",
+            val: "1 H, 34 M",
+            icon: <FaClock />,
+            color: "bg-[#f87171]",
+          },
+        ].map((card, i) => (
+          <div
+            key={i}
+            className="bg-white dark:bg-slate-800 p-4 md:p-6 rounded-xl shadow-sm border dark:border-slate-700 flex items-center gap-4"
+          >
+
+            <div className={`${card.color} text-white p-3 md:p-4 rounded-xl shadow-md`}>
+              {card.icon}
             </div>
+
+            <div>
+              <h2 className="text-xl md:text-2xl font-bold dark:text-white">
+                {card.val}
+              </h2>
+
+              <p className="text-gray-400 text-[11px] md:text-xs font-medium uppercase tracking-tighter">
+                {card.label}
+              </p>
+            </div>
+
           </div>
         ))}
       </div>
 
-      {/* Recent Leads Table */}
-      <div className="bg-white rounded-xl shadow p-5 overflow-x-auto">
-        <h2 className="text-base font-semibold text-gray-700 mb-4 border-b pb-2">
-          My Recent Leads
-        </h2>
-        <table className="min-w-full text-left text-sm">
-          <thead>
-            <tr className="border-b text-gray-500">
-              <th className="p-2 font-semibold">Name</th>
-              <th className="p-2 font-semibold">Phone</th>
-              <th className="p-2 font-semibold">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {leads.map((lead, i) => (
-              <tr key={i} className="border-b hover:bg-gray-50 transition-colors">
-                <td className="p-2 font-medium text-gray-800">{lead.name}</td>
-                <td className="p-2 text-gray-600">{lead.phone}</td>
-                <td className={`p-2 font-semibold ${lead.statusColor}`}>{lead.status}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      {/* CHARTS */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 md:gap-6 mb-8">
+
+        {/* PIE CHART */}
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border dark:border-slate-700 p-4 md:p-6">
+
+          <h3 className="font-semibold mb-4 md:mb-6 dark:text-white text-xs md:text-sm uppercase tracking-wider">
+            Active Campaigns Distribution
+          </h3>
+
+          <ResponsiveContainer width="100%" height={250}>
+            <PieChart>
+              <Pie
+                data={pieData}
+                dataKey="value"
+                innerRadius={60}
+                outerRadius={85}
+                stroke="none"
+              >
+                {pieData.map((entry, index) => (
+                  <Cell key={index} fill={entry.color} />
+                ))}
+              </Pie>
+
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+
+        </div>
+
+        {/* BAR CHART */}
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border dark:border-slate-700 p-4 md:p-6 xl:col-span-2">
+
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4 md:mb-6">
+
+            <h3 className="font-semibold dark:text-white text-xs md:text-sm uppercase tracking-wider">
+              Call Logs Analysis
+            </h3>
+
+            <button
+              onClick={() => navigate("/member/leads")}
+              className="text-blue-500 text-xs font-semibold flex items-center gap-1 hover:underline"
+            >
+              View Leads <FaChevronRight size={10} />
+            </button>
+
+          </div>
+
+          <ResponsiveContainer width="100%" height={320}>
+            <BarChart data={barData}>
+
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+
+              <XAxis dataKey="date" />
+
+              <YAxis allowDecimals={false} />
+
+              <Tooltip />
+
+              <Legend />
+
+              <Bar dataKey="calls" fill="#10b981" radius={[4, 4, 0, 0]} />
+
+            </BarChart>
+          </ResponsiveContainer>
+
+        </div>
+
       </div>
     </div>
   );
