@@ -11,11 +11,12 @@ export default function ManagerLayout() {
   return (
     <div className="flex w-full min-h-screen bg-gray-100 dark:bg-slate-950">
 
-      {/* Sidebar */}
+      {/* Sidebar - Fixed */}
       <div
-        className={`fixed md:static top-0 left-0 z-40 h-full transform transition-all duration-300
+        className={`fixed top-0 left-0 z-40 h-screen transform transition-all duration-300
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
-        md:translate-x-0`}
+        md:translate-x-0
+        ${collapsed ? "w-20" : "w-64"}`}
       >
         <ManagerSidebar
           collapsed={collapsed}
@@ -31,8 +32,10 @@ export default function ManagerLayout() {
         />
       )}
 
-      {/* Main */}
-      <div className="flex flex-col flex-1 min-h-screen">
+      {/* Main Content - Sidebar width इतका margin */}
+      <div className={`flex flex-col flex-1 min-h-screen transition-all duration-300
+        ${collapsed ? "md:ml-20" : "md:ml-64"}`}
+      >
 
         <ManagerNavbar
           setSidebarOpen={setSidebarOpen}

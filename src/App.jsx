@@ -33,12 +33,14 @@ import SocialMediaCampagiens from "./component/pages/SocialMediaCampagiens";
 import LeadTableFields from "./component/pages/settings/LeadTableFields";
 import EmailTemplates from "./component/pages/settings/Messaging/EmailTemplates";
 import Forms from "./component/pages/settings/Forms";
-
 import ManagerLayout from "./component/manager/managerLayout";
 import ManagerDashboard from "./component/pages/ManagerDashboard";
+import ManagerProfile from "./component/pages/ManagerProfile";
 
 import MemberLayout from "./component/member/memberLayout";
 import MemberDashboard from "./component/pages/MemberDashboard";
+import MemberProfile from "./component/pages/MemberProfile";// 's' ऐवजी 'S' करा
+import AdminSettings from "./component/pages/Adminsettings";
 
 function App() {
 
@@ -82,12 +84,15 @@ function App() {
           <Route path="email-templates" element={<EmailTemplates />} />
           <Route path="forms" element={<Forms />} />
 
+{/* स्पेस काढून टाका आणि नाव नीट तपासा */}
+<Route path="settings" element={<AdminSettings />} />
         </Route>
 
         {/* MANAGER */}
         <Route path="/manager" element={<ManagerLayout />}>
 
           <Route index element={<ManagerDashboard />} />
+          <Route path="profile" element={<ManagerProfile />} />
 
           <Route path="calls" element={<CallManager />} />
           <Route path="campaigns" element={<Campaigns />} />
@@ -108,10 +113,10 @@ function App() {
         </Route>
 
         {/* MEMBER */}
-
         <Route path="/member" element={<MemberLayout />}>
 
           <Route index element={<MemberDashboard />} />
+          <Route path="profile" element={<MemberProfile />} />
 
           <Route path="calls" element={<CallManager />} />
           <Route path="leads" element={<Leads />} />
@@ -121,7 +126,6 @@ function App() {
           <Route path="lead-table-fields" element={<LeadTableFields />} />
           <Route path="email-templates" element={<EmailTemplates />} />
           <Route path="forms" element={<Forms />} />
-          
 
         </Route>
 

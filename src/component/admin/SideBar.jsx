@@ -85,6 +85,9 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, collapsed }) {
 
       { label: "Forms", icon: <FaWpforms />, path: "/admin/forms" },
 
+      // ✅ नवीन Settings tab
+      { label: "Settings", icon: <FaCog />, path: "/admin/settings" },
+
       { label: "Logout", icon: <FaSignOutAlt />, logout: true },
 
     ],
@@ -165,9 +168,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, collapsed }) {
 
               </li>
 
-
               {/* SUB MENU */}
-
               {item.children && openMenu === i && !collapsed && (
 
                 <ul className="ml-9 mt-1 space-y-1">

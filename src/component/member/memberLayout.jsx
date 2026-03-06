@@ -11,14 +11,12 @@ export default function MemberLayout() {
   return (
     <div className="flex w-full min-h-screen bg-gray-100 dark:bg-slate-950">
 
-      {/* SIDEBAR */}
+      {/* SIDEBAR - Fixed */}
       <div
-        className={`
-        fixed md:static top-0 left-0 z-40 h-full
-        transition-transform duration-300
+        className={`fixed top-0 left-0 z-40 h-screen transform transition-all duration-300
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
         md:translate-x-0
-      `}
+        ${collapsed ? "w-20" : "w-64"}`}
       >
         <MemberSidebar
           collapsed={collapsed}
@@ -34,8 +32,10 @@ export default function MemberLayout() {
         />
       )}
 
-      {/* MAIN AREA */}
-      <div className="flex-1 flex flex-col">
+      {/* MAIN CONTENT - Sidebar width इतका margin */}
+      <div className={`flex flex-col flex-1 min-h-screen transition-all duration-300
+        ${collapsed ? "md:ml-20" : "md:ml-64"}`}
+      >
 
         <MemberNavbar
           setSidebarOpen={setSidebarOpen}
@@ -48,6 +48,7 @@ export default function MemberLayout() {
         </main>
 
       </div>
+
     </div>
   );
 }
