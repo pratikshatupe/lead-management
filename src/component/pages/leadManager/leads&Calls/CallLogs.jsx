@@ -142,7 +142,6 @@ export default function CallLogs() {
 
           </div>
 
-          {/* Mobile Card View */}
           <div className="md:hidden space-y-4">
 
             {currentLogs.length > 0 ? (
@@ -172,7 +171,6 @@ export default function CallLogs() {
 
           </div>
 
-          {/* Pagination */}
           {filteredLogs.length > 0 && (
 
             <div className="flex flex-wrap justify-center md:justify-end items-center gap-2 mt-6">

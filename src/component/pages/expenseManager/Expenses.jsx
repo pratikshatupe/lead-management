@@ -32,7 +32,6 @@ function Expenses() {
     address: "",
   });
 
-  // Load from localStorage
   useEffect(() => {
     setCategories(JSON.parse(localStorage.getItem("expenseCategories")) || []);
     setExpenses(JSON.parse(localStorage.getItem("expensesList")) || []);
@@ -51,7 +50,6 @@ function Expenses() {
     localStorage.setItem("usersList", JSON.stringify(users));
   }, [users]);
 
-  // File Upload
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -63,7 +61,6 @@ function Expenses() {
     reader.readAsDataURL(file);
   };
 
-  // Add Expense
   const handleAddExpense = () => {
     if (!formData.category || !formData.user || !formData.amount || !formData.date) {
       alert("All required fields are mandatory");
@@ -84,7 +81,6 @@ function Expenses() {
     });
   };
 
-  // Add Category
   const handleAddCategory = () => {
     if (!newCategory.name) return alert("Category Name required");
 
@@ -97,7 +93,6 @@ function Expenses() {
     setShowCategoryModal(false);
   };
 
-  // Add User
   const handleAddUser = () => {
     if (!newUser.name || !newUser.email) {
       return alert("Name & Email required");

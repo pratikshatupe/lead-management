@@ -9,7 +9,6 @@ const ExpenseCategories = () => {
     description: "",
   });
 
-  // Load data from localStorage
   useEffect(() => {
     const storedData = JSON.parse(localStorage.getItem("expenseCategories"));
     if (storedData) {
@@ -17,7 +16,6 @@ const ExpenseCategories = () => {
     }
   }, []);
 
-  // Save to localStorage whenever categories change
   useEffect(() => {
     localStorage.setItem("expenseCategories", JSON.stringify(categories));
   }, [categories]);
@@ -82,7 +80,6 @@ const ExpenseCategories = () => {
         </button>
       </div>
 
-      {/* Table Wrapper (scroll on mobile) */}
       <div className="overflow-x-auto">
         <table className="min-w-full border border-gray-200 text-sm">
           <thead>

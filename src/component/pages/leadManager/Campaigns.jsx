@@ -17,11 +17,9 @@ function Campaigns() {
   const [emailTemplateModalOpen, setEmailTemplateModalOpen] = useState(false);
   const [selectedCampaign, setSelectedCampaign] = useState(null);
 
-  // Delete confirm modal
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
 
-  // Upload Leads
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [uploadTargetCampaign, setUploadTargetCampaign] = useState(null);
   const [uploadedFile, setUploadedFile] = useState(null);
@@ -212,9 +210,7 @@ function Campaigns() {
                   <div className="flex gap-2 flex-wrap">
                     <button className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors" title="Upload Leads" onClick={() => openUploadModal(item)}><FaCloudUploadAlt /></button>
                     <button className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors" title="Add to Campaign" onClick={() => openAddDrawer()}><FaPlus /></button>
-                    {/* ✅ EDIT */}
                     <button className="bg-yellow-500 text-white p-2 rounded hover:bg-yellow-600 transition-colors" title="Edit Campaign" onClick={() => openEditDrawer(item)}><FaEdit /></button>
-                    {/* ✅ DELETE */}
                     <button className="bg-red-500 text-white p-2 rounded hover:bg-red-600 transition-colors" title="Delete Campaign" onClick={() => openDeleteModal(item)}><FaTrash /></button>
                   </div>
                 </td>
@@ -224,7 +220,6 @@ function Campaigns() {
         </table>
       </div>
 
-      {/* MOBILE CARD VIEW */}
       <div className="grid gap-4 md:hidden">
         {filteredList.length === 0 ? (
           <div className="text-center text-gray-400 py-8">No campaigns found.</div>
@@ -266,7 +261,6 @@ function Campaigns() {
         <button className="border px-3 py-1 rounded bg-blue-500 text-white text-xs">1</button>
       </div>
 
-      {/* ✅ DELETE CONFIRM MODAL */}
       {deleteModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4">
           <div className="bg-white w-full max-w-sm rounded-xl shadow-2xl p-6 text-center">
@@ -285,7 +279,6 @@ function Campaigns() {
         </div>
       )}
 
-      {/* UPLOAD LEADS MODAL */}
       {uploadModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[90] p-4">
           <div className="bg-white w-full max-w-lg rounded-xl shadow-2xl flex flex-col">
@@ -336,7 +329,6 @@ function Campaigns() {
         </div>
       )}
 
-      {/* ✅ DRAWER — Add / Edit Campaign */}
       {drawerOpen && (
         <div className="fixed inset-0 bg-black/40 flex justify-end z-40">
           <div className="bg-white w-full sm:w-[90vw] md:w-[650px] h-full overflow-auto shadow-2xl flex flex-col">
@@ -347,7 +339,6 @@ function Campaigns() {
               <button onClick={() => setDrawerOpen(false)} className="text-gray-500 hover:text-black p-1"><FaTimes /></button>
             </div>
 
-            {/* Step indicator */}
             <div className="px-4 sm:px-6 pt-4">
               <div className="flex items-center border-b text-xs sm:text-sm mb-6 overflow-x-auto">
                 {["Basic Settings", "About Campaign", "Import Data"].map((label, i) => (
@@ -431,7 +422,6 @@ function Campaigns() {
         </div>
       )}
 
-      {/* MODAL: Add New Form */}
       {formModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[70] p-4">
           <div className="bg-white w-full max-w-2xl rounded-lg shadow-2xl flex flex-col max-h-[90vh]">
@@ -481,7 +471,6 @@ function Campaigns() {
         </div>
       )}
 
-      {/* MODAL: Add New Email Template */}
       {emailTemplateModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[80] p-4">
           <div className="bg-white w-full max-w-2xl rounded-lg shadow-2xl flex flex-col max-h-[95vh]">
@@ -535,7 +524,6 @@ function Campaigns() {
         </div>
       )}
 
-      {/* MODAL: Add New Staff Member */}
       {staffModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white w-full max-w-2xl rounded-lg shadow-xl flex flex-col max-h-[90vh]">
@@ -587,7 +575,6 @@ function Campaigns() {
         </div>
       )}
 
-      {/* MODAL: Add New Role */}
       {roleModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4">
           <div className="bg-white w-full max-w-2xl rounded-lg shadow-2xl flex flex-col max-h-[90vh]">

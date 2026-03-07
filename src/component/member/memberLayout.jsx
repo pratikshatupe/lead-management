@@ -11,7 +11,6 @@ export default function MemberLayout() {
   return (
     <div className="flex w-full min-h-screen bg-gray-100 dark:bg-slate-950">
 
-      {/* SIDEBAR - Fixed */}
       <div
         className={`fixed top-0 left-0 z-40 h-screen transform transition-all duration-300
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
@@ -32,7 +31,6 @@ export default function MemberLayout() {
         />
       )}
 
-      {/* MAIN CONTENT - Sidebar width इतका margin */}
       <div className={`flex flex-col flex-1 min-h-screen transition-all duration-300
         ${collapsed ? "md:ml-20" : "md:ml-64"}`}
       >

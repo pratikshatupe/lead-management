@@ -85,7 +85,6 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, collapsed }) {
 
       { label: "Forms", icon: <FaWpforms />, path: "/admin/forms" },
 
-      // ✅ नवीन Settings tab
       { label: "Settings", icon: <FaCog />, path: "/admin/settings" },
 
       { label: "Logout", icon: <FaSignOutAlt />, logout: true },

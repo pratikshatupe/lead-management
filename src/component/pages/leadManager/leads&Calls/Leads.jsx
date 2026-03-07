@@ -44,7 +44,6 @@ function Leads() {
   return (
       <div className="p-4 md:p-6 bg-[#f8f9fa] dark:bg-slate-900 min-h-screen">
         
-        {/* PAGE TITLE & TOGGLE */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
           <div>
             <h1 className="text-xl font-semibold text-gray-800 dark:text-white">Leads</h1>

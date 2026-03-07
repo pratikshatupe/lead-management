@@ -8,7 +8,6 @@ export default function LeadNotes() {
 
   const recordsPerPage = 10;
 
-  // Dummy 50 Records
   const notesData = Array.from({ length: 50 }, (_, i) => ({
     ref: "---",
     campaign: "Website Development Campaign",
@@ -161,7 +160,6 @@ export default function LeadNotes() {
 
           </div>
 
-          {/* Mobile Card View */}
           <div className="md:hidden space-y-4">
 
             {currentNotes.length > 0 ? (
@@ -188,7 +186,6 @@ export default function LeadNotes() {
 
           </div>
 
-          {/* Pagination */}
           {filteredNotes.length > 0 && (
 
             <div className="flex flex-wrap justify-center md:justify-end items-center gap-2 mt-6">

@@ -9,7 +9,6 @@ function CallManager() {
 
   const [showModal, setShowModal] = useState(false);
   const [stopModal, setStopModal] = useState(false);
-  // ✅ कोणत्या campaign साठी Resume/Stop clicked ते track करतो
   const [selectedCampaign, setSelectedCampaign] = useState(null);
 
   const campaigns = [
@@ -101,7 +100,6 @@ function CallManager() {
 
             <div className="flex justify-between pt-3 border-t">
 
-              {/* ✅ Resume button — campaign store करतो, modal उघडतो */}
               <button
                 onClick={() => {
                   setSelectedCampaign(item);
@@ -130,7 +128,6 @@ function CallManager() {
         ))}
       </div>
 
-      {/* ✅ Resume Modal */}
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50 p-4">
           <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
@@ -155,7 +152,6 @@ function CallManager() {
                 No
               </button>
 
-              {/* ✅ Yes → /socialmedia route वर navigate करतो */}
               <button
                 onClick={() => {
                   setShowModal(false);
@@ -170,7 +166,6 @@ function CallManager() {
         </div>
       )}
 
-      {/* Stop Modal */}
       {stopModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50 p-4">
           <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6">

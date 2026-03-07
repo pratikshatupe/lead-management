@@ -45,7 +45,6 @@ export default function MemberSidebar({ onClose, collapsed }) {
         </button>
       </div>
 
-      {/* MENU - Scrollable */}
       <div className="flex-1 overflow-y-auto">
 
         {/* DASHBOARD */}

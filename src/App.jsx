@@ -35,7 +35,7 @@ import EmailTemplates from "./component/pages/settings/Messaging/EmailTemplates"
 import Forms from "./component/pages/settings/Forms";
 import ManagerLayout from "./component/manager/managerLayout";
 import ManagerDashboard from "./component/pages/ManagerDashboard";
-import ManagerProfile from "./component/pages/ManagerProfile";
+import Managerprofile from "./component/pages/Managerprofile";
 
 import MemberLayout from "./component/member/memberLayout";
 import MemberDashboard from "./component/pages/MemberDashboard";
@@ -84,7 +84,6 @@ function App() {
           <Route path="email-templates" element={<EmailTemplates />} />
           <Route path="forms" element={<Forms />} />
 
-{/* स्पेस काढून टाका आणि नाव नीट तपासा */}
 <Route path="settings" element={<AdminSettings />} />
         </Route>
 
@@ -92,7 +91,7 @@ function App() {
         <Route path="/manager" element={<ManagerLayout />}>
 
           <Route index element={<ManagerDashboard />} />
-          <Route path="profile" element={<ManagerProfile />} />
+          <Route path="profile" element={<Managerprofile />} />
 
           <Route path="calls" element={<CallManager />} />
           <Route path="campaigns" element={<Campaigns />} />

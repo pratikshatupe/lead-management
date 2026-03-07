@@ -32,7 +32,6 @@ function Products() {
     }
 
     if (editingProductId) {
-      // UPDATE PRODUCT
       const updatedProducts = products.map((p) =>
         p.id === editingProductId ? { ...p, ...formData } : p
       );
@@ -40,7 +39,6 @@ function Products() {
       setProducts(updatedProducts);
       localStorage.setItem('my_products_list', JSON.stringify(updatedProducts));
     } else {
-      // CREATE PRODUCT
       const newProduct = { ...formData, id: Date.now() };
       const updated = [...products, newProduct];
       setProducts(updated);

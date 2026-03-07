@@ -32,7 +32,6 @@ export default function ManagerLayout() {
         />
       )}
 
-      {/* Main Content - Sidebar width इतका margin */}
       <div className={`flex flex-col flex-1 min-h-screen transition-all duration-300
         ${collapsed ? "md:ml-20" : "md:ml-64"}`}
       >
