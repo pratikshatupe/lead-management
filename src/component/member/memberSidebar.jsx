@@ -126,13 +126,12 @@ export default function MemberSidebar({ onClose, collapsed }) {
 
         {/* SETTINGS */}
         <NavLink
-          to="/member/lead-table-fields"
+          to="/member/settings"
           className="flex items-center gap-3 p-3 mx-2 rounded-lg hover:bg-blue-800"
         >
           <FaCog />
           {!collapsed && "Settings"}
         </NavLink>
-
       </div>
 
       {/* LOGOUT */}

@@ -415,7 +415,7 @@ function ProfilePanel() {
 function LeadStatus() {
   const [statuses, setStatuses] = useState([{ id: 1, name: 'Unreachable' }, { id: 2, name: 'Not Interested' }, { id: 3, name: 'Interested' }]);
   const [search, setSearch] = useState('');
-  const [modal, setModal] = useState(null); // null | {type:'add'} | {type:'edit',item} | {type:'del',item}
+  const [modal, setModal] = useState(null);
   const [val, setVal] = useState('');
   const [editVal, setEditVal] = useState('');
   const [toast, setToast] = useState({ show: false, msg: '', type: 'success' });
@@ -695,7 +695,7 @@ const DEFAULT_ROLES = [
 
 function RolePermission() {
   const [roles, setRoles] = useState(DEFAULT_ROLES);
-  const [drawer, setDrawer] = useState(null); // null | { mode:'add'|'edit', data }
+  const [drawer, setDrawer] = useState(null);
   const [delModal, setDelModal] = useState(null);
   const [newRole, setNewRole] = useState({ displayName: '', name: '', description: '', perms: makePerms() });
   const [toast, setToast] = useState({ show: false, msg: '', type: 'success' });
@@ -818,46 +818,66 @@ const PlaceholderPanel = ({ title }) => (
 );
 
 // ═══════════════════════════════════════════════════════
-//  SIDEBAR MENU
+//  MENU CONFIG — role-based
 // ═══════════════════════════════════════════════════════
-const MENU = [
-  { key: 'company', label: 'Company Settings', icon: '🏢' },
-  { key: 'profile', label: 'Profile', icon: '👤' },
+
+// ✅ Admin ला सगळे menu items दिसतात
+const ADMIN_MENU = [
+  { key: 'company',     label: 'Company Settings', icon: '🏢' },
+  { key: 'profile',     label: 'Profile',           icon: '👤' },
+  { key: 'leadstatus',  label: 'Lead Status',        icon: '🏷️' },
+  { key: 'translations',label: 'Translations',       icon: '🌐' },
+  { key: 'roles',       label: 'Role & Permissions', icon: '🔐' },
+  { key: 'currencies',  label: 'Currencies',         icon: '💵' },
+  { key: 'modules',     label: 'Modules',            icon: '🧩' },
+  { key: 'storage',     label: 'Storage Settings',   icon: '🗄️' },
+  { key: 'email',       label: 'Email Settings',     icon: '✉️' },
+  { key: 'database',    label: 'Database Backup',    icon: '💾' },
+  { key: 'update',      label: 'Update App',         icon: '🔄' },
+];
+
+// ✅ Member ला फक्त Profile आणि Lead Status दिसेल
+const MEMBER_MENU = [
+  { key: 'profile',    label: 'Profile',    icon: '👤' },
   { key: 'leadstatus', label: 'Lead Status', icon: '🏷️' },
-  { key: 'translations', label: 'Translations', icon: '🌐' },
-  { key: 'roles', label: 'Role & Permissions', icon: '🔐' },
-  { key: 'currencies', label: 'Currencies', icon: '💵' },
-  { key: 'modules', label: 'Modules', icon: '🧩' },
-  { key: 'storage', label: 'Storage Settings', icon: '🗄️' },
-  { key: 'email', label: 'Email Settings', icon: '✉️' },
-  { key: 'database', label: 'Database Backup', icon: '💾' },
-  { key: 'update', label: 'Update App', icon: '🔄' },
+];
+
+// ✅ Manager ला पण फक्त Profile आणि Lead Status दिसेल
+const MANAGER_MENU = [
+  { key: 'profile',    label: 'Profile',    icon: '👤' },
+  { key: 'leadstatus', label: 'Lead Status', icon: '🏷️' },
 ];
 
 // ═══════════════════════════════════════════════════════
 //  MAIN ADMIN SETTINGS
 // ═══════════════════════════════════════════════════════
-export default function AdminSettings() {
-  const [active, setActive] = useState('company');
+
+// prop: role = 'admin' | 'manager' | 'member'  (default: 'admin')
+export default function AdminSettings({ role = 'admin' }) {
+  const MENU =
+    role === 'member'  ? MEMBER_MENU  :
+    role === 'manager' ? MANAGER_MENU :
+    ADMIN_MENU;
+
+  const [active, setActive] = useState(MENU[0].key);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const navigate = (key) => { setActive(key); setSidebarOpen(false); };
 
   const renderPanel = () => {
     switch (active) {
-      case 'company': return <CompanySettings />;
-      case 'profile': return <ProfilePanel />;
-      case 'leadstatus': return <LeadStatus />;
+      case 'company':      return <CompanySettings />;
+      case 'profile':      return <ProfilePanel />;
+      case 'leadstatus':   return <LeadStatus />;
       case 'translations': return <Translations />;
-      case 'roles': return <RolePermission />;
+      case 'roles':        return <RolePermission />;
       case 'currencies':   return <Currencies />;
-    case 'modules':      return <Modules />;
-    case 'storage':      return <StorageSettings />;
-    case 'email':        return <EmailSettings />;
-    case 'database':     return <DatabaseBackup />;
-    case 'update':       return <UpdateApp />;
-
-      default: return <PlaceholderPanel title={MENU.find(m => m.key === active)?.label || 'Settings'} />;
+      case 'modules':      return <Modules />;
+      case 'storage':      return <StorageSettings />;
+      case 'email':        return <EmailSettings />;
+      case 'database':     return <DatabaseBackup />;
+      case 'update':       return <UpdateApp />;
+      default:             return <PlaceholderPanel title={MENU.find(m => m.key === active)?.label || 'Settings'} />;
     }
   };
 
@@ -883,7 +903,9 @@ export default function AdminSettings() {
         {/* Sidebar */}
         <div className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
           <div style={{ padding: '16px 20px', borderBottom: '1px solid #f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: 15, fontWeight: 700, color: '#1f2937' }}>Admin Settings</span>
+            <span style={{ fontSize: 15, fontWeight: 700, color: '#1f2937' }}>
+              {role === 'member' ? 'Member Settings' : role === 'manager' ? 'Manager Settings' : 'Admin Settings'}
+            </span>
             <button className="sidebar-close-btn" onClick={() => setSidebarOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9ca3af', display: 'none' }}><XIcon /></button>
           </div>
           <div style={{ overflowY: 'auto', flex: 1 }}>

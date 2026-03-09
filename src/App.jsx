@@ -39,8 +39,11 @@ import Managerprofile from "./component/pages/Managerprofile";
 
 import MemberLayout from "./component/member/memberLayout";
 import MemberDashboard from "./component/pages/MemberDashboard";
-import MemberProfile from "./component/pages/MemberProfile";// 's' ऐवजी 'S' करा
+import MemberProfile from "./component/pages/MemberProfile";
 import AdminSettings from "./component/pages/Adminsettings";
+
+
+
 
 function App() {
 
@@ -84,7 +87,9 @@ function App() {
           <Route path="email-templates" element={<EmailTemplates />} />
           <Route path="forms" element={<Forms />} />
 
-<Route path="settings" element={<AdminSettings />} />
+          {/* Admin ला सगळे settings दिसतात (default role="admin") */}
+          <Route path="settings" element={<AdminSettings role="admin" />} />
+
         </Route>
 
         {/* MANAGER */}
@@ -109,6 +114,9 @@ function App() {
           <Route path="email-templates" element={<EmailTemplates />} />
           <Route path="forms" element={<Forms />} />
 
+          {/* ✅ Manager ला फक्त Profile + Lead Status दिसेल */}
+          <Route path="settings" element={<AdminSettings role="manager" />} />
+
         </Route>
 
         {/* MEMBER */}
@@ -125,6 +133,9 @@ function App() {
           <Route path="lead-table-fields" element={<LeadTableFields />} />
           <Route path="email-templates" element={<EmailTemplates />} />
           <Route path="forms" element={<Forms />} />
+
+          {/* ✅ Member ला फक्त Profile + Lead Status दिसेल */}
+          <Route path="settings" element={<AdminSettings role="member" />} />
 
         </Route>
 

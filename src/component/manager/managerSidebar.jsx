@@ -55,6 +55,8 @@ const menuItems = [
     ],
   },
   { label: "Forms", icon: <FaWpforms />, path: "/manager/forms" },
+  // ✅ नवीन standalone Settings tab
+  { label: "Settings", icon: <FaCog />, path: "/manager/settings" },
   { label: "Logout", icon: <FaSignOutAlt />, logout: true },
 ];
 
