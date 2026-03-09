@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { FaClock, FaArrowLeft } from "react-icons/fa";
 
 function SocialMediaCampagiens() {
 
   const navigate = useNavigate();
+  const location = useLocation();
+
   const [seconds, setSeconds] = useState(0);
   const [activeTab, setActiveTab] = useState("details");
 
@@ -22,9 +24,13 @@ function SocialMediaCampagiens() {
     return `${hrs}:${mins}:${secs}`;
   };
 
-  // ✅ Back button — App.jsx मधील /Calls route वर परत जातो
   const handleBack = () => {
-    navigate("/Calls");
+    const from = location.state?.from;
+    if (from) {
+      navigate(from);
+    } else {
+      navigate(-1); // fallback
+    }
   };
 
   return (

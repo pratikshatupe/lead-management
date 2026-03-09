@@ -1,4 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== "undefined" ? window.innerWidth < 640 : false
+  );
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
+  return isMobile;
+}
 
 // ─── Icons ────────────────────────────────────────────
 const CheckIcon = () => (
@@ -17,13 +29,12 @@ const InfoIcon = () => (
   </svg>
 );
 
-// ─── Sample modules data (matches screenshot style) ──
+// ─── Sample modules data ──────────────────────────────
 const INITIAL_MODULES = [
   {
     id: 1,
     name: "Whatsapp",
     subtitle: "Whatsapp",
-    icon: null, // will use initials
     iconBg: "#e5e7eb",
     verified: false,
     purchaseCode: "",
@@ -36,7 +47,6 @@ const INITIAL_MODULES = [
     id: 2,
     name: "Call Manager",
     subtitle: "Call Manager",
-    icon: null,
     iconBg: "#dbeafe",
     verified: true,
     purchaseCode: "CM-ABCD-1234",
@@ -49,7 +59,6 @@ const INITIAL_MODULES = [
     id: 3,
     name: "Lead Follow Up",
     subtitle: "Lead Follow Up",
-    icon: null,
     iconBg: "#d1fae5",
     verified: false,
     purchaseCode: "",
@@ -67,20 +76,13 @@ function VerifyModal({ module, onClose, onVerified }) {
   const [error, setError] = useState("");
 
   const handleVerify = () => {
-    if (!code.trim()) {
-      setError("Please enter your purchase code.");
-      return;
-    }
+    if (!code.trim()) { setError("Please enter your purchase code."); return; }
     setError("");
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      if (code.trim().length >= 8) {
-        onVerified(module.id, code.trim());
-        onClose();
-      } else {
-        setError("Invalid purchase code. Please check and try again.");
-      }
+      if (code.trim().length >= 8) { onVerified(module.id, code.trim()); onClose(); }
+      else setError("Invalid purchase code. Please check and try again.");
     }, 1400);
   };
 
@@ -89,8 +91,7 @@ function VerifyModal({ module, onClose, onVerified }) {
       style={{
         position: "fixed", inset: 0, zIndex: 1000,
         background: "rgba(0,0,0,0.45)", backdropFilter: "blur(2px)",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        padding: 16,
+        display: "flex", alignItems: "center", justifyContent: "center", padding: 16,
       }}
       onClick={onClose}
     >
@@ -103,56 +104,24 @@ function VerifyModal({ module, onClose, onVerified }) {
         }}
         onClick={e => e.stopPropagation()}
       >
-        {/* Modal Header */}
-        <div style={{
-          display: "flex", justifyContent: "space-between", alignItems: "center",
-          padding: "18px 22px", borderBottom: "1px solid #f3f4f6",
-        }}>
-          <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: "#1f2937" }}>
-            Verify Purchase Code
-          </h3>
-          <button
-            onClick={onClose}
-            style={{
-              background: "none", border: "none", cursor: "pointer",
-              color: "#9ca3af", display: "flex", padding: 4, borderRadius: 6,
-            }}
-          >
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "18px 22px", borderBottom: "1px solid #f3f4f6" }}>
+          <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: "#1f2937" }}>Verify Purchase Code</h3>
+          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#9ca3af", display: "flex", padding: 4, borderRadius: 6 }}>
             <XIcon />
           </button>
         </div>
-
-        {/* Modal Body */}
         <div style={{ padding: "22px 22px 18px" }}>
-          {/* Info link */}
-          <div style={{
-            display: "flex", alignItems: "center", gap: 8,
-            borderLeft: "3px solid #3b82f6",
-            paddingLeft: 12, marginBottom: 22,
-          }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, borderLeft: "3px solid #3b82f6", paddingLeft: 12, marginBottom: 22 }}>
             <span style={{ color: "#3b82f6", flexShrink: 0 }}><InfoIcon /></span>
-            <a
-              href="https://codecanyon.net"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ fontSize: 13, color: "#3b82f6", textDecoration: "none", fontWeight: 500 }}
-            >
+            <a href="https://codecanyon.net" target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: "#3b82f6", textDecoration: "none", fontWeight: 500 }}>
               Click here to find your purchase code
             </a>
           </div>
-
-          {/* Domain */}
           <div style={{ marginBottom: 18 }}>
-            <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 6 }}>
-              Domain
-            </label>
-            <div style={{ fontSize: 14, color: "#1f2937", fontWeight: 500 }}>
-              demo.lead-pro.in
-            </div>
+            <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 6 }}>Domain</label>
+            <div style={{ fontSize: 14, color: "#1f2937", fontWeight: 500 }}>demo.lead-pro.in</div>
           </div>
-
-          {/* Purchase Code Input */}
-          <div style={{ marginBottom: error ? 10 : 0 }}>
+          <div>
             <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 6 }}>
               <span style={{ color: "#ef4444" }}>* </span>Purchase Code
             </label>
@@ -165,48 +134,29 @@ function VerifyModal({ module, onClose, onVerified }) {
               style={{
                 width: "100%", border: `1.5px solid ${error ? "#ef4444" : "#e5e7eb"}`,
                 borderRadius: 8, padding: "10px 14px", fontSize: 13,
-                outline: "none", fontFamily: "inherit",
-                transition: "border-color .2s",
+                outline: "none", fontFamily: "inherit", boxSizing: "border-box",
               }}
               onFocus={e => { if (!error) e.target.style.borderColor = "#3b82f6"; }}
               onBlur={e => { if (!error) e.target.style.borderColor = "#e5e7eb"; }}
             />
-            {error && (
-              <p style={{ margin: "5px 0 0", fontSize: 12, color: "#ef4444" }}>{error}</p>
-            )}
+            {error && <p style={{ margin: "5px 0 0", fontSize: 12, color: "#ef4444" }}>{error}</p>}
           </div>
         </div>
-
-        {/* Modal Footer */}
-        <div style={{
-          display: "flex", justifyContent: "flex-end", gap: 10,
-          padding: "14px 22px", borderTop: "1px solid #f3f4f6",
-        }}>
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, padding: "14px 22px", borderTop: "1px solid #f3f4f6" }}>
           <button
-            onClick={handleVerify}
-            disabled={loading}
+            onClick={handleVerify} disabled={loading}
             style={{
               display: "flex", alignItems: "center", gap: 6,
-              background: loading ? "#93c5fd" : "#3b82f6",
-              color: "#fff", border: "none", borderRadius: 8,
-              padding: "9px 20px", fontSize: 13, fontWeight: 600,
-              cursor: loading ? "not-allowed" : "pointer",
-              transition: "background .15s",
+              background: loading ? "#93c5fd" : "#3b82f6", color: "#fff",
+              border: "none", borderRadius: 8, padding: "9px 20px",
+              fontSize: 13, fontWeight: 600, cursor: loading ? "not-allowed" : "pointer",
             }}
           >
             {loading
               ? <><span style={{ display: "inline-block", width: 13, height: 13, border: "2px solid rgba(255,255,255,.5)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} /> Verifying...</>
-              : <><CheckIcon /> Verify</>
-            }
+              : <><CheckIcon /> Verify</>}
           </button>
-          <button
-            onClick={onClose}
-            style={{
-              background: "#f3f4f6", color: "#374151", border: "none",
-              borderRadius: 8, padding: "9px 18px", fontSize: 13,
-              fontWeight: 600, cursor: "pointer",
-            }}
-          >
+          <button onClick={onClose} style={{ background: "#f3f4f6", color: "#374151", border: "none", borderRadius: 8, padding: "9px 18px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
             Cancel
           </button>
         </div>
@@ -217,7 +167,6 @@ function VerifyModal({ module, onClose, onVerified }) {
 
 // ─── Module Icon ──────────────────────────────────────
 function ModuleIcon({ name, bg }) {
-  const initials = name.slice(0, 2).toUpperCase();
   return (
     <div style={{
       width: 38, height: 38, borderRadius: 8,
@@ -226,7 +175,7 @@ function ModuleIcon({ name, bg }) {
       fontSize: 13, fontWeight: 700, color: "#6b7280", flexShrink: 0,
       border: "1px solid rgba(0,0,0,.06)",
     }}>
-      {initials}
+      {name.slice(0, 2).toUpperCase()}
     </div>
   );
 }
@@ -238,12 +187,11 @@ function Toast({ show, message, type = "success" }) {
       position: "fixed", bottom: 20, right: 20, zIndex: 9999,
       background: "#fff", borderRadius: 10,
       boxShadow: "0 8px 28px rgba(0,0,0,.14)",
-      padding: "11px 16px",
-      display: "flex", alignItems: "center", gap: 9,
+      padding: "11px 16px", display: "flex", alignItems: "center", gap: 9,
       border: `1.5px solid ${type === "success" ? "#d1fae5" : "#fee2e2"}`,
       transform: show ? "translateX(0)" : "translateX(120%)",
-      opacity: show ? 1 : 0,
-      transition: "all .32s cubic-bezier(.4,2,.6,1)",
+      opacity: show ? 1 : 0, transition: "all .32s cubic-bezier(.4,2,.6,1)",
+      maxWidth: "calc(100vw - 40px)",
     }}>
       <span style={{ color: type === "success" ? "#10b981" : "#ef4444" }}>
         {type === "success" ? <CheckIcon /> : <XIcon />}
@@ -253,8 +201,19 @@ function Toast({ show, message, type = "success" }) {
   );
 }
 
+// ─── Row Item for mobile card ─────────────────────────
+function CardRow({ label, children }) {
+  return (
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "7px 0", borderBottom: "1px solid #f3f4f6" }}>
+      <span style={{ fontSize: 12, color: "#9ca3af", fontWeight: 600 }}>{label}</span>
+      <span style={{ fontSize: 13, color: "#374151", fontWeight: 500, textAlign: "right" }}>{children}</span>
+    </div>
+  );
+}
+
 // ─── Main Modules Component ───────────────────────────
 export default function Modules() {
+  const isMobile = useIsMobile();
   const [modules, setModules] = useState(INITIAL_MODULES);
   const [verifyModal, setVerifyModal] = useState(null);
   const [toast, setToast] = useState({ show: false, msg: "", type: "success" });
@@ -275,6 +234,18 @@ export default function Modules() {
     showToast("Purchase code verified successfully!");
   };
 
+  const ActiveBadge = () => (
+    <span style={{ fontSize: 12, fontWeight: 600, color: "#16a34a", background: "#f0fdf4", padding: "3px 10px", borderRadius: 20, border: "1px solid #bbf7d0" }}>
+      Active
+    </span>
+  );
+
+  const VerifiedBadge = () => (
+    <span style={{ fontSize: 12, fontWeight: 600, color: "#16a34a", background: "#f0fdf4", padding: "3px 10px", borderRadius: 20, border: "1px solid #bbf7d0" }}>
+      ✔ Verified
+    </span>
+  );
+
   return (
     <>
       <style>{`
@@ -294,129 +265,150 @@ export default function Modules() {
       )}
 
       {/* Page Header */}
-      <div style={{ marginBottom: 6 }}>
-        <h2 style={{ fontSize: 22, fontWeight: 700, color: "#1f2937", margin: 0 }}>Modules</h2>
+      <div style={{ marginBottom: 6, padding: isMobile ? "0 12px" : 0 }}>
+        <h2 style={{ fontSize: isMobile ? 18 : 22, fontWeight: 700, color: "#1f2937", margin: 0 }}>Modules</h2>
         <p style={{ fontSize: 12, color: "#9ca3af", marginTop: 4 }}>
           Dashboard &nbsp;-&nbsp; Settings &nbsp;-&nbsp;
           <span style={{ color: "#6b7280" }}>Modules</span>
         </p>
       </div>
 
-      {/* Table Card */}
-      <div style={{
-        background: "#fff",
-        borderRadius: 12,
-        border: "1px solid #f1f5f9",
-        boxShadow: "0 1px 6px rgba(0,0,0,.05)",
-        overflow: "hidden",
-        marginTop: 20,
-      }}>
-        <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 700 }}>
-            <thead>
-              <tr style={{ background: "#f9fafb" }}>
-                {["Module Name", "Verified", "Current Version", "Latest Version", "Status", "Action"].map(col => (
-                  <th key={col} style={{
-                    padding: "13px 18px", textAlign: "left",
-                    fontSize: 13, fontWeight: 600, color: "#6b7280",
-                    whiteSpace: "nowrap", borderBottom: "1px solid #f3f4f6",
-                  }}>
-                    {col}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {modules.map((mod, i) => (
-                <tr
-                  key={mod.id}
-                  style={{ background: i % 2 === 0 ? "#fff" : "#fafafa", borderTop: "1px solid #f3f4f6" }}
-                >
-                  {/* Module Name */}
-                  <td style={{ padding: "14px 18px" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                      <ModuleIcon name={mod.name} bg={mod.iconBg} />
-                      <div>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: "#1f2937" }}>{mod.name}</div>
-                        <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 2 }}>{mod.subtitle}</div>
-                      </div>
-                    </div>
-                  </td>
+      {/* ── MOBILE: Card Layout ── */}
+      {isMobile ? (
+        <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 16, padding: "0 12px" }}>
+          {modules.map(mod => (
+            <div key={mod.id} style={{
+              background: "#fff", borderRadius: 12,
+              border: "1px solid #f1f5f9",
+              boxShadow: "0 1px 6px rgba(0,0,0,.05)",
+              padding: "14px 16px",
+            }}>
+              {/* Card Header: icon + name */}
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+                <ModuleIcon name={mod.name} bg={mod.iconBg} />
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: "#1f2937" }}>{mod.name}</div>
+                  <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 1 }}>{mod.subtitle}</div>
+                </div>
+              </div>
 
-                  {/* Verified */}
-                  <td style={{ padding: "14px 18px" }}>
-                    {mod.verified ? (
-                      <span style={{
-                        fontSize: 12, fontWeight: 600, color: "#16a34a",
-                        background: "#f0fdf4", padding: "3px 10px",
-                        borderRadius: 20, border: "1px solid #bbf7d0",
-                      }}>
-                        ✔ Verified
-                      </span>
-                    ) : (
-                      <button
-                        onClick={() => setVerifyModal(mod)}
-                        style={{
-                          background: "none", border: "none", padding: 0,
-                          fontSize: 13, fontWeight: 500, color: "#3b82f6",
-                          cursor: "pointer", textDecoration: "none",
-                        }}
-                        onMouseEnter={e => e.target.style.textDecoration = "underline"}
-                        onMouseLeave={e => e.target.style.textDecoration = "none"}
-                      >
-                        Verify Purchase Code
-                      </button>
-                    )}
-                  </td>
+              {/* Card Rows */}
+              <CardRow label="Verified">
+                {mod.verified
+                  ? <VerifiedBadge />
+                  : (
+                    <button
+                      onClick={() => setVerifyModal(mod)}
+                      style={{ background: "none", border: "none", padding: 0, fontSize: 13, fontWeight: 500, color: "#3b82f6", cursor: "pointer" }}
+                    >
+                      Verify Purchase Code
+                    </button>
+                  )
+                }
+              </CardRow>
 
-                  {/* Current Version */}
-                  <td style={{ padding: "14px 18px", fontSize: 13, color: "#374151" }}>
-                    {mod.currentVersion}
-                  </td>
+              <CardRow label="Current Version">{mod.currentVersion}</CardRow>
+              <CardRow label="Latest Version">{mod.latestVersion}</CardRow>
 
-                  {/* Latest Version */}
-                  <td style={{ padding: "14px 18px", fontSize: 13, color: "#374151" }}>
-                    {mod.latestVersion}
-                  </td>
+              <CardRow label="Status">
+                {mod.status === "Active" ? <ActiveBadge /> : <span style={{ color: "#9ca3af" }}>-</span>}
+              </CardRow>
 
-                  {/* Status */}
-                  <td style={{ padding: "14px 18px" }}>
-                    {mod.status === "Active" ? (
-                      <span style={{
-                        fontSize: 12, fontWeight: 600, color: "#16a34a",
-                        background: "#f0fdf4", padding: "3px 10px",
-                        borderRadius: 20, border: "1px solid #bbf7d0",
-                      }}>Active</span>
-                    ) : (
-                      <span style={{ fontSize: 13, color: "#9ca3af" }}>-</span>
-                    )}
-                  </td>
-
-                  {/* Action */}
-                  <td style={{ padding: "14px 18px" }}>
-                    {mod.action === "Update" ? (
-                      <button
-                        onClick={() => showToast(`${mod.name} updated!`)}
-                        style={{
-                          display: "flex", alignItems: "center", gap: 5,
-                          background: "#3b82f6", color: "#fff",
-                          border: "none", borderRadius: 7,
-                          padding: "7px 14px", fontSize: 12,
-                          fontWeight: 600, cursor: "pointer",
-                        }}
-                      >
-                        🔄 Update
-                      </button>
-                    ) : (
-                      <span style={{ fontSize: 13, color: "#9ca3af" }}>-</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+              {/* Action button at bottom */}
+              <div style={{ marginTop: 12 }}>
+                {mod.action === "Update" ? (
+                  <button
+                    onClick={() => showToast(`${mod.name} updated!`)}
+                    style={{
+                      width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                      background: "#3b82f6", color: "#fff", border: "none", borderRadius: 8,
+                      padding: "9px 14px", fontSize: 13, fontWeight: 600, cursor: "pointer",
+                    }}
+                  >
+                    🔄 Update
+                  </button>
+                ) : (
+                  <div style={{ fontSize: 13, color: "#9ca3af", textAlign: "center" }}>No action available</div>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
-      </div>
+      ) : (
+        /* ── DESKTOP: Table Layout ── */
+        <div style={{
+          background: "#fff", borderRadius: 12,
+          border: "1px solid #f1f5f9",
+          boxShadow: "0 1px 6px rgba(0,0,0,.05)",
+          overflow: "hidden", marginTop: 20,
+        }}>
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 700 }}>
+              <thead>
+                <tr style={{ background: "#f9fafb" }}>
+                  {["Module Name", "Verified", "Current Version", "Latest Version", "Status", "Action"].map(col => (
+                    <th key={col} style={{
+                      padding: "13px 18px", textAlign: "left",
+                      fontSize: 13, fontWeight: 600, color: "#6b7280",
+                      whiteSpace: "nowrap", borderBottom: "1px solid #f3f4f6",
+                    }}>
+                      {col}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {modules.map((mod, i) => (
+                  <tr key={mod.id} style={{ background: i % 2 === 0 ? "#fff" : "#fafafa", borderTop: "1px solid #f3f4f6" }}>
+                    <td style={{ padding: "14px 18px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                        <ModuleIcon name={mod.name} bg={mod.iconBg} />
+                        <div>
+                          <div style={{ fontSize: 13, fontWeight: 600, color: "#1f2937" }}>{mod.name}</div>
+                          <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 2 }}>{mod.subtitle}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td style={{ padding: "14px 18px" }}>
+                      {mod.verified ? <VerifiedBadge /> : (
+                        <button
+                          onClick={() => setVerifyModal(mod)}
+                          style={{ background: "none", border: "none", padding: 0, fontSize: 13, fontWeight: 500, color: "#3b82f6", cursor: "pointer" }}
+                          onMouseEnter={e => e.target.style.textDecoration = "underline"}
+                          onMouseLeave={e => e.target.style.textDecoration = "none"}
+                        >
+                          Verify Purchase Code
+                        </button>
+                      )}
+                    </td>
+                    <td style={{ padding: "14px 18px", fontSize: 13, color: "#374151" }}>{mod.currentVersion}</td>
+                    <td style={{ padding: "14px 18px", fontSize: 13, color: "#374151" }}>{mod.latestVersion}</td>
+                    <td style={{ padding: "14px 18px" }}>
+                      {mod.status === "Active" ? <ActiveBadge /> : <span style={{ fontSize: 13, color: "#9ca3af" }}>-</span>}
+                    </td>
+                    <td style={{ padding: "14px 18px" }}>
+                      {mod.action === "Update" ? (
+                        <button
+                          onClick={() => showToast(`${mod.name} updated!`)}
+                          style={{
+                            display: "flex", alignItems: "center", gap: 5,
+                            background: "#3b82f6", color: "#fff", border: "none",
+                            borderRadius: 7, padding: "7px 14px", fontSize: 12, fontWeight: 600, cursor: "pointer",
+                          }}
+                        >
+                          🔄 Update
+                        </button>
+                      ) : (
+                        <span style={{ fontSize: 13, color: "#9ca3af" }}>-</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </>
   );
 }

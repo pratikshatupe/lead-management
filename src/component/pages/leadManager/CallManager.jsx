@@ -94,8 +94,8 @@ function CallManager() {
             </p>
 
             <div className="text-sm text-gray-600 space-y-1 mb-4">
-              <p><span className="text-gray-400">Last Actioner</span> {item.actioner}</p>
-              <p><span className="text-gray-400">Started On</span> {item.started}</p>
+              <p><span className="text-gray-400">Last Actioner </span>{item.actioner}</p>
+              <p><span className="text-gray-400">Started On </span>{item.started}</p>
             </div>
 
             <div className="flex justify-between pt-3 border-t">
@@ -111,7 +111,6 @@ function CallManager() {
                 Resume
               </button>
 
-              {/* Stop button */}
               <button
                 onClick={() => {
                   setSelectedCampaign(item);
@@ -128,6 +127,7 @@ function CallManager() {
         ))}
       </div>
 
+      {/* Resume Modal */}
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50 p-4">
           <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
@@ -155,7 +155,7 @@ function CallManager() {
               <button
                 onClick={() => {
                   setShowModal(false);
-                  navigate("/socialmedia");
+                  navigate("/socialmedia", { state: { from: "/admin/calls" } });
                 }}
                 className="px-4 py-1.5 border border-red-500 text-red-500 rounded hover:bg-red-50 text-sm"
               >
@@ -166,6 +166,7 @@ function CallManager() {
         </div>
       )}
 
+      {/* Stop Modal */}
       {stopModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50 p-4">
           <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6">

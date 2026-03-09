@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 
 function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== "undefined" ? window.innerWidth < 640 : false
+  );
   useEffect(() => {
     const handler = () => setIsMobile(window.innerWidth < 640);
     window.addEventListener("resize", handler);
@@ -56,6 +58,7 @@ function Toast({ show, message, type = "success" }) {
       border: `1.5px solid ${type === "success" ? "#d1fae5" : "#fee2e2"}`,
       transform: show ? "translateX(0)" : "translateX(120%)",
       opacity: show ? 1 : 0, transition: "all .32s cubic-bezier(.4,2,.6,1)",
+      maxWidth: "calc(100vw - 40px)",
     }}>
       <span style={{ color: type === "success" ? "#10b981" : "#ef4444" }}>
         {type === "success" ? <CheckIcon /> : <XIcon />}
@@ -103,12 +106,12 @@ export default function DatabaseBackup() {
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: "#f1f5f9", padding: 24, fontFamily: "'Segoe UI', sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "#f1f5f9", padding: isMobile ? 12 : 24, fontFamily: "'Segoe UI', sans-serif" }}>
       <Toast show={toast.show} message={toast.msg} type={toast.type} />
 
       {/* Page Header */}
       <div style={{ marginBottom: 20 }}>
-        <h2 style={{ fontSize: 22, fontWeight: 700, color: "#1f2937", margin: 0 }}>Database Backup</h2>
+        <h2 style={{ fontSize: isMobile ? 18 : 22, fontWeight: 700, color: "#1f2937", margin: 0 }}>Database Backup</h2>
         <p style={{ fontSize: 12, color: "#9ca3af", marginTop: 4 }}>
           Dashboard &nbsp;-&nbsp; Settings &nbsp;-&nbsp;
           <span style={{ color: "#6b7280" }}>Database Backup</span>
@@ -117,15 +120,24 @@ export default function DatabaseBackup() {
 
       {/* Main Card */}
       <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #f1f5f9", boxShadow: "0 1px 6px rgba(0,0,0,.05)", overflow: "hidden" }}>
-        {/* Toolbar */}
-        <div style={{ padding: "16px 20px", borderBottom: "1px solid #f1f5f9", display: "flex", gap: 10, alignItems: "center" }}>
+
+        {/* ── Toolbar ── */}
+        <div style={{
+          padding: "16px 20px",
+          borderBottom: "1px solid #f1f5f9",
+          display: "flex",
+          flexDirection: isMobile ? "column" : "row",   // ← KEY CHANGE
+          gap: 10,
+          alignItems: isMobile ? "stretch" : "center",  // ← full-width on mobile
+        }}>
           <button
             onClick={() => setShowConfirm(true)}
             disabled={generating}
             style={{
-              display: "flex", alignItems: "center", gap: 7,
+              display: "flex", alignItems: "center", justifyContent: isMobile ? "center" : "flex-start",
+              gap: 7,
               background: generating ? "#93c5fd" : "#3b82f6", color: "#fff", border: "none",
-              borderRadius: 8, padding: "9px 16px", fontSize: 13,
+              borderRadius: 8, padding: "10px 16px", fontSize: 13,
               fontWeight: 600, cursor: generating ? "not-allowed" : "pointer", transition: "background .15s",
             }}
             onMouseEnter={e => { if (!generating) e.currentTarget.style.background = "#2563eb"; }}
@@ -137,9 +149,10 @@ export default function DatabaseBackup() {
           <button
             onClick={() => setShowCommandPanel(true)}
             style={{
-              display: "flex", alignItems: "center", gap: 7,
+              display: "flex", alignItems: "center", justifyContent: isMobile ? "center" : "flex-start",
+              gap: 7,
               background: "#3b82f6", color: "#fff", border: "none",
-              borderRadius: 8, padding: "9px 16px", fontSize: 13,
+              borderRadius: 8, padding: "10px 16px", fontSize: 13,
               fontWeight: 600, cursor: "pointer", transition: "background .15s",
             }}
             onMouseEnter={e => e.currentTarget.style.background = "#2563eb"}
@@ -151,12 +164,12 @@ export default function DatabaseBackup() {
 
         {/* Info Banner */}
         <div style={{
-          display: "flex", alignItems: "center", gap: 10,
+          display: "flex", alignItems: "flex-start", gap: 10,
           background: "#fefce8", border: "1px solid #fef08a",
           margin: "16px 20px", borderRadius: 8, padding: "12px 16px",
         }}>
-          <span style={{ color: "#ca8a04", display: "flex", flexShrink: 0 }}><InfoIcon /></span>
-          <span style={{ fontSize: 13, color: "#92400e" }}>
+          <span style={{ color: "#ca8a04", display: "flex", flexShrink: 0, marginTop: 1 }}><InfoIcon /></span>
+          <span style={{ fontSize: 13, color: "#92400e", lineHeight: 1.5 }}>
             All generated database file will be stored in <strong>storage/app/public/backup</strong> folder.
           </span>
         </div>
@@ -181,14 +194,14 @@ export default function DatabaseBackup() {
                     <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 2 }}>{b.createdAt}</div>
                   </div>
                 </div>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <span style={{ fontSize: 12, background: "#e0f2fe", color: "#0369a1", borderRadius: 6, padding: "3px 10px", fontWeight: 600 }}>{formatBytes(b.size)}</span>
+                <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 4 }}>
+                  <span style={{ fontSize: 12, background: "#e0f2fe", color: "#0369a1", borderRadius: 6, padding: "3px 10px", fontWeight: 600, alignSelf: "flex-start" }}>{formatBytes(b.size)}</span>
                   <div style={{ display: "flex", gap: 8 }}>
-                    <button style={{ display: "flex", alignItems: "center", gap: 4, background: "#3b82f6", color: "#fff", border: "none", borderRadius: 7, padding: "6px 11px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
+                    <button style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 5, background: "#3b82f6", color: "#fff", border: "none", borderRadius: 7, padding: "8px 12px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
                       <DownloadIcon /> Download
                     </button>
                     <button onClick={() => handleDelete(b.id)}
-                      style={{ display: "flex", alignItems: "center", gap: 4, background: "#ef4444", color: "#fff", border: "none", borderRadius: 7, padding: "6px 11px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
+                      style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 5, background: "#ef4444", color: "#fff", border: "none", borderRadius: 7, padding: "8px 12px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
                       <TrashIcon /> Delete
                     </button>
                   </div>
@@ -262,8 +275,8 @@ export default function DatabaseBackup() {
 
       {/* Confirm Modal */}
       {showConfirm && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.55)", backdropFilter: "blur(2px)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <div style={{ background: "#fff", borderRadius: 12, padding: "28px 32px", width: 380, boxShadow: "0 20px 60px rgba(0,0,0,.18)" }}>
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.55)", backdropFilter: "blur(2px)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: isMobile ? 16 : 0 }}>
+          <div style={{ background: "#fff", borderRadius: 12, padding: isMobile ? "24px 20px" : "28px 32px", width: isMobile ? "100%" : 380, boxShadow: "0 20px 60px rgba(0,0,0,.18)" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
               <span style={{ color: "#f59e0b", fontSize: 24 }}>⚠️</span>
               <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1f2937", margin: 0 }}>Generate Backup</h3>
@@ -292,7 +305,15 @@ export default function DatabaseBackup() {
       {/* Command Settings Panel */}
       {showCommandPanel && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", backdropFilter: "blur(2px)", zIndex: 9999, display: "flex", justifyContent: "flex-end" }}>
-          <div style={{ background: "#fff", width: 420, height: "100%", boxShadow: "-4px 0 20px rgba(0,0,0,.12)", overflow: "auto", display: "flex", flexDirection: "column" }}>
+          <div style={{
+            background: "#fff",
+            width: isMobile ? "100%" : 420,   // ← full-width on mobile
+            height: "100%",
+            boxShadow: "-4px 0 20px rgba(0,0,0,.12)",
+            overflow: "auto",
+            display: "flex",
+            flexDirection: "column",
+          }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 24px", borderBottom: "1px solid #f1f5f9" }}>
               <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1f2937", margin: 0 }}>Backup Command Settings</h3>
               <button onClick={() => setShowCommandPanel(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "#9ca3af", display: "flex" }}>
