@@ -1,4 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
+  return isMobile;
+}
+
+const CURRENCY_SYMBOLS = ["$", "€", "£", "¥", "₹", "₩", "₪", "₦", "₫", "฿", "₺", "₴", "₽", "₲", "₡", "₱", "₭", "₮", "₵", "₸", "₾", "₼", "₿", "¢", "ₐ", "CHF", "kr", "zł", "Kč", "Ft"];
 
 const initialCurrencies = [
   { id: 1, name: "Rupee", symbol: "₹", position: "front", code: "INR", thousandSep: ",", decimalSep: ".", decimalDigits: 2, hideEmptyDecimals: false },
@@ -6,7 +18,7 @@ const initialCurrencies = [
 ];
 
 function formatExample(symbol, position, thousandSep, decimalSep, decimalDigits, hideEmpty) {
-  const num = 12345.68;
+  const num = 12345.00;
   const [intPart, decPart] = num.toFixed(decimalDigits).split(".");
   const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, thousandSep || ",");
   const isEmpty = hideEmpty && parseFloat("0." + decPart) === 0;
@@ -21,6 +33,7 @@ const defaultForm = {
 };
 
 export default function Currencies() {
+  const isMobile = useIsMobile();
   const [currencies, setCurrencies] = useState(initialCurrencies);
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState(defaultForm);
@@ -28,6 +41,7 @@ export default function Currencies() {
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState([]);
   const [errors, setErrors] = useState({});
+  const [symbolDropOpen, setSymbolDropOpen] = useState(false);
 
   const filtered = currencies.filter(c =>
     c.name.toLowerCase().includes(search.toLowerCase())
@@ -37,6 +51,7 @@ export default function Currencies() {
     const e = {};
     if (!form.name.trim()) e.name = "Required";
     if (!form.symbol.trim()) e.symbol = "Required";
+    else if (!CURRENCY_SYMBOLS.includes(form.symbol)) e.symbol = "Please select a valid currency symbol";
     if (!form.code.trim()) e.code = "Required";
     return e;
   };
@@ -112,59 +127,104 @@ export default function Currencies() {
           </div>
         </div>
 
-        {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-max">
-            <thead>
-              <tr className="bg-slate-50 text-left border-b border-slate-100">
-                <th className="px-5 py-3 w-10">
-                  <input type="checkbox" className="rounded border-slate-300 text-blue-500 accent-blue-500"
-                    checked={selected.length === filtered.length && filtered.length > 0} onChange={toggleAll} />
-                </th>
-                {["Currency Name", "Currency Symbol", "Currency Position", "Currency Code", "Example", "Action"].map(h => (
-                  <th key={h} className="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-50">
-              {filtered.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="text-center py-12 text-slate-400 text-sm">No currencies found.</td>
-                </tr>
-              ) : filtered.map(c => (
-                <tr key={c.id} className={`transition-colors ${selected.includes(c.id) ? "bg-blue-50" : "hover:bg-slate-50"}`}>
-                  <td className="px-5 py-4">
+        {/* Table (desktop) / Cards (mobile) */}
+        {isMobile ? (
+          <div className="p-3 flex flex-col gap-3">
+            {filtered.length === 0 ? (
+              <p className="text-center py-10 text-slate-400 text-sm">No currencies found.</p>
+            ) : filtered.map(c => (
+              <div key={c.id} className="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
                     <input type="checkbox" className="rounded border-slate-300 accent-blue-500"
                       checked={selected.includes(c.id)} onChange={() => toggleSelect(c.id)} />
-                  </td>
-                  <td className="px-5 py-4 text-sm font-medium text-slate-800">{c.name}</td>
-                  <td className="px-5 py-4 text-base text-slate-700">{c.symbol}</td>
-                  <td className="px-5 py-4 text-sm text-slate-700 capitalize">{c.position}</td>
-                  <td className="px-5 py-4 text-sm text-slate-700">{c.code}</td>
-                  <td className="px-5 py-4 text-sm text-slate-700">
-                    {formatExample(c.symbol, c.position, c.thousandSep, c.decimalSep, c.decimalDigits, c.hideEmptyDecimals)}
-                  </td>
-                  <td className="px-5 py-4">
-                    <div className="flex gap-2">
-                      <button onClick={() => openEdit(c)}
-                        className="w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors shadow-sm">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                      </button>
-                      <button onClick={() => handleDelete(c.id)}
-                        className="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-sm">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </button>
+                    <span className="text-sm font-semibold text-slate-800">{c.name}</span>
+                    <span className="text-base text-slate-600">{c.symbol}</span>
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => openEdit(c)}
+                      className="w-8 h-8 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                    </button>
+                    <button onClick={() => handleDelete(c.id)}
+                      className="w-8 h-8 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { label: "Position", value: c.position.charAt(0).toUpperCase() + c.position.slice(1) },
+                    { label: "Code", value: c.code },
+                    { label: "Example", value: formatExample(c.symbol, c.position, c.thousandSep, c.decimalSep, c.decimalDigits, c.hideEmptyDecimals) },
+                  ].map(({ label, value }) => (
+                    <div key={label} className="bg-white rounded-lg px-3 py-2 border border-slate-100">
+                      <p className="text-xs text-slate-400 font-semibold uppercase tracking-wide mb-0.5">{label}</p>
+                      <p className="text-sm text-slate-700 font-medium">{value}</p>
                     </div>
-                  </td>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-max">
+              <thead>
+                <tr className="bg-slate-50 text-left border-b border-slate-100">
+                  <th className="px-5 py-3 w-10">
+                    <input type="checkbox" className="rounded border-slate-300 text-blue-500 accent-blue-500"
+                      checked={selected.length === filtered.length && filtered.length > 0} onChange={toggleAll} />
+                  </th>
+                  {["Currency Name", "Currency Symbol", "Currency Position", "Currency Code", "Example", "Action"].map(h => (
+                    <th key={h} className="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-slate-50">
+                {filtered.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="text-center py-12 text-slate-400 text-sm">No currencies found.</td>
+                  </tr>
+                ) : filtered.map(c => (
+                  <tr key={c.id} className={`transition-colors ${selected.includes(c.id) ? "bg-blue-50" : "hover:bg-slate-50"}`}>
+                    <td className="px-5 py-4">
+                      <input type="checkbox" className="rounded border-slate-300 accent-blue-500"
+                        checked={selected.includes(c.id)} onChange={() => toggleSelect(c.id)} />
+                    </td>
+                    <td className="px-5 py-4 text-sm font-medium text-slate-800">{c.name}</td>
+                    <td className="px-5 py-4 text-base text-slate-700">{c.symbol}</td>
+                    <td className="px-5 py-4 text-sm text-slate-700 capitalize">{c.position}</td>
+                    <td className="px-5 py-4 text-sm text-slate-700">{c.code}</td>
+                    <td className="px-5 py-4 text-sm text-slate-700">
+                      {formatExample(c.symbol, c.position, c.thousandSep, c.decimalSep, c.decimalDigits, c.hideEmptyDecimals)}
+                    </td>
+                    <td className="px-5 py-4">
+                      <div className="flex gap-2">
+                        <button onClick={() => openEdit(c)}
+                          className="w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors shadow-sm">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                        </button>
+                        <button onClick={() => handleDelete(c.id)}
+                          className="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-sm">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
 
         {/* Pagination */}
         <div className="flex items-center justify-end gap-2 px-5 py-3 border-t border-slate-100">
@@ -181,7 +241,7 @@ export default function Currencies() {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(2px)" }}>
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <div className="p-7">
               <h2 className="text-xl font-bold text-slate-800 mb-6">
@@ -201,16 +261,39 @@ export default function Currencies() {
                   />
                   {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
                 </div>
-                <div>
+
+                {/* Symbol with dropdown */}
+                <div className="relative">
                   <label className="block text-sm font-semibold text-slate-700 mb-1.5">
                     <span className="text-red-500">* </span>Currency Symbol
                   </label>
-                  <input
-                    value={form.symbol}
-                    onChange={e => setForm(f => ({ ...f, symbol: e.target.value }))}
-                    placeholder="Please Enter Currency Symbol"
-                    className={`w-full border rounded-lg px-3 py-2.5 text-sm text-slate-800 outline-none focus:ring-2 focus:ring-blue-300 transition-all ${errors.symbol ? "border-red-400 bg-red-50" : "border-slate-200"}`}
-                  />
+                  <div
+                    className={`w-full border rounded-lg px-3 py-2.5 text-sm text-slate-800 cursor-pointer flex items-center justify-between ${errors.symbol ? "border-red-400 bg-red-50" : "border-slate-200"}`}
+                    onClick={() => setSymbolDropOpen(o => !o)}
+                  >
+                    <span className={form.symbol ? "text-slate-800" : "text-slate-400"}>
+                      {form.symbol || "Select Currency Symbol"}
+                    </span>
+                    <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                  {symbolDropOpen && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg z-50 max-h-44 overflow-y-auto">
+                      <div className="grid grid-cols-5 gap-1 p-2">
+                        {CURRENCY_SYMBOLS.map(sym => (
+                          <button
+                            key={sym}
+                            type="button"
+                            onClick={() => { setForm(f => ({ ...f, symbol: sym })); setSymbolDropOpen(false); setErrors(e => ({ ...e, symbol: "" })); }}
+                            className={`text-sm py-1.5 px-2 rounded-md text-center hover:bg-blue-50 hover:text-blue-600 transition-colors ${form.symbol === sym ? "bg-blue-500 text-white" : "text-slate-700"}`}
+                          >
+                            {sym}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   {errors.symbol && <p className="text-red-500 text-xs mt-1">{errors.symbol}</p>}
                 </div>
               </div>
@@ -279,8 +362,14 @@ export default function Currencies() {
                   </label>
                 </div>
 
+                {/* Example - shows real formatted number */}
                 <div className="bg-white rounded-lg border border-slate-200 px-4 py-3 text-sm text-slate-700">
                   Example: <span className="font-semibold text-slate-800">{example}</span>
+                  {form.symbol && (
+                    <span className="ml-2 text-xs text-slate-400">
+                      (using {form.symbol} symbol, {form.position} position)
+                    </span>
+                  )}
                 </div>
               </div>
 
