@@ -6,9 +6,6 @@ import {
   FaLock, FaEye, FaEyeSlash, FaCheckCircle,
 } from "react-icons/fa";
 
-// ─────────────────────────────────────────────────────────────────
-//  Modal Shell
-// ─────────────────────────────────────────────────────────────────
 function ModalShell({ onClose, children }) {
   return (
     <div
@@ -40,9 +37,6 @@ function ModalShell({ onClose, children }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────
-//  Edit Profile Modal
-// ─────────────────────────────────────────────────────────────────
 function EditProfileModal({ initialAvatar, onClose, onSave }) {
   const editFileRef = useRef(null);
   const [editAvatar, setEditAvatar] = useState(initialAvatar);
@@ -189,9 +183,6 @@ function EditProfileModal({ initialAvatar, onClose, onSave }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────
-//  Profile Modal (View)
-// ─────────────────────────────────────────────────────────────────
 export function ProfileModal({ onClose }) {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
@@ -283,7 +274,6 @@ export function ProfileModal({ onClose }) {
         </div>
       </div>
 
-      {/* Action Buttons — always full width side by side */}
       <div className="flex gap-2">
         <button onClick={() => setLogoutConfirm(true)}
           className="flex-1 flex items-center justify-center gap-2 border border-red-400 text-red-500 hover:bg-red-50 py-3 rounded-lg text-sm font-medium transition-all">
@@ -298,9 +288,6 @@ export function ProfileModal({ onClose }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────
-//  ManagerProfile Page
-// ─────────────────────────────────────────────────────────────────
 export default function ManagerProfile() {
   const [modal, setModal] = useState(null);
   const [name, setName] = useState(localStorage.getItem("name") || "Manager");
@@ -309,15 +296,12 @@ export default function ManagerProfile() {
   const role = localStorage.getItem("role") || "Manager";
 
   return (
-    // ✅ KEY FIX: overflow-x-hidden prevents card from going off-screen
     <div className="overflow-x-hidden">
       <div className="p-3 sm:p-4 md:p-6">
         <h1 className="text-xl sm:text-2xl font-bold mb-4 dark:text-white">Manager Profile</h1>
 
-        {/* Profile Card — w-full ensures it never exceeds parent */}
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md border dark:border-slate-700 p-4 sm:p-6 w-full">
 
-          {/* Avatar + info row */}
           <div className="flex items-center gap-3 mb-4">
             <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-blue-900 to-blue-600 flex items-center justify-center shadow-lg flex-shrink-0 overflow-hidden">
               {avatar ? (
@@ -333,7 +317,6 @@ export default function ManagerProfile() {
             </div>
           </div>
 
-          {/* Buttons — stacked on mobile, side by side on sm+ */}
           <div className="flex flex-col sm:flex-row gap-2">
             <button onClick={() => setModal("view")}
               className="flex-1 flex items-center justify-center gap-2 border border-blue-600 text-blue-600 hover:bg-blue-50 px-4 py-2.5 rounded-lg text-sm font-medium transition-all">

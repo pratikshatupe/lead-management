@@ -1,6 +1,5 @@
 import { useState } from "react";
 
-// Icons
 const PlusIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
 );
@@ -19,63 +18,62 @@ const CheckIcon = () => (
 const XIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
 );
+const SaveIcon = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
+);
 
-// Toast
 const Toast = ({ show, message, type }) => (
-  <div style={{
-    position: 'fixed', top: 24, right: 24, zIndex: 9999,
-    background: '#fff', borderRadius: 12, boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
-    padding: '14px 22px', display: 'flex', alignItems: 'center', gap: 12,
-    border: `1.5px solid ${type === 'success' ? '#d1fae5' : '#fee2e2'}`,
-    transform: show ? 'translateY(0)' : 'translateY(-80px)',
-    opacity: show ? 1 : 0,
-    transition: 'all 0.35s cubic-bezier(.4,2,.6,1)'
-  }}>
-    <div style={{
-      width: 32, height: 32, borderRadius: '50%',
-      background: type === 'success' ? '#10b981' : '#ef4444',
-      display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff'
-    }}>
+  <div className={`fixed top-6 right-6 z-[9999] bg-white rounded-xl shadow-2xl px-5 py-3.5 flex items-center gap-3 transition-all duration-300
+    ${type === 'success' ? 'border border-green-100' : 'border border-red-100'}
+    ${show ? 'translate-y-0 opacity-100' : '-translate-y-20 opacity-0'}`}>
+    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white flex-shrink-0
+      ${type === 'success' ? 'bg-emerald-500' : 'bg-red-500'}`}>
       {type === 'success' ? <CheckIcon /> : <XIcon />}
     </div>
-    <div>
-      <div style={{ fontSize: 14, fontWeight: 700, color: type === 'success' ? '#065f46' : '#991b1b' }}>{message}</div>
-    </div>
+    <span className={`text-sm font-bold ${type === 'success' ? 'text-emerald-800' : 'text-red-800'}`}>
+      {message}
+    </span>
   </div>
 );
 
-// Modal
 const Modal = ({ title, onClose, children, footer }) => (
-  <div style={{
-    position: 'fixed', inset: 0, zIndex: 1000,
-    background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(2px)',
-    display: 'flex', alignItems: 'center', justifyContent: 'center'
-  }} onClick={onClose}>
-    <div style={{
-      background: '#fff', borderRadius: 14, boxShadow: '0 20px 60px rgba(0,0,0,0.2)',
-      width: 500, maxWidth: '90vw',
-      animation: 'popIn 0.25s cubic-bezier(.4,0,.2,1)'
-    }} onClick={e => e.stopPropagation()}>
-      <div style={{ padding: '20px 28px', borderBottom: '1px solid #f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <h3 style={{ margin: 0, fontSize: 17, fontWeight: 700, color: '#1f2937' }}>{title}</h3>
-        <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9ca3af', padding: 4, borderRadius: 6, display: 'flex' }}
-          onMouseEnter={e => e.currentTarget.style.background = '#f3f4f6'}
-          onMouseLeave={e => e.currentTarget.style.background = 'none'}
-        ><XIcon /></button>
+  <div
+    className="fixed inset-0 z-[1000] bg-black/40 backdrop-blur-sm flex items-center justify-center p-4"
+    onClick={onClose}
+  >
+    <div
+      className="bg-white rounded-2xl shadow-2xl w-full max-w-lg animate-[popIn_0.25s_ease]"
+      onClick={e => e.stopPropagation()}
+    >
+      <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+        <h3 className="text-[17px] font-bold text-gray-800">{title}</h3>
+        <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-1 rounded-lg transition-colors">
+          <XIcon />
+        </button>
       </div>
-      <div style={{ padding: '24px 28px' }}>{children}</div>
-      {footer && <div style={{ padding: '16px 28px', borderTop: '1px solid #f3f4f6', display: 'flex', justifyContent: 'flex-end', gap: 10 }}>{footer}</div>}
+      <div className="px-6 py-6">{children}</div>
+      {footer && (
+        <div className="px-6 py-4 border-t border-gray-100 flex justify-end gap-2.5">{footer}</div>
+      )}
     </div>
     <style>{`@keyframes popIn { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }`}</style>
   </div>
 );
 
-const btn = (bg, color, hover) => ({
-  padding: '10px 22px', borderRadius: 8, border: 'none',
-  background: bg, color: color, fontSize: 13, fontWeight: 600,
-  cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 7,
-  transition: 'background 0.15s'
-});
+const FieldLabel = ({ children, required }) => (
+  <label className="block text-[13px] font-semibold text-gray-700 mb-1.5">
+    {required && <span className="text-red-500 mr-1">*</span>}
+    {children}
+  </label>
+);
+
+const TextInput = ({ className = '', ...props }) => (
+  <input
+    {...props}
+    className={`w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-[13px] outline-none
+      focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all ${className}`}
+  />
+);
 
 export default function LeadStatus() {
   const [statuses, setStatuses] = useState([
@@ -83,16 +81,16 @@ export default function LeadStatus() {
     { id: 2, name: 'Not Interested' },
     { id: 3, name: 'Interested' },
   ]);
-  const [search, setSearch] = useState('');
-  const [showAdd, setShowAdd] = useState(false);
-  const [showEdit, setShowEdit] = useState(false);
-  const [showDelete, setShowDelete] = useState(false);
-  const [newName, setNewName] = useState('');
-  const [editItem, setEditItem] = useState(null);
-  const [deleteItem, setDeleteItem] = useState(null);
-  const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
-  const [selected, setSelected] = useState([]);
-  const [page, setPage] = useState(1);
+  const [search,      setSearch]      = useState('');
+  const [showAdd,     setShowAdd]     = useState(false);
+  const [showEdit,    setShowEdit]    = useState(false);
+  const [showDelete,  setShowDelete]  = useState(false);
+  const [newName,     setNewName]     = useState('');
+  const [editItem,    setEditItem]    = useState(null);
+  const [deleteItem,  setDeleteItem]  = useState(null);
+  const [toast,       setToast]       = useState({ show: false, message: '', type: 'success' });
+  const [selected,    setSelected]    = useState([]);
+  const [page,        setPage]        = useState(1);
   const perPage = 10;
 
   const showToast = (message, type = 'success') => {
@@ -100,190 +98,256 @@ export default function LeadStatus() {
     setTimeout(() => setToast(t => ({ ...t, show: false })), 3000);
   };
 
-  const filtered = statuses.filter(s => s.name.toLowerCase().includes(search.toLowerCase()));
-  const paginated = filtered.slice((page - 1) * perPage, page * perPage);
-  const totalPages = Math.ceil(filtered.length / perPage);
+  const filtered    = statuses.filter(s => s.name.toLowerCase().includes(search.toLowerCase()));
+  const paginated   = filtered.slice((page - 1) * perPage, page * perPage);
+  const totalPages  = Math.ceil(filtered.length / perPage);
 
   const handleAdd = () => {
     if (!newName.trim()) return;
     setStatuses(prev => [...prev, { id: Date.now(), name: newName.trim() }]);
-    setNewName('');
-    setShowAdd(false);
+    setNewName(''); setShowAdd(false);
     showToast('Lead status added successfully!');
   };
-
   const handleEdit = () => {
     if (!editItem?.name.trim()) return;
     setStatuses(prev => prev.map(s => s.id === editItem.id ? { ...s, name: editItem.name } : s));
     setShowEdit(false);
     showToast('Lead status updated successfully!');
   };
-
   const handleDelete = () => {
     setStatuses(prev => prev.filter(s => s.id !== deleteItem.id));
     setShowDelete(false);
     showToast('Lead status deleted!', 'error');
   };
 
-  const toggleSelect = (id) => setSelected(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
-  const toggleAll = () => setSelected(selected.length === paginated.length ? [] : paginated.map(s => s.id));
+  const toggleSelect = (id) => setSelected(prev =>
+    prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+  );
+  const toggleAll = () =>
+    setSelected(selected.length === paginated.length ? [] : paginated.map(s => s.id));
 
   return (
-    <div>
+    <div className="p-4 max-w-full box-border">
       <Toast show={toast.show} message={toast.message} type={toast.type} />
 
-      {/* Add Modal */}
       {showAdd && (
-        <Modal title="Add New Lead Status" onClose={() => setShowAdd(false)}
+        <Modal
+          title="Add New Lead Status"
+          onClose={() => setShowAdd(false)}
           footer={<>
-            <button style={btn('#f3f4f6', '#374151')} onClick={() => setShowAdd(false)}
-              onMouseEnter={e => e.currentTarget.style.background = '#e5e7eb'}
-              onMouseLeave={e => e.currentTarget.style.background = '#f3f4f6'}
-            >Cancel</button>
-            <button style={btn('#3b82f6', '#fff')} onClick={handleAdd}
-              onMouseEnter={e => e.currentTarget.style.background = '#2563eb'}
-              onMouseLeave={e => e.currentTarget.style.background = '#3b82f6'}
+            <button
+              onClick={() => setShowAdd(false)}
+              className="px-5 py-2.5 rounded-lg bg-gray-100 text-gray-700 text-[13px] font-semibold hover:bg-gray-200 transition-colors"
             >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
-              Create
+              Cancel
+            </button>
+            <button
+              onClick={handleAdd}
+              className="px-5 py-2.5 rounded-lg bg-blue-500 text-white text-[13px] font-semibold hover:bg-blue-600 transition-colors flex items-center gap-2"
+            >
+              <SaveIcon /> Create
             </button>
           </>}
         >
-          <label style={{ fontSize: 13, fontWeight: 600, color: '#374151' }}>
-            <span style={{ color: '#ef4444' }}>* </span>Name
-          </label>
-          <input
-            value={newName} onChange={e => setNewName(e.target.value)}
+          <FieldLabel required>Name</FieldLabel>
+          <TextInput
+            value={newName}
+            onChange={e => setNewName(e.target.value)}
             placeholder="Please Enter Name"
-            style={{ width: '100%', border: '1.5px solid #e5e7eb', borderRadius: 8, padding: '10px 14px', fontSize: 13, outline: 'none', marginTop: 8, boxSizing: 'border-box' }}
-            onFocus={e => e.target.style.borderColor = '#3b82f6'}
-            onBlur={e => e.target.style.borderColor = '#e5e7eb'}
             onKeyDown={e => e.key === 'Enter' && handleAdd()}
             autoFocus
           />
         </Modal>
       )}
 
-      {/* Edit Modal */}
       {showEdit && (
-        <Modal title="Edit Lead Status" onClose={() => setShowEdit(false)}
+        <Modal
+          title="Edit Lead Status"
+          onClose={() => setShowEdit(false)}
           footer={<>
-            <button style={btn('#f3f4f6', '#374151')} onClick={() => setShowEdit(false)}
-              onMouseEnter={e => e.currentTarget.style.background = '#e5e7eb'}
-              onMouseLeave={e => e.currentTarget.style.background = '#f3f4f6'}
-            >Cancel</button>
-            <button style={btn('#3b82f6', '#fff')} onClick={handleEdit}
-              onMouseEnter={e => e.currentTarget.style.background = '#2563eb'}
-              onMouseLeave={e => e.currentTarget.style.background = '#3b82f6'}
+            <button
+              onClick={() => setShowEdit(false)}
+              className="px-5 py-2.5 rounded-lg bg-gray-100 text-gray-700 text-[13px] font-semibold hover:bg-gray-200 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleEdit}
+              className="px-5 py-2.5 rounded-lg bg-blue-500 text-white text-[13px] font-semibold hover:bg-blue-600 transition-colors flex items-center gap-2"
             >
               <EditIcon /> Update
             </button>
           </>}
         >
-          <label style={{ fontSize: 13, fontWeight: 600, color: '#374151' }}>
-            <span style={{ color: '#ef4444' }}>* </span>Name
-          </label>
-          <input
-            value={editItem?.name || ''} onChange={e => setEditItem(prev => ({ ...prev, name: e.target.value }))}
-            style={{ width: '100%', border: '1.5px solid #3b82f6', borderRadius: 8, padding: '10px 14px', fontSize: 13, outline: 'none', marginTop: 8, boxSizing: 'border-box' }}
+          <FieldLabel required>Name</FieldLabel>
+          <TextInput
+            value={editItem?.name || ''}
+            onChange={e => setEditItem(prev => ({ ...prev, name: e.target.value }))}
             autoFocus
           />
         </Modal>
       )}
 
-      {/* Delete Confirm Modal */}
       {showDelete && (
-        <Modal title="Confirm Delete" onClose={() => setShowDelete(false)}
+        <Modal
+          title="Confirm Delete"
+          onClose={() => setShowDelete(false)}
           footer={<>
-            <button style={btn('#f3f4f6', '#374151')} onClick={() => setShowDelete(false)}
-              onMouseEnter={e => e.currentTarget.style.background = '#e5e7eb'}
-              onMouseLeave={e => e.currentTarget.style.background = '#f3f4f6'}
-            >Cancel</button>
-            <button style={btn('#ef4444', '#fff')} onClick={handleDelete}
-              onMouseEnter={e => e.currentTarget.style.background = '#dc2626'}
-              onMouseLeave={e => e.currentTarget.style.background = '#ef4444'}
+            <button
+              onClick={() => setShowDelete(false)}
+              className="px-5 py-2.5 rounded-lg bg-gray-100 text-gray-700 text-[13px] font-semibold hover:bg-gray-200 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleDelete}
+              className="px-5 py-2.5 rounded-lg bg-red-500 text-white text-[13px] font-semibold hover:bg-red-600 transition-colors flex items-center gap-2"
             >
               <DeleteIcon /> Delete
             </button>
           </>}
         >
-          <p style={{ margin: 0, color: '#374151', fontSize: 14 }}>
-            Are you sure you want to delete <strong>"{deleteItem?.name}"</strong>? This action cannot be undone.
+          <p className="text-sm text-gray-700 m-0">
+            Are you sure you want to delete{' '}
+            <strong>"{deleteItem?.name}"</strong>? This action cannot be undone.
           </p>
         </Modal>
       )}
 
-      {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-        <div>
-          <h2 style={{ margin: 0, fontSize: 24, fontWeight: 700, color: '#1f2937' }}>Lead Status</h2>
-          <p style={{ margin: '4px 0 0', fontSize: 13, color: '#9ca3af' }}>
-            Dashboard - <span style={{ color: '#6b7280', fontWeight: 500 }}>Lead Status</span>
-          </p>
-        </div>
+      <div className="mb-2">
+        <h2 className="text-[22px] font-bold text-gray-800 m-0">Lead Status</h2>
+        <p className="text-[13px] text-gray-400 mt-1 mb-0">
+          Dashboard -{' '}
+          <span className="text-gray-500 font-medium">Lead Status</span>
+        </p>
       </div>
 
-      {/* Table Card */}
-      <div style={{ marginTop: 20, background: '#fff', borderRadius: 14, boxShadow: '0 1px 6px rgba(0,0,0,0.06)', border: '1.5px solid #f1f5f9', overflow: 'hidden' }}>
-        {/* Toolbar */}
-        <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #f3f4f6' }}>
-          <button onClick={() => { setNewName(''); setShowAdd(true); }} style={{
-            display: 'flex', alignItems: 'center', gap: 8,
-            background: '#3b82f6', color: '#fff', border: 'none',
-            padding: '10px 18px', borderRadius: 8, fontSize: 13, fontWeight: 600,
-            cursor: 'pointer', boxShadow: '0 2px 8px rgba(59,130,246,0.25)'
-          }}
-            onMouseEnter={e => e.currentTarget.style.background = '#2563eb'}
-            onMouseLeave={e => e.currentTarget.style.background = '#3b82f6'}
+      <div className="mt-5 bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+
+        <div className="p-3.5 border-b border-gray-100 flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
+          <button
+            onClick={() => { setNewName(''); setShowAdd(true); }}
+            className="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white
+              px-4 py-2.5 rounded-lg text-[13px] font-semibold transition-colors w-full sm:w-auto"
           >
             <PlusIcon /> Add New Lead Status
           </button>
 
-          <div style={{ position: 'relative' }}>
+          <div className="relative w-full sm:w-52">
             <input
-              value={search} onChange={e => setSearch(e.target.value)}
+              value={search}
+              onChange={e => setSearch(e.target.value)}
               placeholder="Search..."
-              style={{ border: '1.5px solid #e5e7eb', borderRadius: 8, padding: '9px 14px 9px 36px', fontSize: 13, outline: 'none', width: 200 }}
-              onFocus={e => e.target.style.borderColor = '#3b82f6'}
-              onBlur={e => e.target.style.borderColor = '#e5e7eb'}
+              className="w-full border border-gray-200 rounded-lg pl-9 pr-3.5 py-2.5 text-[13px]
+                outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
             />
-            <span style={{ position: 'absolute', left: 11, top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }}><SearchIcon /></span>
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+              <SearchIcon />
+            </span>
           </div>
         </div>
 
-        {/* Table */}
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+       
+        <div className="sm:hidden flex flex-col gap-2.5 p-3">
+          {paginated.length === 0 ? (
+            <p className="text-center text-gray-400 text-sm py-10">No lead statuses found</p>
+          ) : paginated.map((s) => (
+            <div
+              key={s.id}
+              className={`rounded-xl overflow-hidden border shadow-sm transition-colors
+                ${selected.includes(s.id) ? 'bg-blue-50 border-blue-200' : 'bg-white border-gray-200'}`}
+            >
+              <div className="flex items-center gap-2.5 px-3.5 py-3 border-b border-gray-100">
+                <input
+                  type="checkbox"
+                  checked={selected.includes(s.id)}
+                  onChange={() => toggleSelect(s.id)}
+                  className="w-4 h-4 cursor-pointer flex-shrink-0 accent-blue-500"
+                />
+                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wide w-16 flex-shrink-0">
+                  Name
+                </span>
+                <span className="text-[14px] font-medium text-gray-800">{s.name}</span>
+              </div>
+
+              <div className="flex items-center gap-2.5 px-3.5 py-3">
+                <div className="w-4 flex-shrink-0" />
+                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wide w-16 flex-shrink-0">
+                  Action
+                </span>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => { setEditItem({ ...s }); setShowEdit(true); }}
+                    className="flex items-center gap-1.5 bg-blue-500 hover:bg-blue-600 text-white
+                      text-[13px] font-semibold px-3 py-1.5 rounded-lg transition-colors"
+                  >
+                    <EditIcon /> Edit
+                  </button>
+                  <button
+                    onClick={() => { setDeleteItem(s); setShowDelete(true); }}
+                    className="flex items-center gap-1.5 bg-red-500 hover:bg-red-600 text-white
+                      text-[13px] font-semibold px-3 py-1.5 rounded-lg transition-colors"
+                  >
+                    <DeleteIcon /> Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+       
+        <table className="hidden sm:table w-full border-collapse">
           <thead>
-            <tr style={{ background: '#f9fafb' }}>
-              <th style={{ padding: '12px 16px', width: 40 }}>
-                <input type="checkbox" checked={selected.length === paginated.length && paginated.length > 0}
-                  onChange={toggleAll} style={{ cursor: 'pointer', width: 16, height: 16 }} />
+            <tr className="bg-gray-50">
+              <th className="px-4 py-3 w-10">
+                <input
+                  type="checkbox"
+                  checked={selected.length === paginated.length && paginated.length > 0}
+                  onChange={toggleAll}
+                  className="w-4 h-4 cursor-pointer accent-blue-500"
+                />
               </th>
-              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: 13, fontWeight: 600, color: '#6b7280' }}>Name</th>
-              <th style={{ padding: '12px 16px', textAlign: 'right', fontSize: 13, fontWeight: 600, color: '#6b7280' }}>Action</th>
+              <th className="px-4 py-3 text-left text-[13px] font-semibold text-gray-500">Name</th>
+              <th className="px-4 py-3 text-right text-[13px] font-semibold text-gray-500">Action</th>
             </tr>
           </thead>
           <tbody>
             {paginated.length === 0 ? (
-              <tr><td colSpan={3} style={{ padding: 40, textAlign: 'center', color: '#9ca3af', fontSize: 14 }}>No lead statuses found</td></tr>
-            ) : paginated.map((s, i) => (
-              <tr key={s.id} style={{ borderTop: '1px solid #f3f4f6', background: selected.includes(s.id) ? '#eff6ff' : (i % 2 === 0 ? '#fff' : '#fafafa') }}>
-                <td style={{ padding: '14px 16px' }}>
-                  <input type="checkbox" checked={selected.includes(s.id)} onChange={() => toggleSelect(s.id)} style={{ cursor: 'pointer', width: 16, height: 16 }} />
+              <tr>
+                <td colSpan={3} className="py-10 text-center text-gray-400 text-sm">
+                  No lead statuses found
                 </td>
-                <td style={{ padding: '14px 16px', fontSize: 14, color: '#374151' }}>{s.name}</td>
-                <td style={{ padding: '14px 16px', textAlign: 'right' }}>
-                  <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-                    <button onClick={() => { setEditItem({ ...s }); setShowEdit(true); }}
-                      style={{ background: '#3b82f6', color: '#fff', border: 'none', borderRadius: 7, padding: '8px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5, fontSize: 13, fontWeight: 500, transition: 'background 0.15s' }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#2563eb'}
-                      onMouseLeave={e => e.currentTarget.style.background = '#3b82f6'}
-                    ><EditIcon /></button>
-                    <button onClick={() => { setDeleteItem(s); setShowDelete(true); }}
-                      style={{ background: '#3b82f6', color: '#fff', border: 'none', borderRadius: 7, padding: '8px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5, fontSize: 13, fontWeight: 500, transition: 'background 0.15s' }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#ef4444'}
-                      onMouseLeave={e => e.currentTarget.style.background = '#3b82f6'}
-                    ><DeleteIcon /></button>
+              </tr>
+            ) : paginated.map((s, i) => (
+              <tr
+                key={s.id}
+                className={`border-t border-gray-100 transition-colors
+                  ${selected.includes(s.id) ? 'bg-blue-50' : i % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}
+              >
+                <td className="px-4 py-3.5">
+                  <input
+                    type="checkbox"
+                    checked={selected.includes(s.id)}
+                    onChange={() => toggleSelect(s.id)}
+                    className="w-4 h-4 cursor-pointer accent-blue-500"
+                  />
+                </td>
+                <td className="px-4 py-3.5 text-[14px] text-gray-700">{s.name}</td>
+                <td className="px-4 py-3.5">
+                  <div className="flex gap-2 justify-end">
+                    <button
+                      onClick={() => { setEditItem({ ...s }); setShowEdit(true); }}
+                      className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg transition-colors flex items-center"
+                    >
+                      <EditIcon />
+                    </button>
+                    <button
+                      onClick={() => { setDeleteItem(s); setShowDelete(true); }}
+                      className="bg-blue-500 hover:bg-red-500 text-white p-2 rounded-lg transition-colors flex items-center"
+                    >
+                      <DeleteIcon />
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -291,17 +355,40 @@ export default function LeadStatus() {
           </tbody>
         </table>
 
-        {/* Pagination */}
-        <div style={{ padding: '12px 20px', borderTop: '1px solid #f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8 }}>
-          <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
-            style={{ background: 'none', border: '1px solid #e5e7eb', borderRadius: 6, padding: '5px 10px', cursor: page === 1 ? 'not-allowed' : 'pointer', color: page === 1 ? '#d1d5db' : '#374151', fontSize: 13 }}>‹</button>
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-            <button key={p} onClick={() => setPage(p)}
-              style={{ background: p === page ? '#3b82f6' : 'none', color: p === page ? '#fff' : '#374151', border: `1px solid ${p === page ? '#3b82f6' : '#e5e7eb'}`, borderRadius: 6, padding: '5px 11px', cursor: 'pointer', fontSize: 13, fontWeight: p === page ? 600 : 400 }}>{p}</button>
-          ))}
-          <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages || totalPages === 0}
-            style={{ background: 'none', border: '1px solid #e5e7eb', borderRadius: 6, padding: '5px 10px', cursor: (page === totalPages || totalPages === 0) ? 'not-allowed' : 'pointer', color: (page === totalPages || totalPages === 0) ? '#d1d5db' : '#374151', fontSize: 13 }}>›</button>
-          <span style={{ fontSize: 13, color: '#9ca3af', marginLeft: 4 }}>10 / page</span>
+        <div className="px-4 py-3 border-t border-gray-100 flex items-center justify-between flex-wrap gap-2">
+          <span className="text-[13px] text-gray-400">{filtered.length} records</span>
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="border border-gray-200 rounded-md px-2.5 py-1 text-[13px] text-gray-700
+                disabled:text-gray-300 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+            >
+              ‹
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+              <button
+                key={p}
+                onClick={() => setPage(p)}
+                className={`border rounded-md px-2.5 py-1 text-[13px] font-medium transition-colors
+                  ${p === page
+                    ? 'bg-blue-500 border-blue-500 text-white'
+                    : 'border-gray-200 text-gray-700 hover:bg-gray-50'
+                  }`}
+              >
+                {p}
+              </button>
+            ))}
+            <button
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages || totalPages === 0}
+              className="border border-gray-200 rounded-md px-2.5 py-1 text-[13px] text-gray-700
+                disabled:text-gray-300 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+            >
+              ›
+            </button>
+            <span className="text-[13px] text-gray-400 ml-1">10 / page</span>
+          </div>
         </div>
       </div>
     </div>

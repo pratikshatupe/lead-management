@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from "react";
 import {
   FaPlus, FaEdit, FaTrash, FaCloudUploadAlt, FaTimes,
@@ -10,7 +9,7 @@ import {
 function Campaigns() {
   const [activeTab, setActiveTab] = useState("active");
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [drawerMode, setDrawerMode] = useState("add"); // "add" | "edit"
+  const [drawerMode, setDrawerMode] = useState("add");
   const [staffModalOpen, setStaffModalOpen] = useState(false);
   const [roleModalOpen, setRoleModalOpen] = useState(false);
   const [formModalOpen, setFormModalOpen] = useState(false);
@@ -25,6 +24,10 @@ function Campaigns() {
   const [uploadedFile, setUploadedFile] = useState(null);
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const leadsFileRef = useRef(null);
+
+  const [drawerImportFile, setDrawerImportFile] = useState(null);
+  const [drawerImportSuccess, setDrawerImportSuccess] = useState(false);
+  const drawerImportRef = useRef(null);
 
   const [perPage, setPerPage] = useState(10);
   const [step, setStep] = useState(1);
@@ -43,7 +46,6 @@ function Campaigns() {
     { id: 3, name: "Electronic Item Sell Campaign", progress: 50, leads: "25/50", form: "Default Form", emailTemplate: "Welcome Email", members: "Admin", description: "", date: "15-02-2026 05:03 pm", user: "Manager" },
   ]);
 
-  // Campaign form state
   const [editingId, setEditingId] = useState(null);
   const [newCampaignName, setNewCampaignName] = useState("");
   const [newCampaignMembers, setNewCampaignMembers] = useState("Select Members...");
@@ -58,7 +60,6 @@ function Campaigns() {
   const [newSubject, setNewSubject] = useState("");
   const [formFields, setFormFields] = useState([]);
 
-  // ─── DRAWER OPEN/CLOSE ───────────────────────────────────────────
   const openAddDrawer = () => {
     setDrawerMode("add");
     setEditingId(null);
@@ -67,6 +68,8 @@ function Campaigns() {
     setNewCampaignForm("Select Form...");
     setNewCampaignTemplate("Select Email Template...");
     setNewCampaignDescription("");
+    setDrawerImportFile(null);
+    setDrawerImportSuccess(false);
     setStep(1);
     setDrawerOpen(true);
   };
@@ -80,11 +83,44 @@ function Campaigns() {
     setNewCampaignForm(item.form || "Select Form...");
     setNewCampaignTemplate(item.emailTemplate || "Select Email Template...");
     setNewCampaignDescription(item.description || "");
+    setDrawerImportFile(null);
+    setDrawerImportSuccess(false);
     setStep(1);
     setDrawerOpen(true);
   };
 
-  // ─── SAVE / FINISH ────────────────────────────────────────────────
+  const handleDrawerImportClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (drawerImportRef.current) {
+      drawerImportRef.current.value = ""; 
+      drawerImportRef.current.click();
+    }
+  };
+
+  const handleDrawerImportFileChange = (e) => {
+    const f = e.target.files[0];
+    if (f) {
+      setDrawerImportFile(f);
+      setDrawerImportSuccess(false);
+    }
+  };
+
+  const handleDrawerImportDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const f = e.dataTransfer.files[0];
+    if (f) {
+      setDrawerImportFile(f);
+      setDrawerImportSuccess(false);
+    }
+  };
+
+  const handleDrawerImportDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
   const handleFinishCampaign = () => {
     if (drawerMode === "edit" && editingId) {
       setCampaignList(campaignList.map((c) =>
@@ -102,6 +138,7 @@ function Campaigns() {
         emailTemplate: newCampaignTemplate !== "Select Email Template..." ? newCampaignTemplate : "",
         members: newCampaignMembers !== "Select Members..." ? newCampaignMembers : "Admin",
         description: newCampaignDescription,
+        importedFile: drawerImportFile ? drawerImportFile.name : null,
         date: new Date().toLocaleString(),
         user: "Admin",
       };
@@ -109,36 +146,46 @@ function Campaigns() {
     }
     setDrawerOpen(false);
     setStep(1);
+    setDrawerImportFile(null);
+    setDrawerImportSuccess(false);
   };
 
-  // ─── DELETE ───────────────────────────────────────────────────────
-  const openDeleteModal = (item) => {
-    setDeleteTarget(item);
-    setDeleteModalOpen(true);
-  };
-
+  const openDeleteModal = (item) => { setDeleteTarget(item); setDeleteModalOpen(true); };
   const confirmDelete = () => {
     setCampaignList(campaignList.filter((c) => c.id !== deleteTarget.id));
     setDeleteModalOpen(false);
     setDeleteTarget(null);
   };
 
-  // ─── UPLOAD LEADS ─────────────────────────────────────────────────
   const openUploadModal = (item) => {
     setUploadTargetCampaign(item);
     setUploadedFile(null);
     setUploadSuccess(false);
     setUploadModalOpen(true);
   };
-  const handleLeadsFileChange = (e) => { const f = e.target.files[0]; if (f) { setUploadedFile(f); setUploadSuccess(false); } };
-  const handleLeadsDrop = (e) => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) { setUploadedFile(f); setUploadSuccess(false); } };
+  const handleLeadsFileChange = (e) => {
+    const f = e.target.files[0];
+    if (f) { setUploadedFile(f); setUploadSuccess(false); }
+  };
+  const handleLeadsDrop = (e) => {
+    e.preventDefault();
+    const f = e.dataTransfer.files[0];
+    if (f) { setUploadedFile(f); setUploadSuccess(false); }
+  };
+  const handleLeadsUploadClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (leadsFileRef.current) {
+      leadsFileRef.current.value = "";
+      leadsFileRef.current.click();
+    }
+  };
   const handleLeadsUploadSubmit = () => {
     if (!uploadedFile) return;
     setUploadSuccess(true);
     setTimeout(() => { setUploadModalOpen(false); setUploadedFile(null); setUploadSuccess(false); }, 1500);
   };
 
-  // ─── OTHER HANDLERS ───────────────────────────────────────────────
   const addFormField = () => setFormFields([...formFields, { id: Date.now(), name: "", type: "Text" }]);
   const removeFormField = (id) => setFormFields(formFields.filter((f) => f.id !== id));
   const handleFieldChange = (id, value, key) => setFormFields(formFields.map((f) => f.id === id ? { ...f, [key]: value } : f));
@@ -157,7 +204,6 @@ function Campaigns() {
   return (
     <div className="p-4 md:p-6 bg-gray-50 min-h-screen font-sans">
 
-      {/* HEADER */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
         <div>
           <h1 className="text-xl sm:text-2xl font-semibold">Campaigns</h1>
@@ -168,13 +214,11 @@ function Campaigns() {
         </button>
       </div>
 
-      {/* TABS */}
       <div className="flex gap-6 border-b mb-4 text-sm overflow-x-auto">
         <button onClick={() => setActiveTab("active")} className={`pb-2 whitespace-nowrap transition-all ${activeTab === "active" ? "border-b-2 border-blue-600 text-blue-600 font-medium" : "text-gray-500 hover:text-blue-400"}`}>Active Campaign</button>
         <button onClick={() => setActiveTab("completed")} className={`pb-2 whitespace-nowrap transition-all ${activeTab === "completed" ? "border-b-2 border-blue-600 text-blue-600 font-medium" : "text-gray-500 hover:text-blue-400"}`}>Completed Campaign</button>
       </div>
 
-      {/* DESKTOP TABLE */}
       <div className="hidden md:block overflow-auto border rounded bg-white shadow-sm">
         <table className="min-w-[900px] w-full text-sm text-left">
           <thead className="bg-gray-100">
@@ -239,18 +283,15 @@ function Campaigns() {
               <p className="col-span-2"><span className="font-medium text-gray-600">Started:</span> <span className="text-gray-500">{item.date}</span></p>
             </div>
             <div className="grid grid-cols-4 gap-2">
-              <button className="bg-blue-500 text-white p-2.5 rounded flex justify-center hover:bg-blue-600 transition-colors" onClick={() => openUploadModal(item)}><FaCloudUploadAlt size={14}/></button>
-              <button className="bg-blue-500 text-white p-2.5 rounded flex justify-center hover:bg-blue-600 transition-colors" onClick={() => openAddDrawer()}><FaPlus size={14}/></button>
-              {/* ✅ EDIT */}
-              <button className="bg-yellow-500 text-white p-2.5 rounded flex justify-center hover:bg-yellow-600 transition-colors" onClick={() => openEditDrawer(item)}><FaEdit size={14}/></button>
-              {/* ✅ DELETE */}
-              <button className="bg-red-500 text-white p-2.5 rounded flex justify-center hover:bg-red-600 transition-colors" onClick={() => openDeleteModal(item)}><FaTrash size={14}/></button>
+              <button className="bg-blue-500 text-white p-2.5 rounded flex justify-center hover:bg-blue-600 transition-colors" onClick={() => openUploadModal(item)}><FaCloudUploadAlt size={14} /></button>
+              <button className="bg-blue-500 text-white p-2.5 rounded flex justify-center hover:bg-blue-600 transition-colors" onClick={() => openAddDrawer()}><FaPlus size={14} /></button>
+              <button className="bg-yellow-500 text-white p-2.5 rounded flex justify-center hover:bg-yellow-600 transition-colors" onClick={() => openEditDrawer(item)}><FaEdit size={14} /></button>
+              <button className="bg-red-500 text-white p-2.5 rounded flex justify-center hover:bg-red-600 transition-colors" onClick={() => openDeleteModal(item)}><FaTrash size={14} /></button>
             </div>
           </div>
         ))}
       </div>
 
-      {/* PAGINATION */}
       <div className="flex justify-between items-center mt-4 text-sm flex-wrap gap-2">
         <div className="flex items-center gap-2">
           <select value={perPage} onChange={(e) => setPerPage(e.target.value)} className="border px-2 py-1 rounded outline-none text-xs">
@@ -290,25 +331,42 @@ function Campaigns() {
               <button onClick={() => setUploadModalOpen(false)} className="text-gray-400 hover:text-black transition-colors"><FaTimes /></button>
             </div>
             <div className="p-6 space-y-4">
+              <input
+                type="file"
+                accept="*"
+                className="hidden"
+                ref={leadsFileRef}
+                onChange={handleLeadsFileChange}
+              />
               <div
-                onDragOver={(e) => e.preventDefault()} onDrop={handleLeadsDrop}
-                onClick={() => leadsFileRef.current.click()}
-                className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-all ${uploadedFile ? "border-blue-400 bg-blue-50" : "border-gray-300 hover:border-blue-400 hover:bg-blue-50"}`}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={handleLeadsDrop}
+                className={`border-2 border-dashed rounded-xl p-10 text-center transition-all ${uploadedFile ? "border-blue-400 bg-blue-50" : "border-gray-300 hover:border-blue-400 hover:bg-blue-50"}`}
               >
-                <input type="file" accept=".csv,.xlsx,.xls" className="hidden" ref={leadsFileRef} onChange={handleLeadsFileChange} />
                 {uploadedFile ? (
                   <div className="flex flex-col items-center gap-2">
                     <FaFileCsv className="text-4xl text-blue-500" />
                     <p className="text-sm font-semibold text-gray-700">{uploadedFile.name}</p>
                     <p className="text-xs text-gray-400">{(uploadedFile.size / 1024).toFixed(1)} KB</p>
-                    <button onClick={(e) => { e.stopPropagation(); setUploadedFile(null); }} className="text-xs text-red-500 hover:underline mt-1">Remove file</button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setUploadedFile(null); }}
+                      className="text-xs text-red-500 hover:underline mt-1"
+                    >
+                      Remove file
+                    </button>
                   </div>
                 ) : (
                   <div className="flex flex-col items-center gap-2 text-gray-400">
                     <FaCloudUploadAlt className="text-4xl" />
                     <p className="text-sm font-medium text-gray-600">Drag & drop your file here</p>
-                    <p className="text-xs">or <span className="text-blue-500 font-semibold">click to browse</span></p>
-                    <p className="text-xs text-gray-400 mt-1">Supported: .csv, .xlsx, .xls</p>
+                    <p className="text-xs text-gray-400">or</p>
+                    <button
+                      onClick={handleLeadsUploadClick}
+                      className="text-xs bg-blue-50 border border-blue-300 text-blue-600 font-semibold px-4 py-1.5 rounded-md hover:bg-blue-100 transition-all"
+                    >
+                      Browse File
+                    </button>
+                    <p className="text-xs text-gray-400 mt-1">Supported: All file types (csv, xlsx, images, etc.)</p>
                   </div>
                 )}
               </div>
@@ -334,7 +392,7 @@ function Campaigns() {
           <div className="bg-white w-full sm:w-[90vw] md:w-[650px] h-full overflow-auto shadow-2xl flex flex-col">
             <div className="flex justify-between items-center p-4 sm:p-6 border-b">
               <h2 className="text-base sm:text-lg font-semibold">
-                {drawerMode === "edit" ? `Edit Campaign` : "Add New Campaign"}
+                {drawerMode === "edit" ? "Edit Campaign" : "Add New Campaign"}
               </h2>
               <button onClick={() => setDrawerOpen(false)} className="text-gray-500 hover:text-black p-1"><FaTimes /></button>
             </div>
@@ -342,12 +400,16 @@ function Campaigns() {
             <div className="px-4 sm:px-6 pt-4">
               <div className="flex items-center border-b text-xs sm:text-sm mb-6 overflow-x-auto">
                 {["Basic Settings", "About Campaign", "Import Data"].map((label, i) => (
-                  <div key={label} className={`pb-2 mr-6 whitespace-nowrap flex-shrink-0 transition-all ${step === i + 1 ? "text-blue-600 font-semibold border-b-2 border-blue-600" : "text-gray-400"}`}>{label}</div>
+                  <div key={label} className={`pb-2 mr-6 whitespace-nowrap flex-shrink-0 transition-all cursor-pointer ${step === i + 1 ? "text-blue-600 font-semibold border-b-2 border-blue-600" : "text-gray-400"}`}
+                    onClick={() => setStep(i + 1)}>
+                    {label}
+                  </div>
                 ))}
               </div>
             </div>
 
             <div className="flex-1 overflow-auto px-4 sm:px-6 pb-4">
+
               {step === 1 && (
                 <div className="space-y-4">
                   <div>
@@ -388,19 +450,79 @@ function Campaigns() {
                   </div>
                 </div>
               )}
+
               {step === 2 && (
                 <div className="space-y-4">
                   <p className="text-gray-500 text-sm">Campaign description and details.</p>
                   <textarea value={newCampaignDescription} onChange={(e) => setNewCampaignDescription(e.target.value)} className="w-full border p-2 rounded h-32 outline-none focus:border-blue-500 text-sm" placeholder="Describe your campaign..."></textarea>
                 </div>
               )}
+
               {step === 3 && (
                 <div className="space-y-4">
                   <p className="text-gray-500 text-sm">Upload CSV or Lead data for this campaign.</p>
-                  <div className="border-2 border-dashed p-10 text-center rounded-md text-gray-400 cursor-pointer hover:bg-blue-50 transition-all">
-                    <FaCloudUploadAlt className="mx-auto mb-2 text-3xl" />
-                    <span className="text-sm">Upload Leads File</span>
+
+                  <input
+                    type="file"
+                    accept="*"
+                    className="hidden"
+                    ref={drawerImportRef}
+                    onChange={handleDrawerImportFileChange}
+                  />
+                  <div
+                    onDragOver={handleDrawerImportDragOver}
+                    onDrop={handleDrawerImportDrop}
+                    className={`border-2 border-dashed rounded-xl p-10 text-center transition-all ${
+                      drawerImportFile
+                        ? "border-blue-400 bg-blue-50"
+                        : "border-gray-300 hover:border-blue-400 hover:bg-blue-50"
+                    }`}
+                  >
+                    {drawerImportFile ? (
+                      <div className="flex flex-col items-center gap-2">
+                        <FaFileCsv className="text-5xl text-blue-500" />
+                        <p className="text-sm font-semibold text-gray-700">{drawerImportFile.name}</p>
+                        <p className="text-xs text-gray-400">{(drawerImportFile.size / 1024).toFixed(1)} KB</p>
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setDrawerImportFile(null);
+                            setDrawerImportSuccess(false);
+                          }}
+                          className="text-xs text-red-500 hover:underline mt-1"
+                        >
+                          Remove file
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center gap-2 text-gray-400">
+                        <FaCloudUploadAlt className="text-5xl" />
+                        <p className="text-sm font-medium text-gray-600">Drag & drop your file here</p>
+                        <p className="text-xs text-gray-400">or</p>
+                        <button
+                          onClick={handleDrawerImportClick}
+                          className="text-xs bg-blue-50 border border-blue-300 text-blue-600 font-semibold px-4 py-1.5 rounded-md hover:bg-blue-100 transition-all"
+                        >
+                          Browse File
+                        </button>
+                        <p className="text-xs text-gray-400 mt-1">Supported: All file types (csv, xlsx, images, etc.)</p>
+                      </div>
+                    )}
                   </div>
+
+                  {drawerImportSuccess && (
+                    <div className="flex items-center gap-2 text-green-600 bg-green-50 border border-green-200 rounded-lg px-4 py-2.5 text-sm font-medium">
+                      <FaCheckCircle /> File ready to import!
+                    </div>
+                  )}
+
+                  {drawerImportFile && !drawerImportSuccess && (
+                    <div className="flex items-center gap-2 text-blue-600 bg-blue-50 border border-blue-200 rounded-lg px-4 py-2.5 text-sm">
+                      <FaCheckCircle size={14} />
+                      <span><span className="font-medium">{drawerImportFile.name}</span> will be imported when you click Finish.</span>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

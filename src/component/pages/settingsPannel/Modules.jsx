@@ -12,7 +12,6 @@ function useIsMobile() {
   return isMobile;
 }
 
-// ─── Icons ────────────────────────────────────────────
 const CheckIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
     <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
@@ -29,7 +28,6 @@ const InfoIcon = () => (
   </svg>
 );
 
-// ─── Sample modules data ──────────────────────────────
 const INITIAL_MODULES = [
   {
     id: 1,
@@ -69,7 +67,6 @@ const INITIAL_MODULES = [
   },
 ];
 
-// ─── Verify Modal ─────────────────────────────────────
 function VerifyModal({ module, onClose, onVerified }) {
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
@@ -165,7 +162,6 @@ function VerifyModal({ module, onClose, onVerified }) {
   );
 }
 
-// ─── Module Icon ──────────────────────────────────────
 function ModuleIcon({ name, bg }) {
   return (
     <div style={{
@@ -180,7 +176,6 @@ function ModuleIcon({ name, bg }) {
   );
 }
 
-// ─── Toast ────────────────────────────────────────────
 function Toast({ show, message, type = "success" }) {
   return (
     <div style={{
@@ -201,7 +196,6 @@ function Toast({ show, message, type = "success" }) {
   );
 }
 
-// ─── Row Item for mobile card ─────────────────────────
 function CardRow({ label, children }) {
   return (
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "7px 0", borderBottom: "1px solid #f3f4f6" }}>
@@ -211,7 +205,6 @@ function CardRow({ label, children }) {
   );
 }
 
-// ─── Main Modules Component ───────────────────────────
 export default function Modules() {
   const isMobile = useIsMobile();
   const [modules, setModules] = useState(INITIAL_MODULES);
@@ -264,7 +257,6 @@ export default function Modules() {
         />
       )}
 
-      {/* Page Header */}
       <div style={{ marginBottom: 6, padding: isMobile ? "0 12px" : 0 }}>
         <h2 style={{ fontSize: isMobile ? 18 : 22, fontWeight: 700, color: "#1f2937", margin: 0 }}>Modules</h2>
         <p style={{ fontSize: 12, color: "#9ca3af", marginTop: 4 }}>
@@ -273,7 +265,6 @@ export default function Modules() {
         </p>
       </div>
 
-      {/* ── MOBILE: Card Layout ── */}
       {isMobile ? (
         <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 16, padding: "0 12px" }}>
           {modules.map(mod => (
@@ -283,7 +274,6 @@ export default function Modules() {
               boxShadow: "0 1px 6px rgba(0,0,0,.05)",
               padding: "14px 16px",
             }}>
-              {/* Card Header: icon + name */}
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
                 <ModuleIcon name={mod.name} bg={mod.iconBg} />
                 <div>
@@ -292,7 +282,6 @@ export default function Modules() {
                 </div>
               </div>
 
-              {/* Card Rows */}
               <CardRow label="Verified">
                 {mod.verified
                   ? <VerifiedBadge />
@@ -314,7 +303,6 @@ export default function Modules() {
                 {mod.status === "Active" ? <ActiveBadge /> : <span style={{ color: "#9ca3af" }}>-</span>}
               </CardRow>
 
-              {/* Action button at bottom */}
               <div style={{ marginTop: 12 }}>
                 {mod.action === "Update" ? (
                   <button
@@ -335,7 +323,6 @@ export default function Modules() {
           ))}
         </div>
       ) : (
-        /* ── DESKTOP: Table Layout ── */
         <div style={{
           background: "#fff", borderRadius: 12,
           border: "1px solid #f1f5f9",

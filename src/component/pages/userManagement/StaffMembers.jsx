@@ -12,7 +12,6 @@ function useIsMobile() {
   return isMobile;
 }
 
-// Real avatar images via UI Avatars API (always works, no broken images)
 const getAvatarUrl = (name) =>
   `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&color=fff&size=80&bold=true`;
 
@@ -95,13 +94,11 @@ function StaffMembers() {
         </button>
       </div>
 
-      {/* ── MOBILE: Card Layout ── */}
       {isMobile ? (
         <div className="flex flex-col gap-3">
           {currentRecords.map((staff) => (
             <div key={staff.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
 
-              {/* Card Header: avatar + name + role */}
               <div className="flex items-center gap-3 mb-3">
                 <img
                   src={staff.profileImage || getAvatarUrl(staff.name)}
@@ -156,7 +153,6 @@ function StaffMembers() {
           ))}
         </div>
       ) : (
-        /* ── DESKTOP: Table Layout ── */
         <div className="overflow-x-auto bg-white shadow rounded-lg">
           <table className="w-full text-sm">
             <thead className="bg-gray-100 text-gray-600 text-xs uppercase">
@@ -205,7 +201,6 @@ function StaffMembers() {
         </div>
       )}
 
-      {/* ── Pagination ── */}
       <div className="flex justify-center mt-6 gap-2 flex-wrap">
         <button
           disabled={currentPage === 1}

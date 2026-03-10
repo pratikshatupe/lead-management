@@ -29,14 +29,25 @@ function WebsiteDevelopmentCampagines() {
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
 
-        <div>
-          <h1 className="text-lg md:text-xl font-semibold">
-            Website Development Campaign (MEP_5708413)
-          </h1>
+        <div className="flex items-center gap-3">
 
-          <p className="text-gray-500 text-sm">
-            Dashboard - Call Manager - Website Development Campaign
-          </p>
+          {/* BACK BUTTON */}
+          <button
+            onClick={() => navigate("/admin/salesman-bookings")}
+            className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-2 rounded text-sm flex items-center gap-1 shrink-0"
+          >
+            ← Back
+          </button>
+
+          <div>
+            <h1 className="text-lg md:text-xl font-semibold">
+              Website Development Campaign (MEP_5708413)
+            </h1>
+            <p className="text-gray-500 text-sm">
+              Dashboard - Call Manager - Website Development Campaign
+            </p>
+          </div>
+
         </div>
 
         <div className="flex gap-2 mt-3 md:mt-0">
@@ -229,7 +240,6 @@ function WebsiteDevelopmentCampagines() {
       </div>
 
       {/* FOLLOW UP MODAL */}
-
       {showFollowUpModal && (
 
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4">
@@ -242,7 +252,6 @@ function WebsiteDevelopmentCampagines() {
 
             <div className="mb-4">
               <label className="text-sm font-medium">* Staff Member</label>
-
               <select className="border rounded w-full p-2 mt-1">
                 <option>Marielle Rosenbaum</option>
                 <option>Admin</option>
@@ -251,13 +260,11 @@ function WebsiteDevelopmentCampagines() {
 
             <div className="mb-4">
               <label className="text-sm font-medium">* Follow Up Time</label>
-
               <input type="datetime-local" className="border rounded w-full p-2 mt-1" />
             </div>
 
             <div className="mb-4">
               <label className="text-sm font-medium">* Notes</label>
-
               <textarea
                 className="border rounded w-full p-2 mt-1"
                 rows="3"

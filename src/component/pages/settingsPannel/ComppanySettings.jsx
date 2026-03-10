@@ -1,6 +1,5 @@
 import React, { useState, useRef } from 'react';
 
-// Icons as SVG components
 const TagIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
     <path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/>
@@ -32,7 +31,6 @@ const CheckIcon = () => (
   </svg>
 );
 
-// Logo Upload Field
 const LogoUploadField = ({ label, id }) => {
   const [image, setImage] = useState(null);
   const inputRef = useRef();
@@ -74,7 +72,6 @@ const LogoUploadField = ({ label, id }) => {
   );
 };
 
-// Input Field
 const InputField = ({ label, required, ...props }) => (
   <div>
     <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 5, fontFamily: 'Georgia, serif' }}>
@@ -91,7 +88,6 @@ const InputField = ({ label, required, ...props }) => (
   </div>
 );
 
-// Select Field
 const SelectField = ({ label, required, children, ...props }) => (
   <div>
     <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 5, fontFamily: 'Georgia, serif' }}>
@@ -107,7 +103,6 @@ const SelectField = ({ label, required, children, ...props }) => (
   </div>
 );
 
-// Toggle Switch
 const ToggleSwitch = ({ label }) => {
   const [on, setOn] = useState(false);
   return (
@@ -127,7 +122,6 @@ const ToggleSwitch = ({ label }) => {
   );
 };
 
-// Success Toast
 const SuccessToast = ({ show }) => (
   <div style={{
     position: 'fixed', top: 24, right: 24, zIndex: 9999,
@@ -148,7 +142,6 @@ const SuccessToast = ({ show }) => (
   </div>
 );
 
-// Add Menu Settings Modal
 const AddMenuModal = ({ onClose, onUpdate }) => {
   const [placement, setPlacement] = useState('Top & Bottom');
   const [addStaffMember, setAddStaffMember] = useState(false);
@@ -167,7 +160,6 @@ const AddMenuModal = ({ onClose, onUpdate }) => {
         display: 'flex', flexDirection: 'column',
         animation: 'slideIn 0.3s cubic-bezier(.4,0,.2,1)'
       }} onClick={e => e.stopPropagation()}>
-        {/* Modal Header */}
         <div style={{ padding: '20px 24px', borderBottom: '1.5px solid #f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <h3 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: '#1f2937', fontFamily: 'Georgia, serif' }}>Add Menu Settings</h3>
           <button onClick={onClose} style={{
@@ -182,9 +174,7 @@ const AddMenuModal = ({ onClose, onUpdate }) => {
           </button>
         </div>
 
-        {/* Modal Body */}
         <div style={{ flex: 1, padding: '28px 24px', overflow: 'auto' }}>
-          {/* Add Menu Placement */}
           <div style={{ marginBottom: 28 }}>
             <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 8, fontFamily: 'Georgia, serif' }}>
               <span style={{ color: '#ef4444' }}>* </span>Add Menu Placement
@@ -204,7 +194,6 @@ const AddMenuModal = ({ onClose, onUpdate }) => {
             </select>
           </div>
 
-          {/* Add Menu Settings Checkboxes */}
           <div>
             <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 14, fontFamily: 'Georgia, serif' }}>
               Add Menu Settings
@@ -235,7 +224,6 @@ const AddMenuModal = ({ onClose, onUpdate }) => {
           </div>
         </div>
 
-        {/* Modal Footer */}
         <div style={{ padding: '16px 24px', borderTop: '1.5px solid #f3f4f6', display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
           <button onClick={onClose} style={{
             padding: '10px 22px', borderRadius: 8, border: '1.5px solid #e5e7eb',
@@ -272,7 +260,6 @@ const AddMenuModal = ({ onClose, onUpdate }) => {
   );
 };
 
-// Main Component
 export default function CompanySettings() {
   const [primaryColor, setPrimaryColor] = useState('#007BFF');
   const [showModal, setShowModal] = useState(false);
@@ -289,13 +276,10 @@ export default function CompanySettings() {
 
   return (
     <div style={{ fontFamily: "'Segoe UI', Georgia, sans-serif", minHeight: '100vh', background: '#f8fafc', padding: 32 }}>
-      {/* Success Toast */}
       <SuccessToast show={showToast} />
 
-      {/* Modal */}
       {showModal && <AddMenuModal onClose={() => setShowModal(false)} onUpdate={handleUpdate} />}
 
-      {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
         <div>
           <h2 style={{ margin: 0, fontSize: 24, fontWeight: 700, color: '#1f2937', fontFamily: 'Georgia, serif' }}>Company Settings</h2>
@@ -329,10 +313,8 @@ export default function CompanySettings() {
         </div>
       </div>
 
-      {/* Main Form Card */}
       <div style={{ marginTop: 28, background: '#fff', borderRadius: 16, boxShadow: '0 1px 6px rgba(0,0,0,0.06)', border: '1.5px solid #f1f5f9', padding: 36 }}>
 
-        {/* Basic Info */}
         <div style={grid2}>
           <InputField label="Company Name" required defaultValue="Lead Pro" />
           <InputField label="Company Short Name" required defaultValue="LeadPro" />
@@ -348,7 +330,6 @@ export default function CompanySettings() {
           }} rows={4} defaultValue="7 street, city, state, 762782" />
         </div>
 
-        {/* Theme & Colors */}
         <div style={{ ...grid2, marginTop: 24 }}>
           <SelectField label="Left Sidebar Theme">
             <option>Dark</option>
@@ -362,7 +343,6 @@ export default function CompanySettings() {
           </div>
         </div>
 
-        {/* Logo Upload */}
         <div style={{ ...grid4, marginTop: 24 }}>
           <LogoUploadField label="Dark Logo" id="darkLogo" />
           <LogoUploadField label="Light Logo" id="lightLogo" />
@@ -372,7 +352,6 @@ export default function CompanySettings() {
 
         <hr style={{ border: 'none', borderTop: '1.5px solid #f3f4f6', margin: '28px 0' }} />
 
-        {/* Currency, Language, Layout */}
         <div style={grid2}>
           <SelectField label="Currency" required>
             <option>Dollar ($)</option>
@@ -393,7 +372,6 @@ export default function CompanySettings() {
           </SelectField>
         </div>
 
-        {/* Toggles & Timezone */}
         <div style={{ ...grid2, marginTop: 24, alignItems: 'end' }}>
           <ToggleSwitch label="Auto Detect Timezone" />
           <SelectField label="Default Timezone" required>
@@ -404,7 +382,6 @@ export default function CompanySettings() {
           <ToggleSwitch label="Update App Notification" />
         </div>
 
-        {/* Date & Time Format */}
         <div style={{ ...grid2, marginTop: 24 }}>
           <SelectField label="Date Format" required>
             <option>{`(d-m-Y) => ${new Date().toLocaleDateString('en-GB')}`}</option>
@@ -414,14 +391,12 @@ export default function CompanySettings() {
           </SelectField>
         </div>
 
-        {/* Login Image */}
         <div style={{ marginTop: 24, maxWidth: 200 }}>
           <LogoUploadField label="Login Image" id="loginImage" />
         </div>
 
         <hr style={{ border: 'none', borderTop: '1.5px solid #f3f4f6', margin: '28px 0' }} />
 
-        {/* Save Button */}
         <button style={{
           display: 'flex', alignItems: 'center', gap: 8,
           background: '#3b82f6', color: '#fff', border: 'none',

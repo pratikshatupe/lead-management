@@ -109,7 +109,6 @@ export default function DatabaseBackup() {
     <div style={{ minHeight: "100vh", background: "#f1f5f9", padding: isMobile ? 12 : 24, fontFamily: "'Segoe UI', sans-serif" }}>
       <Toast show={toast.show} message={toast.msg} type={toast.type} />
 
-      {/* Page Header */}
       <div style={{ marginBottom: 20 }}>
         <h2 style={{ fontSize: isMobile ? 18 : 22, fontWeight: 700, color: "#1f2937", margin: 0 }}>Database Backup</h2>
         <p style={{ fontSize: 12, color: "#9ca3af", marginTop: 4 }}>
@@ -118,17 +117,15 @@ export default function DatabaseBackup() {
         </p>
       </div>
 
-      {/* Main Card */}
       <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #f1f5f9", boxShadow: "0 1px 6px rgba(0,0,0,.05)", overflow: "hidden" }}>
 
-        {/* ── Toolbar ── */}
         <div style={{
           padding: "16px 20px",
           borderBottom: "1px solid #f1f5f9",
           display: "flex",
-          flexDirection: isMobile ? "column" : "row",   // ← KEY CHANGE
+          flexDirection: isMobile ? "column" : "row",   
           gap: 10,
-          alignItems: isMobile ? "stretch" : "center",  // ← full-width on mobile
+          alignItems: isMobile ? "stretch" : "center",  
         }}>
           <button
             onClick={() => setShowConfirm(true)}
@@ -162,7 +159,6 @@ export default function DatabaseBackup() {
           </button>
         </div>
 
-        {/* Info Banner */}
         <div style={{
           display: "flex", alignItems: "flex-start", gap: 10,
           background: "#fefce8", border: "1px solid #fef08a",
@@ -174,7 +170,6 @@ export default function DatabaseBackup() {
           </span>
         </div>
 
-        {/* Table (desktop) / Cards (mobile) */}
         {isMobile ? (
           <div style={{ padding: "0 12px 16px", display: "flex", flexDirection: "column", gap: 10 }}>
             {backups.length === 0 ? (
@@ -273,7 +268,6 @@ export default function DatabaseBackup() {
         )}
       </div>
 
-      {/* Confirm Modal */}
       {showConfirm && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.55)", backdropFilter: "blur(2px)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: isMobile ? 16 : 0 }}>
           <div style={{ background: "#fff", borderRadius: 12, padding: isMobile ? "24px 20px" : "28px 32px", width: isMobile ? "100%" : 380, boxShadow: "0 20px 60px rgba(0,0,0,.18)" }}>
@@ -302,12 +296,11 @@ export default function DatabaseBackup() {
         </div>
       )}
 
-      {/* Command Settings Panel */}
       {showCommandPanel && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", backdropFilter: "blur(2px)", zIndex: 9999, display: "flex", justifyContent: "flex-end" }}>
           <div style={{
             background: "#fff",
-            width: isMobile ? "100%" : 420,   // ← full-width on mobile
+            width: isMobile ? "100%" : 420, 
             height: "100%",
             boxShadow: "-4px 0 20px rgba(0,0,0,.12)",
             overflow: "auto",

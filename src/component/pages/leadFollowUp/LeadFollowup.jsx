@@ -26,7 +26,6 @@ return (
 Lead Follow Up
 </h1>
 
-{/* Filters */}
 <div className="flex flex-col md:flex-row md:justify-end gap-3 mb-4">
 
 <select className="border rounded-lg px-3 py-2 text-sm dark:bg-slate-800 dark:text-white">
@@ -62,7 +61,6 @@ className="px-3 py-2 text-sm outline-none dark:bg-slate-800 dark:text-white"
 
 </div>
 
-{/* Desktop Table */}
 
 <div className="hidden md:block bg-white dark:bg-slate-800 rounded-xl shadow overflow-x-auto">
 
@@ -147,7 +145,6 @@ className="bg-blue-500 text-white p-2 rounded-md"
 </div>
 
 
-{/* Mobile Cards */}
 
 <div className="md:hidden space-y-4">
 
@@ -214,7 +211,6 @@ Delete
 </div>
 
 
-{/* Popup */}
 
 {showPopup && (
 

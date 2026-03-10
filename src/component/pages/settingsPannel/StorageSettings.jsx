@@ -251,7 +251,6 @@ export default function StorageSettings() {
       <Toast show={toast.show} message={toast.msg} type={toast.type} />
 
       <div style={{ minHeight: "100vh", background: "#f1f5f9", padding: isMobile ? 14 : 24, fontFamily: "'Segoe UI', sans-serif" }}>
-        {/* Page Header */}
         <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", justifyContent: "space-between", alignItems: "flex-start", gap: isMobile ? 12 : 0, marginBottom: 20 }}>
           <div>
             <h2 style={{ fontSize: isMobile ? 18 : 22, fontWeight: 700, color: "#1f2937", margin: 0 }}>Storage Settings</h2>
@@ -267,7 +266,6 @@ export default function StorageSettings() {
           </button>
         </div>
 
-        {/* Form Card */}
         <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #f1f5f9", boxShadow: "0 1px 6px rgba(0,0,0,.05)", padding: "24px 24px 28px", marginBottom: 20 }}>
           <Field label="Storage" style={{ marginBottom: driver === "s3" ? 20 : 24 }}>
             <CustomDropdown value={driver} onChange={setDriver} options={STORAGE_OPTIONS} />
@@ -301,7 +299,6 @@ export default function StorageSettings() {
           </button>
         </div>
 
-        {/* Saved Config Table */}
         {savedConfig && (
           <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #f1f5f9", boxShadow: "0 1px 6px rgba(0,0,0,.05)", overflow: "hidden" }}>
             <div style={{ padding: "16px 20px", borderBottom: "1px solid #f1f5f9" }}>

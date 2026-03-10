@@ -79,7 +79,6 @@ export default function Currencies() {
 
   return (
     <div className="min-h-screen bg-slate-100 p-6">
-      {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-2">
         <div>
           <h1 className="text-2xl font-bold text-slate-800">Currencies</h1>
@@ -99,9 +98,7 @@ export default function Currencies() {
         </button>
       </div>
 
-      {/* Table Card */}
       <div className="bg-white rounded-xl shadow-sm mt-6 overflow-hidden">
-        {/* Toolbar */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-5 py-4 border-b border-slate-100">
           <button
             onClick={openAdd}
@@ -127,7 +124,6 @@ export default function Currencies() {
           </div>
         </div>
 
-        {/* Table (desktop) / Cards (mobile) */}
         {isMobile ? (
           <div className="p-3 flex flex-col gap-3">
             {filtered.length === 0 ? (
@@ -226,7 +222,6 @@ export default function Currencies() {
           </div>
         )}
 
-        {/* Pagination */}
         <div className="flex items-center justify-end gap-2 px-5 py-3 border-t border-slate-100">
           <button className="px-3 py-1.5 border border-slate-200 rounded-md text-slate-500 hover:bg-slate-50 text-sm transition-colors">‹</button>
           <span className="px-3 py-1.5 bg-blue-500 text-white rounded-md text-sm font-semibold">1</span>
@@ -239,7 +234,6 @@ export default function Currencies() {
         </div>
       </div>
 
-      {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(2px)" }}>
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
@@ -262,7 +256,6 @@ export default function Currencies() {
                   {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
                 </div>
 
-                {/* Symbol with dropdown */}
                 <div className="relative">
                   <label className="block text-sm font-semibold text-slate-700 mb-1.5">
                     <span className="text-red-500">* </span>Currency Symbol
@@ -311,7 +304,6 @@ export default function Currencies() {
                 {errors.code && <p className="text-red-500 text-xs mt-1">{errors.code}</p>}
               </div>
 
-              {/* Format Settings */}
               <div className="bg-slate-50 rounded-xl p-5 mb-6">
                 <h3 className="text-sm font-bold text-slate-700 text-center mb-4">Format Settings</h3>
                 <div className="grid grid-cols-2 gap-4 mb-4">
@@ -362,7 +354,6 @@ export default function Currencies() {
                   </label>
                 </div>
 
-                {/* Example - shows real formatted number */}
                 <div className="bg-white rounded-lg border border-slate-200 px-4 py-3 text-sm text-slate-700">
                   Example: <span className="font-semibold text-slate-800">{example}</span>
                   {form.symbol && (

@@ -12,7 +12,7 @@ function Salesman() {
       phone: "9876543210",
       status: "Disabled",
       address: "Pune, Maharashtra",
-      profileImage: "https://via.placeholder.com/60",
+      profileImage: "https://ui-avatars.com/api/?name=Janick+Sipes&background=4F46E5&color=fff&size=60",
     },
     {
       id: 2,
@@ -21,7 +21,7 @@ function Salesman() {
       phone: "9876543211",
       status: "Enabled",
       address: "Mumbai, Maharashtra",
-      profileImage: "https://via.placeholder.com/60",
+      profileImage: "https://ui-avatars.com/api/?name=Lilla+Wintheiser&background=0891B2&color=fff&size=60",
     },
   ];
 
@@ -35,6 +35,9 @@ function Salesman() {
     status: "Enabled",
     address: "",
   });
+
+  const getAvatarUrl = (name) =>
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(name || "User")}&background=4F46E5&color=fff&size=60`;
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -51,7 +54,13 @@ function Salesman() {
   const handleSubmit = () => {
     if (editId) {
       const updated = salesmanList.map((item) =>
-        item.id === editId ? { ...item, ...formData } : item
+        item.id === editId
+          ? {
+              ...item,
+              ...formData,
+              profileImage: formData.profileImage || getAvatarUrl(formData.name),
+            }
+          : item
       );
       setSalesmanList(updated);
       setEditId(null);
@@ -59,8 +68,7 @@ function Salesman() {
       const newItem = {
         id: salesmanList.length + 1,
         ...formData,
-        profileImage:
-          formData.profileImage || "https://via.placeholder.com/60",
+        profileImage: formData.profileImage || getAvatarUrl(formData.name),
       };
       setSalesmanList([...salesmanList, newItem]);
     }
@@ -83,8 +91,7 @@ function Salesman() {
   };
 
   const handleDelete = (id) => {
-    const filtered = salesmanList.filter((item) => item.id !== id);
-    setSalesmanList(filtered);
+    setSalesmanList(salesmanList.filter((item) => item.id !== id));
   };
 
   return (
@@ -94,10 +101,7 @@ function Salesman() {
       <div className="flex flex-col sm:flex-row justify-between items-center gap-3 mb-5">
         <h2 className="text-2xl font-semibold">Salesmans</h2>
         <button
-          onClick={() => {
-            setEditId(null);
-            setShowDrawer(true);
-          }}
+          onClick={() => { setEditId(null); setShowDrawer(true); }}
           className="bg-blue-600 text-white px-4 py-2 rounded-lg w-full sm:w-auto"
         >
           + Add New Salesman
@@ -119,37 +123,30 @@ function Salesman() {
           </thead>
           <tbody>
             {salesmanList.map((item) => (
-              <tr key={item.id} className="border-t">
+              <tr key={item.id} className="border-t hover:bg-gray-50">
                 <td className="p-3">
-                  <img src={item.profileImage} className="w-12 h-12 rounded-full" alt="" />
+                  <img
+                    src={item.profileImage || getAvatarUrl(item.name)}
+                    className="w-10 h-10 rounded-full object-cover border border-gray-200"
+                    alt={item.name}
+                    onError={(e) => { e.target.src = getAvatarUrl(item.name); }}
+                  />
                 </td>
-                <td className="p-3">{item.name}</td>
-                <td className="p-3">{item.email}</td>
+                <td className="p-3 font-medium">{item.name}</td>
+                <td className="p-3 text-gray-500">{item.email}</td>
                 <td className="p-3">{item.phone}</td>
                 <td className="p-3">
-                  <span
-                    className={`px-2 py-1 text-xs rounded-full ${
-                      item.status === "Enabled"
-                        ? "bg-green-100 text-green-600"
-                        : "bg-red-100 text-red-600"
-                    }`}
-                  >
+                  <span className={`px-2 py-1 text-xs rounded-full font-medium ${
+                    item.status === "Enabled"
+                      ? "bg-green-100 text-green-600"
+                      : "bg-red-100 text-red-600"
+                  }`}>
                     {item.status}
                   </span>
                 </td>
                 <td className="p-3 space-x-2">
-                  <button
-                    onClick={() => handleEdit(item)}
-                    className="bg-blue-500 text-white px-2 py-1 rounded text-xs"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(item.id)}
-                    className="bg-red-500 text-white px-2 py-1 rounded text-xs"
-                  >
-                    Delete
-                  </button>
+                  <button onClick={() => handleEdit(item)} className="bg-blue-500 text-white px-2 py-1 rounded text-xs">Edit</button>
+                  <button onClick={() => handleDelete(item.id)} className="bg-red-500 text-white px-2 py-1 rounded text-xs">Delete</button>
                 </td>
               </tr>
             ))}
@@ -162,7 +159,12 @@ function Salesman() {
         {salesmanList.map((item) => (
           <div key={item.id} className="bg-white shadow rounded-xl p-4">
             <div className="flex items-center gap-3 mb-3">
-              <img src={item.profileImage} className="w-14 h-14 rounded-full" alt="" />
+              <img
+                src={item.profileImage || getAvatarUrl(item.name)}
+                className="w-14 h-14 rounded-full object-cover border-2 border-gray-100"
+                alt={item.name}
+                onError={(e) => { e.target.src = getAvatarUrl(item.name); }}
+              />
               <div>
                 <h3 className="font-semibold">{item.name}</h3>
                 <p className="text-sm text-gray-500">{item.email}</p>
@@ -171,15 +173,13 @@ function Salesman() {
 
             <div className="text-sm space-y-1">
               <p><strong>Phone:</strong> {item.phone}</p>
-              <p>
-                <strong>Status:</strong>{" "}
-                <span
-                  className={`px-2 py-1 text-xs rounded-full ${
-                    item.status === "Enabled"
-                      ? "bg-green-100 text-green-600"
-                      : "bg-red-100 text-red-600"
-                  }`}
-                >
+              <p className="flex items-center gap-2">
+                <strong>Status:</strong>
+                <span className={`px-2 py-1 text-xs rounded-full font-medium ${
+                  item.status === "Enabled"
+                    ? "bg-green-100 text-green-600"
+                    : "bg-red-100 text-red-600"
+                }`}>
                   {item.status}
                 </span>
               </p>
@@ -187,18 +187,8 @@ function Salesman() {
             </div>
 
             <div className="mt-3 flex gap-2">
-              <button
-                onClick={() => handleEdit(item)}
-                className="bg-blue-500 text-white px-3 py-1 rounded text-xs w-full"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => handleDelete(item.id)}
-                className="bg-red-500 text-white px-3 py-1 rounded text-xs w-full"
-              >
-                Delete
-              </button>
+              <button onClick={() => handleEdit(item)} className="bg-blue-500 text-white px-3 py-1 rounded text-xs w-full">Edit</button>
+              <button onClick={() => handleDelete(item.id)} className="bg-red-500 text-white px-3 py-1 rounded text-xs w-full">Delete</button>
             </div>
           </div>
         ))}
@@ -206,17 +196,24 @@ function Salesman() {
 
       {/* Drawer */}
       {showDrawer && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-end">
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-end z-50">
           <div className="w-full sm:w-[400px] bg-white h-full p-6 overflow-y-auto">
             <h3 className="text-xl font-semibold mb-4">
               {editId ? "Edit Salesman" : "Add New Salesman"}
             </h3>
 
-            {formData.profileImage && (
-              <img src={formData.profileImage} className="w-20 h-20 rounded-full mb-3" alt="" />
-            )}
+            {/* Profile Preview */}
+            <div className="flex justify-center mb-4">
+              <img
+                src={formData.profileImage || getAvatarUrl(formData.name)}
+                className="w-20 h-20 rounded-full object-cover border-2 border-blue-200"
+                alt="Preview"
+                onError={(e) => { e.target.src = getAvatarUrl(formData.name); }}
+              />
+            </div>
 
-            <input type="file" accept="image/*" onChange={handleImageUpload} className="mb-3 w-full" />
+            <label className="block text-xs text-gray-500 mb-1">Upload Profile Photo</label>
+            <input type="file" accept="image/*" onChange={handleImageUpload} className="mb-3 w-full text-sm" />
 
             <input type="text" name="name" placeholder="Enter Name"
               value={formData.name} onChange={handleChange}
@@ -230,30 +227,21 @@ function Salesman() {
               value={formData.phone} onChange={handleChange}
               className="w-full mb-3 p-2 border rounded" />
 
-            <select name="status"
-              value={formData.status}
-              onChange={handleChange}
+            <select name="status" value={formData.status} onChange={handleChange}
               className="w-full mb-3 p-2 border rounded">
               <option value="Enabled">Enabled</option>
               <option value="Disabled">Disabled</option>
             </select>
 
-            <textarea name="address"
-              placeholder="Enter Address"
-              value={formData.address}
-              onChange={handleChange}
-              className="w-full mb-4 p-2 border rounded"></textarea>
+            <textarea name="address" placeholder="Enter Address"
+              value={formData.address} onChange={handleChange}
+              className="w-full mb-4 p-2 border rounded" />
 
             <div className="flex justify-between">
-              <button
-                onClick={handleSubmit}
-                className="bg-blue-600 text-white px-4 py-2 rounded">
+              <button onClick={handleSubmit} className="bg-blue-600 text-white px-4 py-2 rounded">
                 {editId ? "Update" : "Create"}
               </button>
-
-              <button
-                onClick={() => setShowDrawer(false)}
-                className="bg-gray-400 text-white px-4 py-2 rounded">
+              <button onClick={() => setShowDrawer(false)} className="bg-gray-400 text-white px-4 py-2 rounded">
                 Cancel
               </button>
             </div>

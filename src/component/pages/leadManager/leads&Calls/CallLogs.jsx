@@ -74,7 +74,6 @@ export default function CallLogs() {
 
           </div>
 
-          {/* Filters */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3 md:gap-4 mb-6">
 
             <select className="border rounded-lg px-3 py-2 text-sm dark:bg-slate-700 dark:text-white">
@@ -97,7 +96,6 @@ export default function CallLogs() {
 
           </div>
 
-          {/* Desktop Table */}
           <div className="hidden md:block overflow-x-auto">
 
             <table className="w-full text-sm text-left">

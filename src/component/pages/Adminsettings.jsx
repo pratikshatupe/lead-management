@@ -6,9 +6,6 @@ import DatabaseBackup from "./settingsPannel/DatabaseBackup";
 import UpdateApp from "./settingsPannel/UpdateApp";
 import { useState, useRef } from "react";
 
-// ═══════════════════════════════════════════════════════
-//  GLOBAL RESPONSIVE STYLES
-// ═══════════════════════════════════════════════════════
 const GlobalStyles = () => (
   <style>{`
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -116,9 +113,6 @@ const GlobalStyles = () => (
   `}</style>
 );
 
-// ═══════════════════════════════════════════════════════
-//  SHARED ICONS
-// ═══════════════════════════════════════════════════════
 const PlusIcon = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>;
 const EditIcon = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>;
 const TrashIcon = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>;
@@ -137,9 +131,6 @@ const ChevronDownIcon = () => <svg width="14" height="14" viewBox="0 0 24 24" fi
 const ImportIcon = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" transform="rotate(180,12,12)"/></svg>;
 const SortIcon = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5.83L15.17 9l1.41-1.41L12 3 7.41 7.59 8.83 9 12 5.83zm0 12.34L8.83 15l-1.41 1.41L12 21l4.59-4.59L15.17 15 12 18.17z"/></svg>;
 
-// ═══════════════════════════════════════════════════════
-//  SHARED COMPONENTS
-// ═══════════════════════════════════════════════════════
 const Toast = ({ show, message, type = 'success' }) => (
   <div style={{
     position: 'fixed', bottom: 20, right: 20, zIndex: 9999,
@@ -246,9 +237,6 @@ const Pagination = ({ page, total, onPage }) => {
   );
 };
 
-// ═══════════════════════════════════════════════════════
-//  COMPANY SETTINGS
-// ═══════════════════════════════════════════════════════
 function CompanySettings() {
   const [primaryColor, setPrimaryColor] = useState('#007BFF');
   const [showModal, setShowModal] = useState(false);
@@ -364,9 +352,6 @@ function CompanySettings() {
   );
 }
 
-// ═══════════════════════════════════════════════════════
-//  PROFILE
-// ═══════════════════════════════════════════════════════
 function ProfilePanel() {
   const [form, setForm] = useState({ name: 'Admin', email: 'admin@example.com', password: '', phone: '+91 98765 43210', address: '7 street, city, state' });
   const [img, setImg] = useState(null);
@@ -409,9 +394,6 @@ function ProfilePanel() {
   );
 }
 
-// ═══════════════════════════════════════════════════════
-//  LEAD STATUS
-// ═══════════════════════════════════════════════════════
 function LeadStatus() {
   const [statuses, setStatuses] = useState([{ id: 1, name: 'Unreachable' }, { id: 2, name: 'Not Interested' }, { id: 3, name: 'Interested' }]);
   const [search, setSearch] = useState('');
@@ -489,9 +471,6 @@ function LeadStatus() {
   );
 }
 
-// ═══════════════════════════════════════════════════════
-//  TRANSLATIONS
-// ═══════════════════════════════════════════════════════
 const GROUPS = ['common', 'menu', 'dashboard', 'user', 'salesman', 'role', 'notes', 'campaign'];
 const BASE_ROWS = [
   { group: 'common', key: 'enabled', en: 'Enabled' }, { group: 'common', key: 'disabled', en: 'Disabled' },
@@ -662,9 +641,6 @@ function Translations() {
   );
 }
 
-// ═══════════════════════════════════════════════════════
-//  ROLE & PERMISSIONS
-// ═══════════════════════════════════════════════════════
 const PERM_SECTIONS = [
   { label: 'Staff Members', perms: ['View', 'Add', 'Edit', 'Delete'] },
   { label: 'Salesmans', perms: ['View', 'Add', 'Edit', 'Delete'] },
@@ -805,9 +781,6 @@ function RolePermission() {
   );
 }
 
-// ═══════════════════════════════════════════════════════
-//  PLACEHOLDER PANELS
-// ═══════════════════════════════════════════════════════
 const PlaceholderPanel = ({ title }) => (
   <div>
     <h2 style={{ fontSize: 20, fontWeight: 700, color: '#1f2937', marginBottom: 16 }}>{title}</h2>
@@ -817,11 +790,7 @@ const PlaceholderPanel = ({ title }) => (
   </div>
 );
 
-// ═══════════════════════════════════════════════════════
-//  MENU CONFIG — role-based
-// ═══════════════════════════════════════════════════════
 
-// ✅ Admin ला सगळे menu items दिसतात
 const ADMIN_MENU = [
   { key: 'company',     label: 'Company Settings', icon: '🏢' },
   { key: 'profile',     label: 'Profile',           icon: '👤' },
@@ -836,23 +805,17 @@ const ADMIN_MENU = [
   { key: 'update',      label: 'Update App',         icon: '🔄' },
 ];
 
-// ✅ Member ला फक्त Profile आणि Lead Status दिसेल
 const MEMBER_MENU = [
   { key: 'profile',    label: 'Profile',    icon: '👤' },
   { key: 'leadstatus', label: 'Lead Status', icon: '🏷️' },
 ];
 
-// ✅ Manager ला पण फक्त Profile आणि Lead Status दिसेल
 const MANAGER_MENU = [
   { key: 'profile',    label: 'Profile',    icon: '👤' },
   { key: 'leadstatus', label: 'Lead Status', icon: '🏷️' },
 ];
 
-// ═══════════════════════════════════════════════════════
-//  MAIN ADMIN SETTINGS
-// ═══════════════════════════════════════════════════════
 
-// prop: role = 'admin' | 'manager' | 'member'  (default: 'admin')
 export default function AdminSettings({ role = 'admin' }) {
   const MENU =
     role === 'member'  ? MEMBER_MENU  :
@@ -887,7 +850,6 @@ export default function AdminSettings({ role = 'admin' }) {
     <>
       <GlobalStyles />
 
-      {/* Mobile top bar */}
       <div className="mobile-topbar">
         <button onClick={() => setSidebarOpen(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', color: '#374151' }}>
           <MenuIcon />
@@ -935,7 +897,6 @@ export default function AdminSettings({ role = 'admin' }) {
         </div>
       </div>
 
-      {/* Mobile sidebar close button fix */}
       <style>{`
         @media (max-width: 640px) {
           .sidebar-close-btn { display: flex !important; }

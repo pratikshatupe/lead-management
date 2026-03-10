@@ -34,14 +34,12 @@ export default function LeadNotes() {
 
       <div className="p-4 md:p-6">
 
-        {/* Title */}
         <h1 className="text-xl md:text-2xl font-bold mb-4 dark:text-white">
           Lead Notes
         </h1>
 
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow p-4 md:p-6">
 
-          {/* Tabs */}
           <div className="flex gap-6 border-b mb-6">
 
             <button
@@ -74,7 +72,6 @@ export default function LeadNotes() {
 
           </div>
 
-          {/* Filters */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3 md:gap-4 mb-6">
 
             <select className="border rounded-lg px-3 py-2 text-sm dark:bg-slate-700 dark:text-white">
@@ -101,7 +98,6 @@ export default function LeadNotes() {
 
           </div>
 
-          {/* Desktop Table */}
           <div className="hidden md:block overflow-x-auto">
 
             <table className="w-full text-sm text-left">

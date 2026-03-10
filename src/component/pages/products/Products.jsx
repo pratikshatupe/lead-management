@@ -125,7 +125,6 @@ function Products() {
             </button>
           </div>
 
-          {/* MOBILE VIEW */}
           <div className="grid grid-cols-1 gap-4 md:hidden">
             {products.length > 0 ? (
               products.map((product) => (
@@ -156,7 +155,6 @@ function Products() {
             )}
           </div>
 
-          {/* DESKTOP VIEW */}
           <div className="hidden md:block bg-white dark:bg-slate-800 rounded-xl shadow-sm border dark:border-slate-700 overflow-hidden">
             <table className="w-full text-left">
               <thead className="bg-gray-50 dark:bg-slate-900/50 text-gray-500 text-[11px] font-bold uppercase">

@@ -6,9 +6,6 @@ import {
   FaLock, FaEye, FaEyeSlash, FaCheckCircle,
 } from "react-icons/fa";
 
-// ─────────────────────────────────────────────────────────────────
-//  Modal Shell
-// ─────────────────────────────────────────────────────────────────
 function ModalShell({ onClose, children }) {
   return (
     <div
@@ -40,9 +37,6 @@ function ModalShell({ onClose, children }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────
-//  Edit Profile Modal
-// ─────────────────────────────────────────────────────────────────
 function EditProfileModal({ initialAvatar, onClose, onSave }) {
   const editFileRef = useRef(null);
   const [editAvatar, setEditAvatar] = useState(initialAvatar);
@@ -189,9 +183,6 @@ function EditProfileModal({ initialAvatar, onClose, onSave }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────
-//  Profile Modal (View)
-// ─────────────────────────────────────────────────────────────────
 export function ProfileModal({ onClose }) {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
@@ -298,9 +289,6 @@ export function ProfileModal({ onClose }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────
-//  MemberProfile Page
-// ─────────────────────────────────────────────────────────────────
 export default function MemberProfile() {
   const [modal, setModal] = useState(null);
   const [name, setName] = useState(localStorage.getItem("name") || "Member");

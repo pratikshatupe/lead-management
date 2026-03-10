@@ -10,7 +10,6 @@ function useIsMobile() {
   return isMobile;
 }
 
-// ─── Icons ─────────────────────────────────────────────────────────────────
 const SaveIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
     <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z" />
@@ -52,7 +51,6 @@ const WarningIcon = () => (
   </svg>
 );
 
-// ─── Toast ─────────────────────────────────────────────────────────────────
 function Toast({ show, message, type = "success" }) {
   return (
     <div style={{
@@ -74,7 +72,6 @@ function Toast({ show, message, type = "success" }) {
   );
 }
 
-// ─── Custom Dropdown ────────────────────────────────────────────────────────
 function CustomDropdown({ value, onChange, options, placeholder = "Select..." }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
@@ -135,7 +132,6 @@ function CustomDropdown({ value, onChange, options, placeholder = "Select..." })
   );
 }
 
-// ─── Password Input ─────────────────────────────────────────────────────────
 function PasswordInput({ value, onChange, placeholder }) {
   const [show, setShow] = useState(false);
   return (
@@ -168,7 +164,6 @@ function PasswordInput({ value, onChange, placeholder }) {
   );
 }
 
-// ─── Text Input ─────────────────────────────────────────────────────────────
 function TextInput({ value, onChange, placeholder, hasError }) {
   return (
     <input
@@ -187,7 +182,6 @@ function TextInput({ value, onChange, placeholder, hasError }) {
   );
 }
 
-// ─── Field ──────────────────────────────────────────────────────────────────
 function Field({ label, required, children, error }) {
   return (
     <div>
@@ -271,7 +265,6 @@ export default function EmailSettings() {
     <div style={{ minHeight: "100vh", background: "#f1f5f9", padding: isMobile ? 14 : 24, fontFamily: "'Segoe UI', sans-serif" }}>
       <Toast show={toast.show} message={toast.msg} type={toast.type} />
 
-      {/* Page Header */}
       <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", justifyContent: "space-between", alignItems: isMobile ? "flex-start" : "flex-start", gap: isMobile ? 12 : 0, marginBottom: 20 }}>
         <div>
           <h2 style={{ fontSize: isMobile ? 18 : 22, fontWeight: 700, color: "#1f2937", margin: 0 }}>Email Settings</h2>
@@ -296,10 +289,8 @@ export default function EmailSettings() {
       </div>
 
       <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: 20, alignItems: "flex-start" }}>
-        {/* Left: Main Card */}
         <div style={{ flex: 1, background: "#fff", borderRadius: 12, border: "1px solid #f1f5f9", boxShadow: "0 1px 6px rgba(0,0,0,.05)", padding: "24px 24px 28px" }}>
 
-          {/* SMTP Error Banner */}
           {showSMTPWarning && (
             <div style={{
               display: "flex", alignItems: "center", gap: 10,
@@ -313,7 +304,6 @@ export default function EmailSettings() {
             </div>
           )}
 
-          {/* Mail Driver */}
           <div style={{ marginBottom: 20 }}>
             <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 7 }}>
               Mail Driver
@@ -326,10 +316,8 @@ export default function EmailSettings() {
             />
           </div>
 
-          {/* SMTP Fields */}
           {driver !== "none" && (
             <>
-              {/* Row 1 */}
               <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "16px 20px", marginBottom: 16 }}>
                 <Field label="Mail From Name" required error={errors.mailFromName}>
                   <TextInput value={form.mailFromName} onChange={setField("mailFromName")}
@@ -341,7 +329,6 @@ export default function EmailSettings() {
                 </Field>
               </div>
 
-              {/* Row 2 */}
               <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "16px 20px", marginBottom: 16 }}>
                 <Field label="Enable Mail Queue" required>
                   <CustomDropdown value={form.enableMailQueue} onChange={v => setForm(f => ({ ...f, enableMailQueue: v }))}
@@ -353,7 +340,6 @@ export default function EmailSettings() {
                 </Field>
               </div>
 
-              {/* Row 3 */}
               <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "16px 20px", marginBottom: 16 }}>
                 <Field label="Port" required error={errors.port}>
                   <TextInput value={form.port} onChange={setField("port")}
@@ -365,7 +351,6 @@ export default function EmailSettings() {
                 </Field>
               </div>
 
-              {/* Row 4 */}
               <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "16px 20px", marginBottom: 24 }}>
                 <Field label="Username" required error={errors.username}>
                   <TextInput value={form.username} onChange={setField("username")}
@@ -379,7 +364,6 @@ export default function EmailSettings() {
             </>
           )}
 
-          {/* Buttons */}
           <div style={{ display: "flex", gap: 10 }}>
             <button
               onClick={handleUpdate}
@@ -414,7 +398,6 @@ export default function EmailSettings() {
           </div>
         </div>
 
-        {/* Right: Send Mail For */}
         <div style={{
           width: 220, background: "#fff", borderRadius: 12,
           border: "1px solid #f1f5f9", boxShadow: "0 1px 6px rgba(0,0,0,.05)",

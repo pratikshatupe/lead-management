@@ -2,8 +2,14 @@ import { useState, useRef, useEffect } from "react";
 import {
   FaBold, FaItalic, FaUnderline, FaLink,
   FaListOl, FaListUl, FaRemoveFormat, FaTimes, FaPlus, FaTrash,
-  FaEdit, FaToggleOn, FaToggleOff
+  FaEdit, FaChevronDown
 } from "react-icons/fa";
+
+const FILTER_OPTIONS = [
+  { value: "name", label: "Name" },
+  { value: "subject", label: "Subject" },
+  { value: "status", label: "Status" },
+];
 
 const initialTemplates = [
   {
@@ -17,7 +23,6 @@ const initialTemplates = [
   },
 ];
 
-// ── Toggle Switch ─────────────────────────────────────────────────
 function ToggleSwitch({ checked, onChange }) {
   return (
     <button
@@ -29,7 +34,6 @@ function ToggleSwitch({ checked, onChange }) {
   );
 }
 
-// ── Rich Text Toolbar ─────────────────────────────────────────────
 function RichToolbar({ onCommand }) {
   const headings = ["Normal", "H1", "H2", "H3", "H4"];
   const [heading, setHeading] = useState("Normal");
@@ -63,13 +67,12 @@ function RichToolbar({ onCommand }) {
   );
 }
 
-// ── Add New Form Drawer ───────────────────────────────────────────
 function AddFormDrawer({ onClose, onSave }) {
-  const [formName, setFormName]     = useState("");
+  const [formName, setFormName] = useState("");
   const [formStatus, setFormStatus] = useState("active");
   const [formFields, setFormFields] = useState([]);
-  const [newField, setNewField]     = useState("");
-  const [nameError, setNameError]   = useState("");
+  const [newField, setNewField] = useState("");
+  const [nameError, setNameError] = useState("");
 
   const handleAddField = () => {
     if (newField.trim()) {
@@ -149,16 +152,15 @@ function AddFormDrawer({ onClose, onSave }) {
   );
 }
 
-// ── Template Drawer ───────────────────────────────────────────────
 function TemplateDrawer({ onClose, onSave, editData, availableForms }) {
   const editorRef = useRef(null);
-  const [name, setName]         = useState(editData?.name     || "");
-  const [subject, setSubject]   = useState(editData?.subject  || "");
-  const [body, setBody]         = useState(editData?.body     || "");
+  const [name, setName] = useState(editData?.name || "");
+  const [subject, setSubject] = useState(editData?.subject || "");
+  const [body, setBody] = useState(editData?.body || "");
   const [sharable, setSharable] = useState(editData?.sharable ?? false);
-  const [form, setForm]         = useState(editData?.form     || "");
-  const [status, setStatus]     = useState(editData?.status   || "active");
-  const [errors, setErrors]     = useState({});
+  const [form, setForm] = useState(editData?.form || "");
+  const [status, setStatus] = useState(editData?.status || "active");
+  const [errors, setErrors] = useState({});
   const [showAddForm, setShowAddForm] = useState(false);
 
   useEffect(() => {
@@ -169,7 +171,7 @@ function TemplateDrawer({ onClose, onSave, editData, availableForms }) {
 
   const validate = () => {
     const e = {};
-    if (!name.trim())    e.name    = "Name is required";
+    if (!name.trim()) e.name = "Name is required";
     if (!subject.trim()) e.subject = "Subject is required";
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -257,19 +259,30 @@ function TemplateDrawer({ onClose, onSave, editData, availableForms }) {
   );
 }
 
-// ── Main EmailTemplates Component ─────────────────────────────────
-function EmailTemplates() {
-  const [templates, setTemplates]   = useState(initialTemplates);
+export default function EmailTemplates() {
+  const [templates, setTemplates] = useState(initialTemplates);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [editData, setEditData]     = useState(null);
-  const [editId, setEditId]         = useState(null);
-  const [selected, setSelected]     = useState([]);
-  const [searchText, setSearchText] = useState("");
+  const [editData, setEditData] = useState(null);
+  const [editId, setEditId] = useState(null);
+  const [selected, setSelected] = useState([]);
+  const [searchText, setSearchText] = useState("");           
+  const [selectedFilter, setSelectedFilter] = useState(null); 
+  const [dropdownOpen, setDropdownOpen] = useState(false);    
   const [availableForms, setAvailableForms] = useState([
     { id: "contact", name: "Contact Form" },
     { id: "lead", name: "Lead Form" },
     { id: "inquiry", name: "Inquiry Form" },
   ]);
+
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handler = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) setDropdownOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
   useEffect(() => {
     const handler = (e) => {
@@ -280,7 +293,7 @@ function EmailTemplates() {
     return () => window.removeEventListener("newFormCreated", handler);
   }, []);
 
-  const openAdd  = () => { setEditData(null); setEditId(null); setDrawerOpen(true); };
+  const openAdd = () => { setEditData(null); setEditId(null); setDrawerOpen(true); };
   const openEdit = (t) => { setEditData({ ...t }); setEditId(t.id); setDrawerOpen(true); };
 
   const handleSave = (data) => {
@@ -295,62 +308,106 @@ function EmailTemplates() {
   const handleToggleStatus = (id) =>
     setTemplates(templates.map((t) => t.id === id ? { ...t, status: t.status === "active" ? "inactive" : "active" } : t));
 
-  const filtered = templates.filter((t) =>
-    t.name.toLowerCase().includes(searchText.toLowerCase()) ||
-    t.subject.toLowerCase().includes(searchText.toLowerCase())
-  );
+  const filtered = templates.filter((t) => {
+    if (!searchText.trim()) return true;
+    const q = searchText.toLowerCase();
+    if (!selectedFilter) {
+      return (
+        t.name.toLowerCase().includes(q) ||
+        t.subject.toLowerCase().includes(q) ||
+        t.status.toLowerCase().includes(q)
+      );
+    }
+    if (selectedFilter === "name") return t.name.toLowerCase().includes(q);
+    if (selectedFilter === "subject") return t.subject.toLowerCase().includes(q);
+    if (selectedFilter === "status") return t.status.toLowerCase().includes(q);
+    return true;
+  });
 
   const allSelected = filtered.length > 0 && selected.length === filtered.length;
+  const selectedLabel = selectedFilter
+    ? FILTER_OPTIONS.find((o) => o.value === selectedFilter)?.label
+    : "Select...";
 
   return (
     <div className="p-4 md:p-6 min-h-screen bg-gray-50">
-
       <p className="text-xs text-gray-400 mb-1">Dashboard &nbsp;-&nbsp; Email Templates</p>
       <h1 className="text-xl md:text-2xl font-bold text-gray-800 mb-5">Email Templates</h1>
 
-      {/* Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
         <button onClick={openAdd} className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold text-sm px-4 py-2.5 rounded-lg transition shadow-sm">
           <FaPlus size={12} /> Add New Email Template
         </button>
-        <div className="flex items-center gap-2 flex-wrap">
-          <div className="flex items-center gap-1 border border-gray-300 rounded-lg px-3 py-2 bg-white text-sm text-gray-400 cursor-pointer select-none min-w-[90px]">
-            Sel... <span className="text-xs ml-1">▼</span>
+
+        <div className="flex items-center gap-0 border rounded-lg bg-white shadow-sm overflow-visible">
+
+          <div className="relative flex-shrink-0" ref={dropdownRef}>
+            <button
+              onClick={() => setDropdownOpen((v) => !v)}
+              className="flex items-center gap-2 px-3 py-2.5 text-sm text-gray-600 hover:bg-gray-50 border-r border-gray-200 transition w-[140px] justify-between rounded-l-lg"
+            >
+              <span className="truncate flex-1 text-left">{selectedLabel}</span>
+              <FaChevronDown size={10} className={`transition-transform flex-shrink-0 ${dropdownOpen ? "rotate-180" : ""}`} />
+            </button>
+
+            {dropdownOpen && (
+              <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 w-[160px]">
+                {selectedFilter && (
+                  <button
+                    onClick={() => { setSelectedFilter(null); setDropdownOpen(false); }}
+                    className="w-full text-left px-4 py-2 text-xs text-red-500 hover:bg-red-50 flex items-center gap-2 border-b border-gray-100"
+                  >
+                    <FaTimes size={10} /> Clear Filter
+                  </button>
+                )}
+                {FILTER_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    onClick={() => { setSelectedFilter(opt.value); setDropdownOpen(false); }}
+                    className={`w-full text-left px-4 py-2.5 text-sm hover:bg-blue-50 hover:text-blue-600 transition ${selectedFilter === opt.value ? "bg-blue-50 text-blue-600 font-medium" : "text-gray-700"}`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
-          <div className="flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-3 py-2">
+
+          <div className="flex items-center px-3 py-2 gap-2 min-w-[180px]">
             <input
-              className="outline-none text-sm text-gray-700 w-32 md:w-48 bg-transparent placeholder-gray-400"
-              placeholder="Search..."
+              className="outline-none text-sm text-gray-700 w-full bg-transparent placeholder-gray-400"
+              placeholder={selectedFilter ? `Search by ${FILTER_OPTIONS.find(o => o.value === selectedFilter)?.label}...` : "Search..."}
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
             />
-            <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
-            </svg>
+            {searchText ? (
+              <button onClick={() => setSearchText("")} className="text-gray-400 hover:text-gray-600 flex-shrink-0">
+                <FaTimes size={11} />
+              </button>
+            ) : (
+              <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+              </svg>
+            )}
           </div>
         </div>
       </div>
 
-      {/* ── MOBILE: Card View (hidden on md+) ── */}
       <div className="flex flex-col gap-3 md:hidden">
         {filtered.length === 0 ? (
           <div className="text-center py-12 text-gray-400 text-sm bg-white rounded-xl border border-gray-200">No templates found.</div>
         ) : (
           filtered.map((t) => (
             <div key={t.id} className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
-              {/* Card Header */}
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1 min-w-0">
                   <h3 className="font-semibold text-gray-800 text-sm truncate">{t.name}</h3>
                   <p className="text-xs text-gray-400 mt-0.5 truncate">{t.subject}</p>
                 </div>
-                {/* Status badge */}
                 <span className={`ml-2 flex-shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold ${t.status === "active" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
                   {t.status === "active" ? "Active" : "Inactive"}
                 </span>
               </div>
-
-              {/* Card Body */}
               <div className="space-y-2 text-xs text-gray-500 mb-4">
                 <div className="flex items-center gap-2">
                   <span className="font-medium text-gray-600 w-16">Subject:</span>
@@ -361,27 +418,16 @@ function EmailTemplates() {
                   <span>{t.sharable ? "Yes" : "No"}</span>
                 </div>
               </div>
-
-              {/* Card Footer — Actions + Toggle */}
               <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                {/* Toggle */}
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-gray-500">Status:</span>
                   <ToggleSwitch checked={t.status === "active"} onChange={() => handleToggleStatus(t.id)} />
                 </div>
-
-                {/* Action Buttons */}
                 <div className="flex gap-2">
-                  <button
-                    onClick={() => openEdit(t)}
-                    className="flex items-center gap-1.5 bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition"
-                  >
+                  <button onClick={() => openEdit(t)} className="flex items-center gap-1.5 bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition">
                     <FaEdit size={11} /> Edit
                   </button>
-                  <button
-                    onClick={() => handleDelete(t.id)}
-                    className="flex items-center gap-1.5 bg-blue-500 hover:bg-red-500 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition"
-                  >
+                  <button onClick={() => handleDelete(t.id)} className="flex items-center gap-1.5 bg-blue-500 hover:bg-red-500 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition">
                     <FaTrash size={11} /> Delete
                   </button>
                 </div>
@@ -391,7 +437,6 @@ function EmailTemplates() {
         )}
       </div>
 
-      {/* ── DESKTOP: Table View (hidden on mobile) ── */}
       <div className="hidden md:block bg-white rounded-xl shadow-sm border border-gray-200 overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
@@ -436,7 +481,6 @@ function EmailTemplates() {
         </table>
       </div>
 
-      {/* Pagination */}
       <div className="flex flex-wrap justify-between items-center mt-4 px-1 gap-2">
         <span className="text-xs text-gray-400">Total: {filtered.length} templates</span>
         <div className="flex items-center gap-1">
@@ -447,7 +491,6 @@ function EmailTemplates() {
         </div>
       </div>
 
-      {/* Drawer */}
       {drawerOpen && (
         <TemplateDrawer
           key={editId ?? "new"}
@@ -460,5 +503,3 @@ function EmailTemplates() {
     </div>
   );
 }
-
-export default EmailTemplates;

@@ -127,7 +127,6 @@ function CallManager() {
         ))}
       </div>
 
-      {/* Resume Modal */}
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50 p-4">
           <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
@@ -166,7 +165,6 @@ function CallManager() {
         </div>
       )}
 
-      {/* Stop Modal */}
       {stopModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50 p-4">
           <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6">

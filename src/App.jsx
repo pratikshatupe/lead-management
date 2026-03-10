@@ -87,7 +87,6 @@ function App() {
           <Route path="email-templates" element={<EmailTemplates />} />
           <Route path="forms" element={<Forms />} />
 
-          {/* Admin ला सगळे settings दिसतात (default role="admin") */}
           <Route path="settings" element={<AdminSettings role="admin" />} />
 
         </Route>
@@ -114,7 +113,6 @@ function App() {
           <Route path="email-templates" element={<EmailTemplates />} />
           <Route path="forms" element={<Forms />} />
 
-          {/* ✅ Manager ला फक्त Profile + Lead Status दिसेल */}
           <Route path="settings" element={<AdminSettings role="manager" />} />
 
         </Route>
@@ -134,7 +132,6 @@ function App() {
           <Route path="email-templates" element={<EmailTemplates />} />
           <Route path="forms" element={<Forms />} />
 
-          {/* ✅ Member ला फक्त Profile + Lead Status दिसेल */}
           <Route path="settings" element={<AdminSettings role="member" />} />
 
         </Route>

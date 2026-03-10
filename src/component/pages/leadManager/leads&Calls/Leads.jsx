@@ -63,7 +63,6 @@ function Leads() {
   return (
     <div className="p-4 md:p-6 bg-[#f8f9fa] dark:bg-slate-900 min-h-screen">
 
-      {/* ── Page Header ── */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
         <div>
           <h1 className="text-xl font-semibold text-gray-800 dark:text-white">Leads</h1>
@@ -82,10 +81,8 @@ function Leads() {
         </div>
       </div>
 
-      {/* ── Main Card ── */}
       <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border dark:border-slate-700 p-4 md:p-6">
 
-        {/* Active / Completed tabs */}
         <div className="flex gap-4 md:gap-8 border-b dark:border-slate-700 mb-6 overflow-x-auto no-scrollbar">
           <button
             className={`flex items-center gap-2 pb-3 border-b-2 text-sm font-medium whitespace-nowrap ${activeTab === 'active' ? 'border-blue-500 text-blue-500' : 'border-transparent text-gray-400'}`}
@@ -101,7 +98,6 @@ function Leads() {
           </button>
         </div>
 
-        {/* ── MOBILE: Stat cards 2-column grid ── */}
         {isMobile && (
           <div className="grid grid-cols-2 gap-3 mb-5">
             {statCards.map((s, i) => (
@@ -118,7 +114,6 @@ function Leads() {
 
         <div className="grid grid-cols-12 gap-6 md:gap-8">
 
-          {/* ── LEFT PANEL (desktop only) ── */}
           {!isMobile && (
             <div className="col-span-12 lg:col-span-3 space-y-4">
               <div>
@@ -145,10 +140,8 @@ function Leads() {
             </div>
           )}
 
-          {/* ── RIGHT PANEL ── */}
           <div className={`col-span-12 ${!isMobile ? 'lg:col-span-9' : ''}`}>
 
-            {/* Mobile: Campaign dropdown */}
             {isMobile && (
               <div className="relative mb-4">
                 <select className="w-full p-2.5 border rounded-md text-sm bg-gray-50 dark:bg-slate-900 dark:border-slate-700 dark:text-gray-400 outline-none appearance-none">
@@ -159,7 +152,6 @@ function Leads() {
               </div>
             )}
 
-            {/* Started / Not Started sub-tabs */}
             <div className="flex gap-6 border-b dark:border-slate-700 mb-5 overflow-x-auto no-scrollbar">
               <button
                 onClick={() => { setSubTab('Started'); setCurrentPage(1); }}
@@ -175,7 +167,6 @@ function Leads() {
               </button>
             </div>
 
-            {/* Search + filter */}
             <div className="flex flex-col sm:flex-row gap-3 mb-5">
               <input
                 type="text"
@@ -191,14 +182,12 @@ function Leads() {
               </div>
             </div>
 
-            {/* ── MOBILE: Card layout ── */}
             {isMobile ? (
               <div className="flex flex-col gap-3">
                 {currentRecords.length === 0 ? (
                   <div className="text-center py-12 text-gray-400 text-sm">No records found</div>
                 ) : currentRecords.map((item, i) => (
                   <div key={i} className="bg-white dark:bg-slate-900 border dark:border-slate-700 rounded-xl p-4 shadow-sm">
-                    {/* Card header */}
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-blue-500 font-semibold text-sm underline decoration-dotted cursor-pointer">
                         {item.ref}
@@ -208,7 +197,6 @@ function Leads() {
                       </button>
                     </div>
 
-                    {/* Card rows */}
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between items-center py-1 border-b dark:border-slate-700">
                         <span className="text-gray-400 text-xs font-semibold">Campaign</span>
@@ -227,7 +215,6 @@ function Leads() {
                 ))}
               </div>
             ) : (
-              /* ── DESKTOP: Table layout ── */
               <div className="overflow-x-auto border dark:border-slate-700 rounded-lg">
                 <table className="w-full text-left text-[13px] border-collapse min-w-[600px]">
                   <thead>
@@ -258,7 +245,6 @@ function Leads() {
               </div>
             )}
 
-            {/* ── Pagination ── */}
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-5">
               <span className="text-xs text-gray-500 order-2 sm:order-1 text-center sm:text-left">
                 Showing {filteredData.length > 0 ? (currentPage - 1) * recordsPerPage + 1 : 0} to {Math.min(currentPage * recordsPerPage, filteredData.length)} of {filteredData.length} entries

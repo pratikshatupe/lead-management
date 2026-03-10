@@ -7,9 +7,6 @@ import {
 } from "react-icons/fa";
 
 
-// ─────────────────────────────────────────────────────────────────
-//  Reusable modal shell
-// ─────────────────────────────────────────────────────────────────
 function ModalShell({ onClose, children }) {
   return (
     <div
@@ -32,9 +29,7 @@ function ModalShell({ onClose, children }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────
-//  Edit Profile Modal
-// ─────────────────────────────────────────────────────────────────
+
 function EditProfileModal({ initialAvatar, onClose, onSave }) {
   const editFileRef = useRef(null);
   const [editAvatar, setEditAvatar] = useState(initialAvatar);
@@ -214,9 +209,7 @@ function EditProfileModal({ initialAvatar, onClose, onSave }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────
-//  Profile Modal (View)
-// ─────────────────────────────────────────────────────────────────
+
 export function ProfileModal({ onClose }) {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
@@ -313,7 +306,7 @@ export function ProfileModal({ onClose }) {
           className="flex-1 flex items-center justify-center gap-2 border border-red-400 text-red-500 hover:bg-red-50 py-2.5 rounded-lg text-sm font-medium transition-all"
         ><FaSignOutAlt /> Logout</button>
 
-        {/* ✅ Edit button */}
+        {/*  Edit button */}
         <button
           onClick={() => setEditOpen(true)}
           className="flex-1 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg text-sm font-medium transition-all shadow-md"
@@ -323,11 +316,9 @@ export function ProfileModal({ onClose }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────
-//  AdminProfile Page  (route: /admin/profile)
-// ─────────────────────────────────────────────────────────────────
+
 export default function AdminProfile() {
-  const [modal, setModal] = useState(null); // null | "view" | "edit"
+  const [modal, setModal] = useState(null); 
 
   const [name, setName]   = useState(localStorage.getItem("name")  || "Admin");
   const [email, setEmail] = useState(localStorage.getItem("email") || "admin@gmail.com");
@@ -357,7 +348,6 @@ export default function AdminProfile() {
           <p className="text-sm text-gray-400 mt-0.5">{email}</p>
         </div>
 
-        {/* ✅ Both buttons on card */}
         <div className="flex gap-2">
           <button
             onClick={() => setModal("view")}
@@ -374,10 +364,8 @@ export default function AdminProfile() {
         </div>
       </div>
 
-      {/* View Profile Modal */}
       {modal === "view" && <ProfileModal onClose={() => setModal(null)} />}
 
-      {/* ✅ Edit Profile Modal — directly opens edit form */}
       {modal === "edit" && (
         <EditProfileModal
           initialAvatar={avatar}
