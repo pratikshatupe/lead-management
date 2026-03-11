@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { FaEdit, FaTrash } from "react-icons/fa";
 
 const ExpenseCategories = () => {
   const [categories, setCategories] = useState([]);
@@ -67,11 +68,13 @@ const ExpenseCategories = () => {
 
   return (
     <div className="p-4 sm:p-6">
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
         <h2 className="text-xl sm:text-2xl font-semibold">
           Expense Categories
         </h2>
+
         <button
           onClick={handleOpen}
           className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded w-full sm:w-auto"
@@ -80,8 +83,10 @@ const ExpenseCategories = () => {
         </button>
       </div>
 
+      {/* Table */}
       <div className="overflow-x-auto">
         <table className="min-w-full border border-gray-200 text-sm">
+
           <thead>
             <tr className="bg-gray-100 text-left">
               <th className="p-2 border">Category Name</th>
@@ -100,36 +105,49 @@ const ExpenseCategories = () => {
             ) : (
               categories.map((item) => (
                 <tr key={item.id} className="hover:bg-gray-50">
+
                   <td className="p-2 border">{item.name}</td>
                   <td className="p-2 border">{item.description}</td>
-                  <td className="p-2 border">
-                    {/* Responsive Buttons */}
-                    <div className="flex flex-col sm:flex-row gap-2">
+
+                  <td className="p-2 border text-center">
+
+                    {/* SAME PRODUCT PAGE STYLE */}
+                    <div className="flex justify-center gap-2">
+
+                      {/* Edit */}
                       <button
                         onClick={() => handleEdit(item)}
-                        className="bg-yellow-400 hover:bg-yellow-500 px-3 py-1 rounded text-white w-full sm:w-auto"
+                        className="w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-sm transition"
                       >
-                        Edit
+                        <FaEdit size={14} />
                       </button>
+
+                      {/* Delete */}
                       <button
                         onClick={() => handleDelete(item.id)}
-                        className="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-white w-full sm:w-auto"
+                        className="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-lg shadow-sm transition"
                       >
-                        Delete
+                        <FaTrash size={14} />
                       </button>
+
                     </div>
+
                   </td>
+
                 </tr>
               ))
             )}
           </tbody>
+
         </table>
       </div>
 
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 p-3">
+
           <div className="bg-white w-full max-w-md p-6 rounded shadow-lg">
+
             <h3 className="text-lg font-semibold mb-4">
               {formData.id
                 ? "Edit Expense Category"
@@ -140,6 +158,7 @@ const ExpenseCategories = () => {
               <label className="block text-sm mb-1">
                 Expense Category Name *
               </label>
+
               <input
                 type="text"
                 name="name"
@@ -152,6 +171,7 @@ const ExpenseCategories = () => {
 
             <div className="mb-3">
               <label className="block text-sm mb-1">Description</label>
+
               <textarea
                 name="description"
                 value={formData.description}
@@ -162,22 +182,28 @@ const ExpenseCategories = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row justify-end gap-2">
+
               <button
                 onClick={handleClose}
                 className="px-4 py-2 border rounded w-full sm:w-auto"
               >
                 Cancel
               </button>
+
               <button
                 onClick={handleSubmit}
                 className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded w-full sm:w-auto"
               >
                 {formData.id ? "Update" : "Create"}
               </button>
+
             </div>
+
           </div>
+
         </div>
       )}
+
     </div>
   );
 };

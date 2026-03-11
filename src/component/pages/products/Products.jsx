@@ -1,202 +1,486 @@
-import React, { useState, useEffect } from 'react';
-import Layout from "../../../component/admin/Layout"; 
-import { Plus, Search, ChevronDown, PackageOpen, X, Upload, Trash2, DollarSign, Percent, Tag, Edit } from 'lucide-react';
+import React, { useEffect, useState } from "react";
+import { Edit, Trash2 } from "lucide-react";
 
-function Products() {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [products, setProducts] = useState([]);
-  const [editingProductId, setEditingProductId] = useState(null);
+function Expenses() {
+  const [expenses, setExpenses]               = useState([]);
+  const [categories, setCategories]           = useState([]);
+  const [users, setUsers]                     = useState([]);
+  const [showDrawer, setShowDrawer]           = useState(false);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [showUserModal, setShowUserModal]     = useState(false);
+  const [viewBill, setViewBill]               = useState(null);
+  const [editingExpenseId, setEditingExpenseId] = useState(null);
 
   const [formData, setFormData] = useState({
-    logo: '', type: 'Product', name: '', price: '', taxLabel: '', taxRate: '0'
+    category: "", user: "", amount: "", date: "", notes: "", bill: null,
+  });
+  const [newCategory, setNewCategory] = useState({ name: "", description: "" });
+  const [newUser, setNewUser] = useState({
+    name: "", email: "", phone: "", role: "", status: "Enabled", address: "",
   });
 
   useEffect(() => {
-    const savedProducts = localStorage.getItem('my_products_list');
-    if (savedProducts) setProducts(JSON.parse(savedProducts));
+    setCategories(JSON.parse(localStorage.getItem("expenseCategories")) || []);
+    setExpenses(JSON.parse(localStorage.getItem("expensesList")) || []);
+    setUsers(JSON.parse(localStorage.getItem("usersList")) || []);
   }, []);
 
-  const handleImageUpload = (e) => {
+  useEffect(() => { localStorage.setItem("expensesList",    JSON.stringify(expenses));   }, [expenses]);
+  useEffect(() => { localStorage.setItem("expenseCategories", JSON.stringify(categories)); }, [categories]);
+  useEffect(() => { localStorage.setItem("usersList",       JSON.stringify(users));      }, [users]);
+
+  const handleFileChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => setFormData({ ...formData, logo: reader.result });
-      reader.readAsDataURL(file);
-    }
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => setFormData(prev => ({ ...prev, bill: reader.result }));
+    reader.readAsDataURL(file);
   };
 
-  const handleSaveProduct = () => {
-    if (!formData.name || !formData.price) {
-      alert("Please fill required fields!");
+  const openAddDrawer = () => {
+    setFormData({ category: "", user: "", amount: "", date: "", notes: "", bill: null });
+    setEditingExpenseId(null);
+    setShowDrawer(true);
+  };
+
+  const openEditDrawer = (expense) => {
+    setFormData({
+      category: expense.category,
+      user: expense.user,
+      amount: expense.amount,
+      date: expense.date,
+      notes: expense.notes,
+      bill: expense.bill,
+    });
+    setEditingExpenseId(expense.id);
+    setShowDrawer(true);
+  };
+
+  const handleSaveExpense = () => {
+    if (!formData.category || !formData.user || !formData.amount || !formData.date) {
+      alert("All required fields are mandatory");
       return;
     }
 
-    if (editingProductId) {
-      const updatedProducts = products.map((p) =>
-        p.id === editingProductId ? { ...p, ...formData } : p
+    if (editingExpenseId) {
+      setExpenses(prev =>
+        prev.map(e => e.id === editingExpenseId ? { ...e, ...formData } : e)
       );
-
-      setProducts(updatedProducts);
-      localStorage.setItem('my_products_list', JSON.stringify(updatedProducts));
     } else {
-      const newProduct = { ...formData, id: Date.now() };
-      const updated = [...products, newProduct];
-      setProducts(updated);
-      localStorage.setItem('my_products_list', JSON.stringify(updated));
+      setExpenses(prev => [...prev, { ...formData, id: Date.now() }]);
     }
 
-    setFormData({ logo: '', type: 'Product', name: '', price: '', taxLabel: '', taxRate: '0' });
-    setEditingProductId(null);
-    setIsDrawerOpen(false);
+    setShowDrawer(false);
+    setEditingExpenseId(null);
+    setFormData({ category: "", user: "", amount: "", date: "", notes: "", bill: null });
   };
 
-  const handleEditProduct = (product) => {
-    setFormData(product);
-    setEditingProductId(product.id);
-    setIsDrawerOpen(true);
+  const handleAddCategory = () => {
+    if (!newCategory.name) return alert("Category Name required");
+    setCategories(prev => [...prev, { id: Date.now(), ...newCategory }]);
+    setFormData(prev => ({ ...prev, category: newCategory.name }));
+    setNewCategory({ name: "", description: "" });
+    setShowCategoryModal(false);
   };
 
-  const deleteProduct = (id) => {
-    if (window.confirm("Delete this product?")) {
-      const filtered = products.filter(p => p.id !== id);
-      setProducts(filtered);
-      localStorage.setItem('my_products_list', JSON.stringify(filtered));
+  const handleAddUser = () => {
+    if (!newUser.name || !newUser.email) return alert("Name & Email required");
+    setUsers(prev => [...prev, { id: Date.now(), ...newUser }]);
+    setFormData(prev => ({ ...prev, user: newUser.name }));
+    setNewUser({ name: "", email: "", phone: "", role: "", status: "Enabled", address: "" });
+    setShowUserModal(false);
+  };
+
+  const handleDelete = (id) => {
+    if (window.confirm("Delete this expense?")) {
+      setExpenses(prev => prev.filter(item => item.id !== id));
     }
   };
 
-  return (
-    
-      <div className="min-h-screen bg-[#f8f9fa] dark:bg-slate-900 pb-10">
-        
-        {isDrawerOpen && <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" onClick={() => {
-          setIsDrawerOpen(false);
-          setEditingProductId(null);
-        }}></div>}
-
-        <div className={`fixed top-0 right-0 h-full w-full sm:w-[500px] bg-white dark:bg-slate-800 shadow-2xl z-50 transform transition-transform duration-300 ${isDrawerOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-          <div className="flex justify-between items-center p-4 border-b dark:border-slate-700">
-            <h2 className="text-lg font-semibold dark:text-white">
-              {editingProductId ? "Edit Product" : "Add New Product"}
-            </h2>
-            <button onClick={() => {
-              setIsDrawerOpen(false);
-              setEditingProductId(null);
-            }}>
-              <X size={24} className="text-gray-400" />
-            </button>
-          </div>
-
-          <div className="p-6 space-y-4">
-             <div>
-                <input type="file" id="logoUpload" hidden onChange={handleImageUpload} />
-                <label htmlFor="logoUpload" className="border-2 border-dashed border-gray-200 dark:border-slate-700 rounded-lg w-24 h-24 flex items-center justify-center cursor-pointer overflow-hidden bg-gray-50 dark:bg-slate-900">
-                  {formData.logo ? <img src={formData.logo} className="w-full h-full object-cover" /> : <Plus className="text-gray-400" />}
-                </label>
-             </div>
-
-             <input type="text" placeholder="Product Name" value={formData.name}
-               onChange={e => setFormData({...formData, name: e.target.value})}
-               className="w-full p-2 border rounded dark:bg-slate-900 dark:text-white dark:border-slate-700" />
-
-             <input type="number" placeholder="Price" value={formData.price}
-               onChange={e => setFormData({...formData, price: e.target.value})}
-               className="w-full p-2 border rounded dark:bg-slate-900 dark:text-white dark:border-slate-700" />
-
-             <input type="text" placeholder="Tax Label" value={formData.taxLabel}
-               onChange={e => setFormData({...formData, taxLabel: e.target.value})}
-               className="w-full p-2 border rounded dark:bg-slate-900 dark:text-white dark:border-slate-700" />
-
-             <button onClick={handleSaveProduct}
-               className="w-full bg-[#0095ff] text-white p-3 rounded-lg font-bold">
-               {editingProductId ? "Update Product" : "Create Product"}
-             </button>
+  if (viewBill) {
+    return (
+      <div className="p-4 sm:p-6 bg-gray-50 min-h-screen">
+        <div className="flex items-center gap-3 mb-5">
+          <button
+            onClick={() => setViewBill(null)}
+            className="flex items-center gap-1.5 text-sm font-semibold text-gray-600
+              hover:text-blue-600 bg-white border border-gray-200 px-3 py-2 rounded-lg
+              shadow-sm transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Back
+          </button>
+          <div>
+            <h2 className="text-xl font-bold text-gray-800 m-0">Bill Details</h2>
+            <p className="text-xs text-gray-400 mt-0.5">Expenses — Bill View</p>
           </div>
         </div>
 
-        <div className="p-4 sm:p-6 lg:p-8">
-          <div className="mb-6 flex justify-between items-center">
-            <h1 className="text-2xl font-bold dark:text-white">Products</h1>
-            <button onClick={() => {
-              setIsDrawerOpen(true);
-              setEditingProductId(null);
-            }}
-              className="bg-[#0095ff] text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm">
-              <Plus size={18} /> <span className="hidden sm:inline">Add New Product</span>
-            </button>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden max-w-lg">
+          <div className="px-5 py-4 border-b border-gray-100 bg-blue-50 flex items-center justify-between">
+            <span className="text-sm font-bold text-blue-700 bg-blue-100 px-3 py-1 rounded-full">
+              {viewBill.category}
+            </span>
+            <span className="text-xl font-bold text-gray-800">₹ {viewBill.amount}</span>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 md:hidden">
-            {products.length > 0 ? (
-              products.map((product) => (
-                <div key={product.id} className="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 relative">
+          <div className="divide-y divide-gray-50">
+            {[
+              { label: "Category", value: viewBill.category },
+              { label: "User", value: viewBill.user },
+              { label: "Amount", value: `₹ ${viewBill.amount}` },
+              { label: "Date", value: viewBill.date },
+            ].map(({ label, value }) => (
+              <div key={label} className="flex flex-col px-5 py-3.5">
+                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wide mb-1">{label}</span>
+                <span className="text-sm font-medium text-gray-800">{value}</span>
+              </div>
+            ))}
 
-                  <div className="absolute top-4 right-4 flex gap-2">
-                    <button onClick={() => handleEditProduct(product)} className="text-blue-400">
-                      <Edit size={18} />
-                    </button>
-                    <button onClick={() => deleteProduct(product.id)} className="text-red-400">
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
-
-                  <div className="flex items-center gap-4 mb-3">
-                    <div className="w-16 h-16 rounded-lg border dark:border-slate-700 overflow-hidden bg-gray-50 flex-shrink-0">
-                      {product.logo ? <img src={product.logo} className="w-full h-full object-cover" /> : <PackageOpen className="m-4 text-gray-300" />}
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-gray-800 dark:text-white">{product.name}</h3>
-                      <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded dark:bg-blue-900/20">{product.type}</span>
-                    </div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="text-center p-10 bg-white dark:bg-slate-800 rounded-xl">No products found</div>
+            {viewBill.notes && (
+              <div className="flex flex-col px-5 py-3.5">
+                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wide mb-1">Notes</span>
+                <span className="text-sm text-gray-700 leading-relaxed">{viewBill.notes}</span>
+              </div>
             )}
+
+            <div className="flex flex-col px-5 py-3.5">
+              <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wide mb-2">Bill</span>
+              {viewBill.bill ? (
+                viewBill.bill.startsWith("data:image") ? (
+                  <img src={viewBill.bill} alt="Bill" className="w-full max-w-xs rounded-xl border border-gray-200 shadow-sm" />
+                ) : (
+                  <a href={viewBill.bill} target="_blank" rel="noreferrer"
+                    className="inline-flex items-center gap-2 text-sm text-blue-600 font-semibold bg-blue-50 px-4 py-2 rounded-lg hover:bg-blue-100 transition-colors w-fit">
+                    View Bill
+                  </a>
+                )
+              ) : (
+                <span className="text-sm text-gray-400 italic">No bill attached</span>
+              )}
+            </div>
           </div>
 
-          <div className="hidden md:block bg-white dark:bg-slate-800 rounded-xl shadow-sm border dark:border-slate-700 overflow-hidden">
-            <table className="w-full text-left">
-              <thead className="bg-gray-50 dark:bg-slate-900/50 text-gray-500 text-[11px] font-bold uppercase">
-                <tr>
-                  <th className="p-4">Logo</th>
-                  <th className="p-4">Name</th>
-                  <th className="p-4">Type</th>
-                  <th className="p-4">Price</th>
-                  <th className="p-4">Tax</th>
-                  <th className="p-4 text-center">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y dark:divide-slate-700">
-                {products.map((product) => (
-                  <tr key={product.id} className="dark:text-white text-sm hover:bg-gray-50 dark:hover:bg-slate-700/40">
-                    <td className="p-4">
-                      <div className="w-10 h-10 rounded border overflow-hidden">
-                        {product.logo ? <img src={product.logo} className="w-full h-full object-cover" /> : <PackageOpen size={20} className="m-2 text-gray-300" />}
-                      </div>
-                    </td>
-                    <td className="p-4 font-medium">{product.name}</td>
-                    <td className="p-4">{product.type}</td>
-                    <td className="p-4 text-blue-500 font-bold">${product.price}</td>
-                    <td className="p-4 text-xs">{product.taxLabel} ({product.taxRate}%)</td>
-                    <td className="p-4 text-center space-x-3">
-                      <button onClick={() => handleEditProduct(product)} className="text-blue-400 hover:text-blue-600">
-                        <Edit size={18} />
-                      </button>
-                      <button onClick={() => deleteProduct(product.id)} className="text-red-400 hover:text-red-600">
-                        <Trash2 size={18} />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="px-5 py-4 border-t border-gray-100 flex justify-between items-center bg-gray-50">
+            <button onClick={() => setViewBill(null)} className="text-sm font-semibold text-gray-600 hover:text-gray-800 transition-colors">
+              ← Back to list
+            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => { openEditDrawer(viewBill); setViewBill(null); }}
+                className="w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors shadow-sm"
+              >
+                <Edit size={16} />
+              </button>
+              <button
+                onClick={() => { handleDelete(viewBill.id); setViewBill(null); }}
+                className="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-sm"
+              >
+                <Trash2 size={16} />
+              </button>
+            </div>
           </div>
-
         </div>
       </div>
-    
+    );
+  }
+
+  return (
+    <div className="p-4 sm:p-6 bg-gray-50 min-h-screen">
+
+      <div className="flex items-center justify-between gap-3 mb-5">
+        <div>
+          <h2 className="text-xl font-bold text-gray-800 m-0">Expenses</h2>
+          <p className="text-xs text-gray-400 mt-0.5">Dashboard - Expenses</p>
+        </div>
+        <button
+          onClick={openAddDrawer}
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white
+            text-sm font-semibold px-4 py-2 rounded-lg transition-colors shadow-sm whitespace-nowrap flex-shrink-0"
+        >
+          <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          <span className="hidden xs:inline">Add New Expense</span>
+          <span className="xs:hidden">Add</span>
+        </button>
+      </div>
+
+      {/* DESKTOP TABLE */}
+      <div className="hidden sm:block bg-white shadow-sm rounded-xl border border-gray-100 overflow-hidden">
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 border-b border-gray-100">
+            <tr>
+              {["Category","User","Amount","Date","Notes","Bill","Action"].map(h => (
+                <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-50">
+            {expenses.length === 0 ? (
+              <tr>
+                <td colSpan={7} className="text-center py-12 text-gray-400 text-sm">No Data Available</td>
+              </tr>
+            ) : expenses.map((item) => (
+              <tr key={item.id} className="hover:bg-gray-50 transition-colors">
+                <td className="px-4 py-3.5 text-sm text-gray-700">{item.category}</td>
+                <td className="px-4 py-3.5 text-sm text-gray-700">{item.user}</td>
+                <td className="px-4 py-3.5 text-sm font-medium text-gray-800">₹ {item.amount}</td>
+                <td className="px-4 py-3.5 text-sm text-gray-600">{item.date}</td>
+                <td className="px-4 py-3.5 text-sm text-gray-500 max-w-[160px] truncate">{item.notes || <span className="text-gray-300">—</span>}</td>
+                <td className="px-4 py-3.5">
+                  {item.bill ? (
+                    <button onClick={() => setViewBill(item)} className="text-blue-600 hover:text-blue-800 underline text-xs font-medium">View</button>
+                  ) : (
+                    <span className="text-gray-300 text-xs">—</span>
+                  )}
+                </td>
+                <td className="px-4 py-3.5">
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => openEditDrawer(item)}
+                      className="w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors shadow-sm"
+                    >
+                      <Edit size={16} />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(item.id)}
+                      className="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-sm"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* MOBILE CARDS */}
+      <div className="sm:hidden flex flex-col gap-2.5">
+        {expenses.length === 0 ? (
+          <div className="text-center py-10 text-gray-400 bg-white rounded-xl border border-gray-100 shadow-sm">
+            <div className="text-4xl mb-2">🧾</div>
+            <div className="text-sm font-semibold">No Data Available</div>
+          </div>
+        ) : expenses.map((item) => (
+          <div key={item.id} className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+
+            {/* Card Header with action buttons */}
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50">
+              <span className="text-sm font-bold text-blue-600">{item.category}</span>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => openEditDrawer(item)}
+                  className="w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors shadow-sm"
+                >
+                  <Edit size={16} />
+                </button>
+                <button
+                  onClick={() => handleDelete(item.id)}
+                  className="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-sm"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            </div>
+
+            <div className="flex flex-col px-4 py-3 border-b border-gray-100">
+              <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wide mb-1">User</span>
+              <span className="text-sm font-medium text-gray-800">{item.user}</span>
+            </div>
+
+            <div className="flex flex-col px-4 py-3 border-b border-gray-100">
+              <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wide mb-1">Amount</span>
+              <span className="text-sm font-bold text-gray-800">₹ {item.amount}</span>
+            </div>
+
+            <div className="flex flex-col px-4 py-3 border-b border-gray-100">
+              <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wide mb-1">Date</span>
+              <span className="text-sm text-gray-700">{item.date}</span>
+            </div>
+
+            {item.notes && (
+              <div className="flex flex-col px-4 py-3 border-b border-gray-100">
+                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wide mb-1">Notes</span>
+                <span className="text-sm text-gray-600 leading-relaxed">{item.notes}</span>
+              </div>
+            )}
+
+            {item.bill && (
+              <div className="flex flex-col px-4 py-3">
+                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wide mb-1">Bill</span>
+                <button
+                  onClick={() => setViewBill(item)}
+                  className="inline-flex items-center gap-1.5 text-sm text-blue-600 font-semibold bg-blue-50 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition-colors w-fit"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  View Bill
+                </button>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* ADD / EDIT DRAWER */}
+      {showDrawer && (
+        <div className="fixed inset-0 z-40 flex">
+          <div className="flex-1 bg-black/40 backdrop-blur-sm" onClick={() => { setShowDrawer(false); setEditingExpenseId(null); }} />
+          <div className="w-full max-w-xl bg-white p-5 sm:p-6 overflow-y-auto shadow-2xl">
+            <div className="flex justify-between items-center mb-5 border-b pb-3">
+              <h3 className="text-lg font-semibold text-gray-800">
+                {editingExpenseId ? "Edit Expense" : "Add New Expense"}
+              </h3>
+              <button onClick={() => { setShowDrawer(false); setEditingExpenseId(null); }} className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
+            </div>
+
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+              Expense Category <span className="text-red-500">*</span>
+            </label>
+            <div className="flex gap-2 mb-4">
+              <select
+                className="w-full border border-gray-200 p-2.5 rounded-lg text-sm outline-none focus:border-blue-500"
+                value={formData.category}
+                onChange={e => setFormData({ ...formData, category: e.target.value })}
+              >
+                <option value="">Select Category</option>
+                {categories.map(cat => <option key={cat.id} value={cat.name}>{cat.name}</option>)}
+              </select>
+              <button
+                onClick={() => setShowCategoryModal(true)}
+                className="border border-gray-200 px-3 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold transition-colors"
+              >+</button>
+            </div>
+
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+              User <span className="text-red-500">*</span>
+            </label>
+            <div className="flex gap-2 mb-4">
+              <select
+                className="w-full border border-gray-200 p-2.5 rounded-lg text-sm outline-none focus:border-blue-500"
+                value={formData.user}
+                onChange={e => setFormData({ ...formData, user: e.target.value })}
+              >
+                <option value="">Select User</option>
+                {users.map(u => <option key={u.id} value={u.name}>{u.name}</option>)}
+              </select>
+              <button
+                onClick={() => setShowUserModal(true)}
+                className="border border-gray-200 px-3 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold transition-colors"
+              >+</button>
+            </div>
+
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+              Date <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="date"
+              className="w-full border border-gray-200 p-2.5 rounded-lg text-sm mb-4 outline-none focus:border-blue-500"
+              value={formData.date}
+              onChange={e => setFormData({ ...formData, date: e.target.value })}
+            />
+
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+              Amount <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="number"
+              placeholder="Enter Amount"
+              className="w-full border border-gray-200 p-2.5 rounded-lg text-sm mb-4 outline-none focus:border-blue-500"
+              value={formData.amount}
+              onChange={e => setFormData({ ...formData, amount: e.target.value })}
+            />
+
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Upload Bill</label>
+            <div className="mb-4">
+              <label className="cursor-pointer inline-flex items-center gap-2 border border-gray-200 px-4 py-2.5 rounded-lg bg-gray-50 hover:bg-gray-100 text-sm text-gray-600 font-medium transition-colors">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                {formData.bill ? "Bill Selected ✓" : "Upload Bill"}
+                <input type="file" className="hidden" onChange={handleFileChange} />
+              </label>
+            </div>
+
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Notes</label>
+            <textarea
+              placeholder="Add notes..."
+              className="w-full border border-gray-200 p-2.5 rounded-lg text-sm mb-5 outline-none focus:border-blue-500 resize-none"
+              rows={3}
+              value={formData.notes}
+              onChange={e => setFormData({ ...formData, notes: e.target.value })}
+            />
+
+            <div className="flex justify-end gap-3 border-t pt-4">
+              <button
+                onClick={() => { setShowDrawer(false); setEditingExpenseId(null); }}
+                className="px-5 py-2.5 border border-gray-200 rounded-lg text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveExpense}
+                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-colors"
+              >
+                {editingExpenseId ? "Update Expense" : "Create"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* CATEGORY MODAL */}
+      {showCategoryModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50 p-4">
+          <div className="bg-white p-5 rounded-xl w-full max-w-md shadow-2xl">
+            <h3 className="mb-4 font-semibold text-gray-800">Add Category</h3>
+            <input
+              type="text" placeholder="Category Name"
+              className="w-full border border-gray-200 p-2.5 mb-3 rounded-lg text-sm outline-none focus:border-blue-500"
+              value={newCategory.name}
+              onChange={e => setNewCategory({ ...newCategory, name: e.target.value })}
+            />
+            <textarea
+              placeholder="Description"
+              className="w-full border border-gray-200 p-2.5 mb-4 rounded-lg text-sm outline-none focus:border-blue-500 resize-none"
+              rows={3}
+              value={newCategory.description}
+              onChange={e => setNewCategory({ ...newCategory, description: e.target.value })}
+            />
+            <div className="flex justify-end gap-2">
+              <button onClick={() => setShowCategoryModal(false)} className="border border-gray-200 px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 hover:bg-gray-50">Cancel</button>
+              <button onClick={handleAddCategory} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold">Save</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* USER MODAL */}
+      {showUserModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50 p-4">
+          <div className="bg-white p-5 rounded-xl w-full max-w-lg shadow-2xl">
+            <h3 className="mb-4 font-semibold text-gray-800">Add New Staff Member</h3>
+            <input type="text" placeholder="Name" className="w-full border border-gray-200 p-2.5 mb-3 rounded-lg text-sm outline-none focus:border-blue-500" value={newUser.name} onChange={e => setNewUser({ ...newUser, name: e.target.value })} />
+            <input type="email" placeholder="Email" className="w-full border border-gray-200 p-2.5 mb-3 rounded-lg text-sm outline-none focus:border-blue-500" value={newUser.email} onChange={e => setNewUser({ ...newUser, email: e.target.value })} />
+            <input type="text" placeholder="Phone" className="w-full border border-gray-200 p-2.5 mb-3 rounded-lg text-sm outline-none focus:border-blue-500" value={newUser.phone} onChange={e => setNewUser({ ...newUser, phone: e.target.value })} />
+            <input type="text" placeholder="Role" className="w-full border border-gray-200 p-2.5 mb-3 rounded-lg text-sm outline-none focus:border-blue-500" value={newUser.role} onChange={e => setNewUser({ ...newUser, role: e.target.value })} />
+            <textarea placeholder="Address" className="w-full border border-gray-200 p-2.5 mb-4 rounded-lg text-sm outline-none focus:border-blue-500 resize-none" rows={3} value={newUser.address} onChange={e => setNewUser({ ...newUser, address: e.target.value })} />
+            <div className="flex justify-end gap-2">
+              <button onClick={() => setShowUserModal(false)} className="border border-gray-200 px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 hover:bg-gray-50">Cancel</button>
+              <button onClick={handleAddUser} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold">Save</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
-export default Products;
+export default Expenses;

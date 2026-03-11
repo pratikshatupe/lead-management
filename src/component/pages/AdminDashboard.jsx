@@ -48,28 +48,27 @@ export default function AdminDashboard() {
       <div className="mb-6">
         <div className="inline-flex items-center gap-2 bg-white dark:bg-slate-800 border dark:border-slate-700 rounded-md px-4 py-2 shadow-sm">
           
-          <input 
-            type="text" 
-            placeholder="Start Date"
-            className="bg-transparent outline-none text-sm text-gray-500 dark:text-slate-300 w-24"
-            onFocus={(e) => (e.target.type = "date")}
-            onBlur={(e) => (e.target.type = "text")}
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-          />
+       <input
+  type="text"
+  placeholder="Start Date"
+  className="bg-transparent outline-none text-sm text-black font-semibold dark:text-white w-24"
+  onFocus={(e) => (e.target.type = "date")}
+  onBlur={(e) => (e.target.type = "text")}
+  value={startDate}
+  onChange={(e) => setStartDate(e.target.value)}
+/>
 
-          <span className="text-gray-300">→</span>
+<span className="text-gray-300">→</span>
 
-          <input 
-            type="text" 
-            placeholder="End Date"
-            className="bg-transparent outline-none text-sm text-gray-500 dark:text-slate-300 w-24"
-            onFocus={(e) => (e.target.type = "date")}
-            onBlur={(e) => (e.target.type = "text")}
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-          />
-
+<input
+  type="text"
+  placeholder="End Date"
+  className="bg-transparent outline-none text-sm text-black font-semibold dark:text-white w-24"
+  onFocus={(e) => (e.target.type = "date")}
+  onBlur={(e) => (e.target.type = "text")}
+  value={endDate}
+  onChange={(e) => setEndDate(e.target.value)}
+/>
           <FaCalendarAlt className="text-gray-300 ml-2" size={16} />
         </div>
       </div>

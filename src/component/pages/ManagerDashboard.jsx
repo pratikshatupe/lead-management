@@ -61,28 +61,27 @@ export default function ManagerDashboard() {
 
         <div className="flex flex-wrap items-center gap-2 bg-white dark:bg-slate-800 border dark:border-slate-700 rounded-md px-3 md:px-4 py-2 shadow-sm w-fit">
 
-          <input 
-            type="text" 
-            placeholder="Start Date"
-            className="bg-transparent outline-none text-sm text-gray-500 dark:text-slate-300 w-28 md:w-32"
-            onFocus={(e) => (e.target.type = "date")}
-            onBlur={(e) => (e.target.type = "text")}
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-          />
+        <input
+  type="text"
+  placeholder="Start Date"
+  className="bg-transparent outline-none text-sm text-black font-semibold dark:text-white w-24"
+  onFocus={(e) => (e.target.type = "date")}
+  onBlur={(e) => (e.target.type = "text")}
+  value={startDate}
+  onChange={(e) => setStartDate(e.target.value)}
+/>
 
-          <span className="text-gray-300">→</span>
+<span className="text-gray-300">→</span>
 
-          <input 
-            type="text" 
-            placeholder="End Date"
-            className="bg-transparent outline-none text-sm text-gray-500 dark:text-slate-300 w-28 md:w-32"
-            onFocus={(e) => (e.target.type = "date")}
-            onBlur={(e) => (e.target.type = "text")}
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-          />
-
+<input
+  type="text"
+  placeholder="End Date"
+  className="bg-transparent outline-none text-sm text-black font-semibold dark:text-white w-24"
+  onFocus={(e) => (e.target.type = "date")}
+  onBlur={(e) => (e.target.type = "text")}
+  value={endDate}
+  onChange={(e) => setEndDate(e.target.value)}
+/>
           <FaCalendarAlt className="text-gray-300 ml-1" size={16} />
 
         </div>

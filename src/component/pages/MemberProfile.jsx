@@ -6,36 +6,29 @@ import {
   FaLock, FaEye, FaEyeSlash, FaCheckCircle,
 } from "react-icons/fa";
 
+
 function ModalShell({ onClose, children }) {
   return (
     <div
-      className="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center z-50"
+      className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"
       onClick={onClose}
     >
       <div
-        className="bg-white w-full sm:max-w-sm sm:mx-4 rounded-t-3xl sm:rounded-2xl shadow-2xl relative"
-        style={{ maxHeight: "92vh", display: "flex", flexDirection: "column" }}
+        className="bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 relative"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* drag handle */}
-        <div className="flex-shrink-0 flex justify-center pt-3 pb-1 sm:hidden">
-          <div className="w-10 h-1 bg-gray-200 rounded-full" />
-        </div>
-
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors z-10"
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors"
         >
           <FaTimes size={16} />
         </button>
-
-        <div className="overflow-y-auto flex-1 p-5 sm:p-6">
-          {children}
-        </div>
+        {children}
       </div>
     </div>
   );
 }
+
 
 function EditProfileModal({ initialAvatar, onClose, onSave }) {
   const editFileRef = useRef(null);
@@ -72,13 +65,14 @@ function EditProfileModal({ initialAvatar, onClose, onSave }) {
 
   return (
     <ModalShell onClose={onClose}>
-      <h2 className="text-base font-semibold text-gray-800 mb-4 flex items-center gap-2 pr-6">
+      <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
         <FaEdit className="text-indigo-500" /> Edit Profile
       </h2>
 
-      <div className="space-y-4">
+      <div className="overflow-y-auto max-h-[70vh] space-y-4 pr-1">
+
         {/* Avatar */}
-        <div className="flex flex-col items-center gap-1">
+        <div className="flex flex-col items-center gap-1 mb-2">
           <input type="file" accept="image/*" className="hidden" ref={editFileRef}
             onChange={(e) => { const f = e.target.files[0]; if (f) setEditAvatar(URL.createObjectURL(f)); }}
           />
@@ -106,7 +100,7 @@ function EditProfileModal({ initialAvatar, onClose, onSave }) {
           <label className="text-xs font-semibold text-gray-500 uppercase">Full Name</label>
           <input value={fullName}
             onChange={(e) => { setFullName(e.target.value); setErrors({ ...errors, fullName: "" }); }}
-            className={`w-full border rounded-lg mt-1 p-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition ${errors.fullName ? "border-red-400" : "border-gray-300"}`}
+            className={`w-full border rounded-lg mt-1 p-2.5 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition ${errors.fullName ? "border-red-400" : "border-gray-300"}`}
             placeholder="Full name" />
           {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>}
         </div>
@@ -118,7 +112,7 @@ function EditProfileModal({ initialAvatar, onClose, onSave }) {
           </label>
           <input type="email" value={email}
             onChange={(e) => { setEmail(e.target.value); setErrors({ ...errors, email: "" }); }}
-            className={`w-full border rounded-lg mt-1 p-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition ${errors.email ? "border-red-400" : "border-gray-300"}`}
+            className={`w-full border rounded-lg mt-1 p-2.5 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition ${errors.email ? "border-red-400" : "border-gray-300"}`}
             placeholder="Email address" />
           {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
         </div>
@@ -129,7 +123,7 @@ function EditProfileModal({ initialAvatar, onClose, onSave }) {
             <FaPhone size={9} /> Phone
           </label>
           <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg mt-1 p-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition"
+            className="w-full border border-gray-300 rounded-lg mt-1 p-2.5 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition"
             placeholder="Phone number" />
         </div>
 
@@ -145,9 +139,9 @@ function EditProfileModal({ initialAvatar, onClose, onSave }) {
               <div className="relative mt-1">
                 <input type={showOld ? "text" : "password"} value={oldPass}
                   onChange={(e) => { setOldPass(e.target.value); setErrors({ ...errors, oldPass: "" }); }}
-                  className={`w-full border rounded-lg p-3 text-sm outline-none focus:border-indigo-500 pr-10 transition ${errors.oldPass ? "border-red-400" : "border-gray-300"}`}
+                  className={`w-full border rounded-lg p-2.5 text-sm outline-none focus:border-indigo-500 pr-10 transition ${errors.oldPass ? "border-red-400" : "border-gray-300"}`}
                   placeholder="Current password" />
-                <button onClick={() => setShowOld(!showOld)} className="absolute right-3 top-3.5 text-gray-400">
+                <button onClick={() => setShowOld(!showOld)} className="absolute right-3 top-3 text-gray-400">
                   {showOld ? <FaEyeSlash size={13} /> : <FaEye size={13} />}
                 </button>
               </div>
@@ -158,9 +152,9 @@ function EditProfileModal({ initialAvatar, onClose, onSave }) {
               <div className="relative mt-1">
                 <input type={showNew ? "text" : "password"} value={newPass}
                   onChange={(e) => setNewPass(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg p-3 text-sm outline-none focus:border-indigo-500 pr-10 transition"
+                  className="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none focus:border-indigo-500 pr-10 transition"
                   placeholder="New password" />
-                <button onClick={() => setShowNew(!showNew)} className="absolute right-3 top-3.5 text-gray-400">
+                <button onClick={() => setShowNew(!showNew)} className="absolute right-3 top-3 text-gray-400">
                   {showNew ? <FaEyeSlash size={13} /> : <FaEye size={13} />}
                 </button>
               </div>
@@ -176,12 +170,13 @@ function EditProfileModal({ initialAvatar, onClose, onSave }) {
       </div>
 
       <div className="flex gap-3 mt-5">
-        <button onClick={onClose} className="flex-1 py-3 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition-all">Cancel</button>
-        <button onClick={handleSave} className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-all shadow-md">Save Changes</button>
+        <button onClick={onClose} className="flex-1 py-2.5 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition-all">Cancel</button>
+        <button onClick={handleSave} className="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-all shadow-md">Save Changes</button>
       </div>
     </ModalShell>
   );
 }
+
 
 export function ProfileModal({ onClose }) {
   const navigate = useNavigate();
@@ -206,8 +201,8 @@ export function ProfileModal({ onClose }) {
           <h2 className="text-lg font-semibold text-gray-800 mb-1">Logout?</h2>
           <p className="text-sm text-gray-500 mb-6">Are you sure you want to logout?</p>
           <div className="flex gap-3">
-            <button onClick={() => setLogoutConfirm(false)} className="flex-1 py-3 border rounded-lg text-sm font-medium hover:bg-gray-50 transition-all">Cancel</button>
-            <button onClick={handleLogout} className="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-medium transition-all shadow-md">Yes, Logout</button>
+            <button onClick={() => setLogoutConfirm(false)} className="flex-1 py-2.5 border rounded-lg text-sm font-medium hover:bg-gray-50 transition-all">Cancel</button>
+            <button onClick={handleLogout} className="flex-1 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-medium transition-all shadow-md">Yes, Logout</button>
           </div>
         </div>
       </ModalShell>
@@ -252,24 +247,24 @@ export function ProfileModal({ onClose }) {
             <FaCamera className="text-white" style={{ fontSize: 10 }} />
           </button>
         </div>
-        <h2 className="text-xl font-bold text-indigo-700">{name}</h2>
-        <p className="text-sm text-gray-500 capitalize">{role === "member" ? "Member" : role}</p>
+        <h2 className="text-xl font-bold text-indigo-600">{name}</h2>
+        <p className="text-sm text-gray-500">{role === "member" ? "Member" : role}</p>
       </div>
 
       {/* Info rows */}
-      <div className="space-y-3 mb-5 text-sm bg-gray-50 rounded-xl p-4">
-        <div className="flex justify-between items-start gap-3">
-          <span className="text-gray-400 text-xs uppercase font-semibold shrink-0 pt-0.5">Name</span>
-          <span className="font-medium text-gray-800 text-right break-all">{name}</span>
+      <div className="space-y-3 mb-6 text-sm bg-gray-50 rounded-xl p-4">
+        <div className="flex justify-between items-center">
+          <span className="text-gray-400 text-xs uppercase font-semibold">Name</span>
+          <span className="font-medium text-gray-800">{name}</span>
         </div>
         <div className="border-t border-gray-200" />
-        <div className="flex justify-between items-start gap-3">
-          <span className="text-gray-400 text-xs uppercase font-semibold shrink-0 pt-0.5">Email</span>
-          <span className="font-medium text-gray-800 text-right break-all">{email}</span>
+        <div className="flex justify-between items-center">
+          <span className="text-gray-400 text-xs uppercase font-semibold">Email</span>
+          <span className="font-medium text-gray-800">{email}</span>
         </div>
         <div className="border-t border-gray-200" />
-        <div className="flex justify-between items-start gap-3">
-          <span className="text-gray-400 text-xs uppercase font-semibold shrink-0 pt-0.5">Role</span>
+        <div className="flex justify-between items-center">
+          <span className="text-gray-400 text-xs uppercase font-semibold">Role</span>
           <span className="font-medium text-gray-800 capitalize">{role}</span>
         </div>
       </div>
@@ -277,17 +272,18 @@ export function ProfileModal({ onClose }) {
       {/* Action Buttons */}
       <div className="flex gap-2">
         <button onClick={() => setLogoutConfirm(true)}
-          className="flex-1 flex items-center justify-center gap-2 border border-red-400 text-red-500 hover:bg-red-50 py-3 rounded-lg text-sm font-medium transition-all">
-          <FaSignOutAlt size={13} /> Logout
+          className="flex-1 flex items-center justify-center gap-2 border border-red-400 text-red-500 hover:bg-red-50 py-2.5 rounded-lg text-sm font-medium transition-all">
+          <FaSignOutAlt /> Logout
         </button>
         <button onClick={() => setEditOpen(true)}
-          className="flex-1 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg text-sm font-medium transition-all shadow-md">
-          <FaEdit size={13} /> Edit Profile
+          className="flex-1 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg text-sm font-medium transition-all shadow-md">
+          <FaEdit /> Edit Profile
         </button>
       </div>
     </ModalShell>
   );
 }
+
 
 export default function MemberProfile() {
   const [modal, setModal] = useState(null);
@@ -297,39 +293,37 @@ export default function MemberProfile() {
   const role = localStorage.getItem("role") || "Member";
 
   return (
-    <div className="overflow-x-hidden">
-      <div className="p-3 sm:p-4 md:p-6">
-        <h1 className="text-xl sm:text-2xl font-bold mb-4 dark:text-white">Member Profile</h1>
+    <div className="max-w-4xl mx-auto p-4 md:p-0">
+      <h1 className="text-2xl font-bold mb-6 dark:text-white">Member Profile</h1>
 
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md border dark:border-slate-700 p-4 sm:p-6 w-full">
+      {/* Profile Card */}
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md border dark:border-slate-700 p-6 flex flex-col sm:flex-row items-center gap-6">
 
-          {/* Avatar + info row */}
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-indigo-800 to-indigo-600 flex items-center justify-center shadow-lg flex-shrink-0 overflow-hidden">
-              {avatar ? (
-                <img src={avatar} alt="avatar" className="w-full h-full object-cover" />
-              ) : (
-                <FaUserCircle className="text-white/80 text-3xl sm:text-5xl" />
-              )}
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-base sm:text-xl font-bold dark:text-white truncate">{name}</p>
-              <p className="text-xs sm:text-sm text-indigo-600 font-medium capitalize">{role}</p>
-              <p className="text-xs sm:text-sm text-gray-400 truncate">{email}</p>
-            </div>
-          </div>
+        {/* Avatar */}
+        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-indigo-800 to-indigo-600 flex items-center justify-center shadow-lg flex-shrink-0 overflow-hidden">
+          {avatar ? (
+            <img src={avatar} alt="avatar" className="w-full h-full object-cover" />
+          ) : (
+            <FaUserCircle className="text-white/80 text-5xl" />
+          )}
+        </div>
 
-          {/* Buttons */}
-          <div className="flex flex-col sm:flex-row gap-2">
-            <button onClick={() => setModal("view")}
-              className="flex-1 flex items-center justify-center gap-2 border border-indigo-600 text-indigo-600 hover:bg-indigo-50 px-4 py-2.5 rounded-lg text-sm font-medium transition-all">
-              <FaUserCircle size={14} /> View Profile
-            </button>
-            <button onClick={() => setModal("edit")}
-              className="flex-1 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-all shadow-sm">
-              <FaEdit size={14} /> Edit Profile
-            </button>
-          </div>
+        {/* Info */}
+        <div className="flex-1 text-center sm:text-left">
+          <p className="text-xl font-bold dark:text-white">{name}</p>
+          <p className="text-sm text-indigo-500 font-medium capitalize">{role}</p>
+          <p className="text-sm text-gray-400 mt-0.5">{email}</p>
+        </div>
+
+        <div className="flex gap-2">
+          <button onClick={() => setModal("view")}
+            className="flex items-center gap-2 border border-indigo-600 text-indigo-600 hover:bg-indigo-50 px-4 py-2.5 rounded-lg text-sm font-medium transition-all">
+            <FaUserCircle /> View Profile
+          </button>
+          <button onClick={() => setModal("edit")}
+            className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-all shadow-sm">
+            <FaEdit /> Edit Profile
+          </button>
         </div>
       </div>
 
