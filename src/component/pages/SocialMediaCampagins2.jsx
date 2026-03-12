@@ -74,7 +74,8 @@ function roleRoute(role, page) {
   return `${prefix}/${page}`;
 }
 
-const STORAGE_KEY = "social_media_lead_data";
+// ✅ Unique storage key — page 2 cha data page 1 che overwrite करणार नाही
+const STORAGE_KEY = "social_media_lead_data_2";
 
 const LEAD_STATUS_OPTIONS = [
   "New",
@@ -86,15 +87,16 @@ const LEAD_STATUS_OPTIONS = [
   "Converted",
 ];
 
+// ✅ वेगळा lead data — page 2 साठी
 const defaultFormData = {
   referenceNumber: "",
   leadStatus: "",
-  firstName: "Anthony",
-  lastName: "Windler",
-  company: "O'Conner Group",
-  email: "iwitting@example.org",
-  website: "https://hand.net",
-  phone: "+13217057189",
+  firstName: "Jessica",
+  lastName: "Turner",
+  company: "Hartmann LLC",
+  email: "jessica.turner@example.org",
+  website: "https://hartmann.com",
+  phone: "+14085559821",
 };
 
 // ── Custom Responsive Dropdown ──
@@ -236,7 +238,7 @@ function LeadStatusDropdown({ value, onChange }) {
   );
 }
 
-export default function SocialMediaCampaigns() {
+export default function SocialMediaCampagins2() {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -251,7 +253,7 @@ export default function SocialMediaCampaigns() {
   const [websiteError, setWebsiteError] = useState("");
   const [noteText, setNoteText]         = useState("");
   const [notes, setNotes]               = useState([
-    { id: 1, text: "Called customer, interested in premium plan.", time: "03-03-2026 10:05 am" },
+    { id: 1, text: "Follow-up call scheduled for next week.", time: "04-03-2026 11:00 am" },
   ]);
 
   useEffect(() => {
@@ -339,16 +341,16 @@ export default function SocialMediaCampaigns() {
           </div>
         </div>
 
-        {/* ✅ Previous Lead disabled (page 1), Next Lead → /socialmedia2 */}
+        {/* ✅ Previous Lead → /socialmedia (page 1), Next Lead disabled (last page) */}
         <div className="flex gap-2 flex-shrink-0">
           <button
-            disabled
-            className="bg-yellow-400 opacity-50 cursor-not-allowed px-3 md:px-4 py-2 rounded text-white text-sm">
+            onClick={() => navigate("/socialmedia")}
+            className="bg-yellow-400 hover:bg-yellow-500 px-3 md:px-4 py-2 rounded text-white text-sm transition-colors">
             ← Previous Lead
           </button>
           <button
-            onClick={() => navigate("/socialmedia2")}
-            className="bg-green-500 hover:bg-green-600 px-3 md:px-4 py-2 rounded text-white text-sm transition-colors">
+            disabled
+            className="bg-green-500 opacity-50 cursor-not-allowed px-3 md:px-4 py-2 rounded text-white text-sm">
             Next Lead →
           </button>
         </div>
@@ -376,7 +378,7 @@ export default function SocialMediaCampaigns() {
           </div>
           <h3 className="font-semibold mb-3">Lead Details</h3>
           <div className="text-sm space-y-2 text-gray-600">
-            <p>Lead Number : <b>68 / 97</b></p>
+            <p>Lead Number : <b>69 / 97</b></p>
             <p>Last Actioner : <b>Admin</b></p>
             <p>Follow Up : <b>-</b></p>
             <p>Salesman Booking : <b>-</b></p>
@@ -559,8 +561,8 @@ export default function SocialMediaCampaigns() {
                   </thead>
                   <tbody>
                     <tr>
-                      <td className="p-2 border text-sm">17 M, 45 S</td>
-                      <td className="p-2 border text-sm">03-03-2026 10:05 am</td>
+                      <td className="p-2 border text-sm">08 M, 20 S</td>
+                      <td className="p-2 border text-sm">04-03-2026 11:00 am</td>
                       <td className="p-2 border text-sm">Admin</td>
                     </tr>
                   </tbody>
@@ -605,7 +607,7 @@ export default function SocialMediaCampaigns() {
         <div className="bg-white p-4 rounded shadow">
           <h3 className="font-semibold text-green-600 mb-4">Lead History</h3>
           <div className="text-sm text-gray-600 space-y-3">
-            <p>A new call started by Admin on<br /><span className="text-xs text-gray-400">03-03-2026 10:05 am</span></p>
+            <p>A new call started by Admin on<br /><span className="text-xs text-gray-400">04-03-2026 11:00 am</span></p>
           </div>
         </div>
 

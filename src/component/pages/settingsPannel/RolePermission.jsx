@@ -1,8 +1,7 @@
 import { useState } from "react";
+import { Edit, Trash2 } from "lucide-react";
 
 const PlusIcon = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>;
-const EditIcon = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>;
-const TrashIcon = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>;
 const XIcon = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>;
 const CheckCircleIcon = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>;
 const SaveIcon = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>;
@@ -91,96 +90,107 @@ const PermRow = ({ section, perms, onChange }) => (
   </div>
 );
 
-const RoleDrawer = ({ title, role, onChange, onClose, onSubmit, submitLabel }) => (
-  <div
-    className="fixed inset-0 z-[1000] bg-black/35 backdrop-blur-sm flex items-stretch justify-end"
-    onClick={onClose}
-  >
+function RoleDrawer({ title, initialRole, onClose, onSubmit, submitLabel }) {
+  const [role, setRole] = useState(() => ({
+    ...initialRole,
+    perms: { ...initialRole.perms },
+  }));
+
+  const handleChange = (field, val) => {
+    setRole(prev => ({ ...prev, [field]: val }));
+  };
+
+  return (
     <div
-      className="w-full max-w-[560px] bg-white flex flex-col shadow-2xl animate-[slideIn_0.3s_ease]"
-      onClick={e => e.stopPropagation()}
+      className="fixed inset-0 z-[1000] bg-black/35 backdrop-blur-sm flex items-stretch justify-end"
+      onClick={onClose}
     >
-      <div className="flex items-center justify-between px-6 py-[18px] border-b border-gray-100 flex-shrink-0">
-        <h3 className="m-0 text-[17px] font-bold text-gray-800">{title}</h3>
-        <button
-          onClick={onClose}
-          className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 p-1 rounded-lg transition-colors flex"
-        >
-          <XIcon />
-        </button>
-      </div>
-
-      <div className="flex-1 overflow-y-auto px-6 py-5">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-          <div>
-            <label className="block text-[13px] font-semibold text-gray-700 mb-1.5">
-              <span className="text-red-500">* </span>Display Name
-            </label>
-            <input
-              value={role.displayName}
-              onChange={e => onChange('displayName', e.target.value)}
-              placeholder="Please Enter Display Name"
-              className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-[13px] outline-none
-                focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
-            />
-          </div>
-          <div>
-            <label className="block text-[13px] font-semibold text-gray-700 mb-1.5">
-              <span className="text-red-500">* </span>Role Name
-            </label>
-            <input
-              value={role.name}
-              onChange={e => onChange('name', e.target.value)}
-              placeholder="Please Enter Role Name"
-              className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-[13px] outline-none
-                focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
-            />
-          </div>
+      <div
+        className="w-full max-w-[560px] bg-white flex flex-col shadow-2xl animate-[slideIn_0.3s_ease]"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between px-6 py-[18px] border-b border-gray-100 flex-shrink-0">
+          <h3 className="m-0 text-[17px] font-bold text-gray-800">{title}</h3>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 p-1 rounded-lg transition-colors flex"
+          >
+            <XIcon />
+          </button>
         </div>
 
-        <div className="mb-5">
-          <label className="block text-[13px] font-semibold text-gray-700 mb-1.5">Description</label>
-          <textarea
-            value={role.description}
-            onChange={e => onChange('description', e.target.value)}
-            placeholder="Please Enter Description"
-            rows={3}
-            className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-[13px] outline-none
-              focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all resize-none font-[inherit]"
-          />
+        <div className="flex-1 overflow-y-auto px-6 py-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-[13px] font-semibold text-gray-700 mb-1.5">
+                <span className="text-red-500">* </span>Display Name
+              </label>
+              <input
+                value={role.displayName}
+                onChange={e => handleChange('displayName', e.target.value)}
+                placeholder="Please Enter Display Name"
+                className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-[13px] outline-none
+                  focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
+              />
+            </div>
+            <div>
+              <label className="block text-[13px] font-semibold text-gray-700 mb-1.5">
+                <span className="text-red-500">* </span>Role Name
+              </label>
+              <input
+                value={role.name}
+                onChange={e => handleChange('name', e.target.value)}
+                placeholder="Please Enter Role Name"
+                className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-[13px] outline-none
+                  focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
+              />
+            </div>
+          </div>
+
+          <div className="mb-5">
+            <label className="block text-[13px] font-semibold text-gray-700 mb-1.5">Description</label>
+            <textarea
+              value={role.description}
+              onChange={e => handleChange('description', e.target.value)}
+              placeholder="Please Enter Description"
+              rows={3}
+              className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-[13px] outline-none
+                focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all resize-none font-[inherit]"
+            />
+          </div>
+
+          <div className="text-[13px] font-bold text-gray-700 mb-2.5">Permissions</div>
+          {PERMISSION_SECTIONS.map(s => (
+            <PermRow
+              key={s.label}
+              section={s}
+              perms={role.perms}
+              onChange={(key, val) => handleChange('perms', { ...role.perms, [key]: val })}
+            />
+          ))}
         </div>
 
-        <div className="text-[13px] font-bold text-gray-700 mb-2.5">Permissions</div>
-        {PERMISSION_SECTIONS.map(s => (
-          <PermRow
-            key={s.label}
-            section={s}
-            perms={role.perms}
-            onChange={(key, val) => onChange('perms', { ...role.perms, [key]: val })}
-          />
-        ))}
+        <div className="flex justify-end gap-2.5 px-6 py-4 border-t border-gray-100 flex-shrink-0">
+          <button
+            onClick={onClose}
+            className="px-5 py-2.5 rounded-lg border border-gray-200 bg-white text-gray-700
+              text-[13px] font-semibold hover:bg-gray-50 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => onSubmit(role)}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-blue-500 hover:bg-blue-600
+              text-white text-[13px] font-semibold shadow-md shadow-blue-200 transition-colors"
+          >
+            <SaveIcon /> {submitLabel}
+          </button>
+        </div>
       </div>
-
-      <div className="flex justify-end gap-2.5 px-6 py-4 border-t border-gray-100 flex-shrink-0">
-        <button
-          onClick={onClose}
-          className="px-5 py-2.5 rounded-lg border border-gray-200 bg-white text-gray-700
-            text-[13px] font-semibold hover:bg-gray-50 transition-colors"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={onSubmit}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-blue-500 hover:bg-blue-600
-            text-white text-[13px] font-semibold shadow-md shadow-blue-200 transition-colors"
-        >
-          <SaveIcon /> {submitLabel}
-        </button>
-      </div>
+      <style>{`@keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}`}</style>
     </div>
-    <style>{`@keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}`}</style>
-  </div>
-);
+  );
+}
 
 const DeleteModal = ({ role, onClose, onDelete }) => (
   <div
@@ -215,7 +225,7 @@ const DeleteModal = ({ role, onClose, onDelete }) => (
           className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-red-500 hover:bg-red-600
             text-white text-[13px] font-semibold transition-colors"
         >
-          <TrashIcon /> Delete
+          <Trash2 size={13} /> Delete
         </button>
       </div>
     </div>
@@ -224,18 +234,14 @@ const DeleteModal = ({ role, onClose, onDelete }) => (
 );
 
 export default function RolePermission() {
-  const [roles, setRoles]       = useState(DEFAULT_ROLES);
+  const [roles, setRoles] = useState(DEFAULT_ROLES);
   const [selected, setSelected] = useState([]);
-  const [page, setPage]         = useState(1);
+  const [page, setPage] = useState(1);
   const perPage = 10;
 
-  const [addDrawer,   setAddDrawer]   = useState(false);
-  const [editDrawer,  setEditDrawer]  = useState(null);
+  const [addDrawer, setAddDrawer] = useState(false);
+  const [editDrawer, setEditDrawer] = useState(null);
   const [deleteModal, setDeleteModal] = useState(null);
-
-  const [newRole, setNewRole] = useState({
-    displayName: '', name: '', description: '', perms: makeEmptyPerms(),
-  });
 
   const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
   const showToast = (message, type = 'success') => {
@@ -243,22 +249,21 @@ export default function RolePermission() {
     setTimeout(() => setToast(t => ({ ...t, show: false })), 3000);
   };
 
-  const paginated  = roles.slice((page - 1) * perPage, page * perPage);
+  const paginated = roles.slice((page - 1) * perPage, page * perPage);
   const totalPages = Math.ceil(roles.length / perPage);
 
   const toggleSelect = id => setSelected(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]);
-  const toggleAll    = () => setSelected(selected.length === paginated.length ? [] : paginated.map(r => r.id));
+  const toggleAll = () => setSelected(selected.length === paginated.length ? [] : paginated.map(r => r.id));
 
-  const handleAdd = () => {
-    if (!newRole.displayName.trim() || !newRole.name.trim()) return;
-    setRoles(prev => [...prev, { id: Date.now(), ...newRole, isDefault: false }]);
-    setNewRole({ displayName: '', name: '', description: '', perms: makeEmptyPerms() });
+  const handleAdd = (role) => {
+    if (!role.displayName.trim() || !role.name.trim()) return;
+    setRoles(prev => [...prev, { id: Date.now(), ...role, isDefault: false }]);
     setAddDrawer(false);
     showToast('Role created successfully!');
   };
 
-  const handleEdit = () => {
-    setRoles(prev => prev.map(r => r.id === editDrawer.id ? editDrawer : r));
+  const handleEdit = (role) => {
+    setRoles(prev => prev.map(r => r.id === role.id ? role : r));
     setEditDrawer(null);
     showToast('Role updated successfully!');
   };
@@ -269,7 +274,7 @@ export default function RolePermission() {
     showToast('Role deleted!', 'error');
   };
 
-  const handleRowClick = (role) => setEditDrawer({ ...role, perms: { ...role.perms } });
+  const emptyNewRole = { id: null, displayName: '', name: '', description: '', perms: makeEmptyPerms() };
 
   return (
     <>
@@ -278,8 +283,7 @@ export default function RolePermission() {
       {addDrawer && (
         <RoleDrawer
           title="Add New Role"
-          role={newRole}
-          onChange={(field, val) => setNewRole(p => ({ ...p, [field]: val }))}
+          initialRole={emptyNewRole}
           onClose={() => setAddDrawer(false)}
           onSubmit={handleAdd}
           submitLabel="Create"
@@ -289,8 +293,7 @@ export default function RolePermission() {
       {editDrawer && (
         <RoleDrawer
           title={`Edit Role — ${editDrawer.name}`}
-          role={editDrawer}
-          onChange={(field, val) => setEditDrawer(p => ({ ...p, [field]: val }))}
+          initialRole={editDrawer}
           onClose={() => setEditDrawer(null)}
           onSubmit={handleEdit}
           submitLabel="Update"
@@ -312,13 +315,9 @@ export default function RolePermission() {
       </div>
 
       <div className="mx-4 mt-4 mb-4 bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-
         <div className="px-4 py-3.5 border-b border-gray-100">
           <button
-            onClick={() => {
-              setNewRole({ displayName: '', name: '', description: '', perms: makeEmptyPerms() });
-              setAddDrawer(true);
-            }}
+            onClick={() => setAddDrawer(true)}
             className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white
               px-4 py-2.5 rounded-lg text-[13px] font-semibold transition-colors
               shadow-md shadow-blue-200 w-full sm:w-auto justify-center sm:justify-start"
@@ -327,13 +326,14 @@ export default function RolePermission() {
           </button>
         </div>
 
+        {/* Mobile Cards */}
         <div className="sm:hidden flex flex-col gap-2.5 p-3">
           {paginated.length === 0 ? (
             <p className="text-center text-gray-400 text-sm py-10">No roles found</p>
           ) : paginated.map((role) => (
             <div
               key={role.id}
-              onClick={() => handleRowClick(role)}
+              onClick={() => setEditDrawer({ ...role, perms: { ...role.perms } })}
               className={`rounded-xl overflow-hidden border shadow-sm cursor-pointer transition-colors
                 ${selected.includes(role.id) ? 'bg-blue-50 border-blue-200' : 'bg-white border-gray-200'}`}
             >
@@ -370,16 +370,16 @@ export default function RolePermission() {
                 <div className="flex gap-2">
                   <button
                     onClick={() => setEditDrawer({ ...role, perms: { ...role.perms } })}
-                    className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg transition-colors flex items-center"
+                    className="w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors shadow-sm"
                   >
-                    <EditIcon />
+                    <Edit size={15} />
                   </button>
                   {!role.isDefault && (
                     <button
                       onClick={() => setDeleteModal(role)}
-                      className="bg-blue-500 hover:bg-red-500 text-white p-2 rounded-lg transition-colors flex items-center"
+                      className="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-sm"
                     >
-                      <TrashIcon />
+                      <Trash2 size={15} />
                     </button>
                   )}
                 </div>
@@ -388,6 +388,7 @@ export default function RolePermission() {
           ))}
         </div>
 
+        {/* Desktop Table */}
         <table className="hidden sm:table w-full border-collapse">
           <thead>
             <tr className="bg-gray-50">
@@ -414,7 +415,7 @@ export default function RolePermission() {
             ) : paginated.map((role, i) => (
               <tr
                 key={role.id}
-                onClick={() => handleRowClick(role)}
+                onClick={() => setEditDrawer({ ...role, perms: { ...role.perms } })}
                 className={`border-t border-gray-100 cursor-pointer transition-colors
                   ${selected.includes(role.id) ? 'bg-blue-50' : i % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}
                   hover:bg-blue-50/40`}
@@ -433,16 +434,16 @@ export default function RolePermission() {
                   <div className="flex gap-2 justify-end">
                     <button
                       onClick={() => setEditDrawer({ ...role, perms: { ...role.perms } })}
-                      className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg transition-colors flex items-center"
+                      className="w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors shadow-sm"
                     >
-                      <EditIcon />
+                      <Edit size={15} />
                     </button>
                     {!role.isDefault && (
                       <button
                         onClick={() => setDeleteModal(role)}
-                        className="bg-blue-500 hover:bg-red-500 text-white p-2 rounded-lg transition-colors flex items-center"
+                        className="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-sm"
                       >
-                        <TrashIcon />
+                        <Trash2 size={15} />
                       </button>
                     )}
                   </div>

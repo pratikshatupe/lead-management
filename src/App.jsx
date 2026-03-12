@@ -28,7 +28,9 @@ import WebsiteDeevelopmentCampagines2 from "./component/pages/WebsiteDeevelopmen
 import CallManager from "./component/pages/leadManager/CallManager";
 import Campaigns from "./component/pages/leadManager/Campaigns";
 
+// ✅ दोन्ही Social Media pages import
 import SocialMediaCampagiens from "./component/pages/SocialMediaCampagiens";
+import SocialMediaCampagins2 from "./component/pages/SocialMediaCampagins2";
 
 import LeadTableFields from "./component/pages/settings/LeadTableFields";
 import EmailTemplates from "./component/pages/settings/Messaging/EmailTemplates";
@@ -41,26 +43,30 @@ import MemberLayout from "./component/member/memberLayout";
 import MemberDashboard from "./component/pages/MemberDashboard";
 import MemberProfile from "./component/pages/MemberProfile";
 import AdminSettings from "./component/pages/Adminsettings";
-
-
-
+import SaleHomeLoneCampagins from "./component/pages/SaleHomeLoneCampagins";
 
 function App() {
-
   return (
     <Router>
-
       <Routes>
 
         <Route path="/" element={<Login />} />
 
-        <Route path="/lead-details" element={<WebsiteDevelopmentCampagines />} />
+        {/* ── Standalone full pages — NO sidebar/navbar ── */}
+        <Route path="/lead-details"                   element={<WebsiteDevelopmentCampagines />} />
         <Route path="/WebsiteDeevelopmentCampagines2" element={<WebsiteDeevelopmentCampagines2 />} />
-        <Route path="/socialmedia" element={<SocialMediaCampagiens />} />
 
-        {/* ADMIN */}
+        {/* ✅ Social Media Campaign pages — Layout बाहेर (no sidebar/navbar) */}
+        <Route path="/socialmedia"  element={<SocialMediaCampagiens />} />
+        <Route path="/socialmedia2" element={<SocialMediaCampagins2 />} />
+
+        {/* ✅ Sale Home Loan — Layout बाहेर (no sidebar/navbar) */}
+        <Route path="/admin/sale-home-loan"   element={<SaleHomeLoneCampagins />} />
+        <Route path="/manager/sale-home-loan" element={<SaleHomeLoneCampagins />} />
+        <Route path="/member/sale-home-loan"  element={<SaleHomeLoneCampagins />} />
+
+        {/* ── ADMIN — Layout सकट ── */}
         <Route path="/admin" element={<Layout />}>
-
           <Route index element={<AdminDashboard />} />
           <Route path="profile" element={<AdminProfile />} />
 
@@ -88,12 +94,10 @@ function App() {
           <Route path="forms" element={<Forms />} />
 
           <Route path="settings" element={<AdminSettings role="admin" />} />
-
         </Route>
 
-        {/* MANAGER */}
+        {/* ── MANAGER — ManagerLayout सकट ── */}
         <Route path="/manager" element={<ManagerLayout />}>
-
           <Route index element={<ManagerDashboard />} />
           <Route path="profile" element={<Managerprofile />} />
 
@@ -114,12 +118,10 @@ function App() {
           <Route path="forms" element={<Forms />} />
 
           <Route path="settings" element={<AdminSettings role="manager" />} />
-
         </Route>
 
-        {/* MEMBER */}
+        {/* ── MEMBER — MemberLayout सकट ── */}
         <Route path="/member" element={<MemberLayout />}>
-
           <Route index element={<MemberDashboard />} />
           <Route path="profile" element={<MemberProfile />} />
 
@@ -133,11 +135,9 @@ function App() {
           <Route path="forms" element={<Forms />} />
 
           <Route path="settings" element={<AdminSettings role="member" />} />
-
         </Route>
 
       </Routes>
-
     </Router>
   );
 }

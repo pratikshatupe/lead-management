@@ -30,6 +30,16 @@ const CheckIcon = () => (
   </svg>
 );
 
+// ── Role-based route helper ──
+// role: "admin" | "manager" | "member"
+function roleRoute(role, page) {
+  const prefix =
+    role === "manager" ? "/manager" :
+    role === "member"  ? "/member"  :
+    "/admin";
+  return `${prefix}/${page}`;
+}
+
 const STORAGE_KEY = "wdc1_lead_data";
 
 const defaultFormData = {
@@ -50,6 +60,9 @@ const defaultFormData = {
 function WebsiteDevelopmentCampagines() {
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Get role from localStorage
+  const role = localStorage.getItem("role") || "admin";
 
   const [seconds, setSeconds] = useState(0);
   const [activeTab, setActiveTab] = useState("details");
@@ -165,16 +178,21 @@ function WebsiteDevelopmentCampagines() {
             <ClockIcon /> {formatTime()}
           </div>
           <div className="flex flex-col sm:flex-row lg:flex-col gap-2 mb-4">
+
+            {/* ── Lead Follow Up — role-based route ── */}
             <button
-              onClick={() => navigate("/admin/follow-up", { state: { from: location.pathname } })}
+              onClick={() => navigate(roleRoute(role, "follow-up"), { state: { from: location.pathname } })}
               className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded text-sm transition-colors w-full">
               Lead Follow Up
             </button>
+
+            {/* ── Salesman Bookings — role-based route ── */}
             <button
-              onClick={() => navigate("/admin/salesman-bookings", { state: { from: location.pathname } })}
+              onClick={() => navigate(roleRoute(role, "salesman-bookings"), { state: { from: location.pathname } })}
               className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded text-sm transition-colors w-full">
               Salesman Bookings
             </button>
+
           </div>
           <h3 className="font-semibold mb-3">Lead Details</h3>
           <div className="text-sm space-y-2 text-gray-600">

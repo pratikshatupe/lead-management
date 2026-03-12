@@ -4,6 +4,7 @@ import {
   FaListOl, FaListUl, FaRemoveFormat, FaTimes, FaPlus, FaTrash,
   FaEdit, FaChevronDown
 } from "react-icons/fa";
+import { Edit, Trash2 } from "lucide-react";
 
 const FILTER_OPTIONS = [
   { value: "name", label: "Name" },
@@ -265,9 +266,9 @@ export default function EmailTemplates() {
   const [editData, setEditData] = useState(null);
   const [editId, setEditId] = useState(null);
   const [selected, setSelected] = useState([]);
-  const [searchText, setSearchText] = useState("");           
-  const [selectedFilter, setSelectedFilter] = useState(null); 
-  const [dropdownOpen, setDropdownOpen] = useState(false);    
+  const [searchText, setSearchText] = useState("");
+  const [selectedFilter, setSelectedFilter] = useState(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [availableForms, setAvailableForms] = useState([
     { id: "contact", name: "Contact Form" },
     { id: "lead", name: "Lead Form" },
@@ -340,7 +341,6 @@ export default function EmailTemplates() {
         </button>
 
         <div className="flex items-center gap-0 border rounded-lg bg-white shadow-sm overflow-visible">
-
           <div className="relative flex-shrink-0" ref={dropdownRef}>
             <button
               onClick={() => setDropdownOpen((v) => !v)}
@@ -393,6 +393,7 @@ export default function EmailTemplates() {
         </div>
       </div>
 
+      {/* MOBILE CARDS */}
       <div className="flex flex-col gap-3 md:hidden">
         {filtered.length === 0 ? (
           <div className="text-center py-12 text-gray-400 text-sm bg-white rounded-xl border border-gray-200">No templates found.</div>
@@ -424,11 +425,11 @@ export default function EmailTemplates() {
                   <ToggleSwitch checked={t.status === "active"} onChange={() => handleToggleStatus(t.id)} />
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={() => openEdit(t)} className="flex items-center gap-1.5 bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition">
-                    <FaEdit size={11} /> Edit
+                  <button onClick={() => openEdit(t)} className="w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors shadow-sm">
+                    <Edit size={15} />
                   </button>
-                  <button onClick={() => handleDelete(t.id)} className="flex items-center gap-1.5 bg-blue-500 hover:bg-red-500 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition">
-                    <FaTrash size={11} /> Delete
+                  <button onClick={() => handleDelete(t.id)} className="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-sm">
+                    <Trash2 size={15} />
                   </button>
                 </div>
               </div>
@@ -437,6 +438,7 @@ export default function EmailTemplates() {
         )}
       </div>
 
+      {/* DESKTOP TABLE */}
       <div className="hidden md:block bg-white rounded-xl shadow-sm border border-gray-200 overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
@@ -466,11 +468,11 @@ export default function EmailTemplates() {
                   </td>
                   <td className="px-4 py-4">
                     <div className="flex gap-2">
-                      <button onClick={() => openEdit(t)} className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg transition" title="Edit">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                      <button onClick={() => openEdit(t)} className="w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors shadow-sm" title="Edit">
+                        <Edit size={15} />
                       </button>
-                      <button onClick={() => handleDelete(t.id)} className="bg-blue-500 hover:bg-red-500 text-white p-2 rounded-lg transition" title="Delete">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                      <button onClick={() => handleDelete(t.id)} className="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-sm" title="Delete">
+                        <Trash2 size={15} />
                       </button>
                     </div>
                   </td>

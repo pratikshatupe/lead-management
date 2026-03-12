@@ -5,6 +5,7 @@ import {
   FaLink, FaListUl, FaListOl, FaTextHeight, FaFileCsv,
   FaCheckCircle, FaExclamationTriangle,
 } from "react-icons/fa";
+import { Edit, Trash2 } from "lucide-react";
 
 function Campaigns() {
   const [activeTab, setActiveTab] = useState("active");
@@ -93,27 +94,21 @@ function Campaigns() {
     e.preventDefault();
     e.stopPropagation();
     if (drawerImportRef.current) {
-      drawerImportRef.current.value = ""; 
+      drawerImportRef.current.value = "";
       drawerImportRef.current.click();
     }
   };
 
   const handleDrawerImportFileChange = (e) => {
     const f = e.target.files[0];
-    if (f) {
-      setDrawerImportFile(f);
-      setDrawerImportSuccess(false);
-    }
+    if (f) { setDrawerImportFile(f); setDrawerImportSuccess(false); }
   };
 
   const handleDrawerImportDrop = (e) => {
     e.preventDefault();
     e.stopPropagation();
     const f = e.dataTransfer.files[0];
-    if (f) {
-      setDrawerImportFile(f);
-      setDrawerImportSuccess(false);
-    }
+    if (f) { setDrawerImportFile(f); setDrawerImportSuccess(false); }
   };
 
   const handleDrawerImportDragOver = (e) => {
@@ -209,7 +204,7 @@ function Campaigns() {
           <h1 className="text-xl sm:text-2xl font-semibold">Campaigns</h1>
           <p className="text-sm text-gray-500">Dashboard - Campaigns</p>
         </div>
-        <button onClick={openAddDrawer} className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow-md transition-all text-sm w-full sm:w-auto">
+        <button onClick={openAddDrawer} className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-sm transition-colors text-sm font-semibold w-full sm:w-auto">
           <FaPlus /> Add New Campaign
         </button>
       </div>
@@ -219,43 +214,65 @@ function Campaigns() {
         <button onClick={() => setActiveTab("completed")} className={`pb-2 whitespace-nowrap transition-all ${activeTab === "completed" ? "border-b-2 border-blue-600 text-blue-600 font-medium" : "text-gray-500 hover:text-blue-400"}`}>Completed Campaign</button>
       </div>
 
-      <div className="hidden md:block overflow-auto border rounded bg-white shadow-sm">
+      {/* ── DESKTOP TABLE ── */}
+      <div className="hidden md:block bg-white shadow-sm rounded-xl border border-gray-100 overflow-auto">
         <table className="min-w-[900px] w-full text-sm text-left">
-          <thead className="bg-gray-100">
+          <thead className="bg-gray-50 border-b border-gray-100">
             <tr>
-              <th className="p-3">Name</th>
-              <th className="p-3">Progress</th>
-              <th className="p-3">Members</th>
-              <th className="p-3">Form</th>
-              <th className="p-3">Started On</th>
-              <th className="p-3">Last Actioner</th>
-              <th className="p-3">Action</th>
+              {["Name","Progress","Members","Form","Started On","Last Actioner","Action"].map(h => (
+                <th key={h} className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">{h}</th>
+              ))}
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-gray-50">
             {filteredList.length === 0 ? (
               <tr><td colSpan={7} className="p-6 text-center text-gray-400">No campaigns found.</td></tr>
             ) : filteredList.map((item) => (
-              <tr key={item.id} className="border-t hover:bg-gray-50">
-                <td className="p-3 font-medium">{item.name}</td>
-                <td className="p-3 min-w-[140px]">
+              <tr key={item.id} className="hover:bg-gray-50 transition-colors">
+                <td className="px-4 py-3.5 font-medium text-gray-800">{item.name}</td>
+                <td className="px-4 py-3.5 min-w-[140px]">
                   <div className="w-full bg-gray-200 h-2 rounded"><div className="bg-blue-500 h-2 rounded" style={{ width: `${item.progress}%` }}></div></div>
-                  <p className="text-xs text-gray-500 mt-1">Remaining Leads: {item.leads}</p>
+                  <p className="text-xs text-gray-400 mt-1">Remaining Leads: {item.leads}</p>
                 </td>
-                <td className="p-3">
+                <td className="px-4 py-3.5">
                   <div className="flex -space-x-2">
                     <div className="w-8 h-8 bg-blue-300 rounded-full border-2 border-white flex items-center justify-center text-white text-[10px] font-bold">{item.members?.charAt(0) || "A"}</div>
                   </div>
                 </td>
-                <td className="p-3 text-xs">{item.form}</td>
-                <td className="p-3 text-xs whitespace-nowrap">{item.date}</td>
-                <td className="p-3 text-xs">{item.user}</td>
-                <td className="p-3">
-                  <div className="flex gap-2 flex-wrap">
-                    <button className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors" title="Upload Leads" onClick={() => openUploadModal(item)}><FaCloudUploadAlt /></button>
-                    <button className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors" title="Add to Campaign" onClick={() => openAddDrawer()}><FaPlus /></button>
-                    <button className="bg-yellow-500 text-white p-2 rounded hover:bg-yellow-600 transition-colors" title="Edit Campaign" onClick={() => openEditDrawer(item)}><FaEdit /></button>
-                    <button className="bg-red-500 text-white p-2 rounded hover:bg-red-600 transition-colors" title="Delete Campaign" onClick={() => openDeleteModal(item)}><FaTrash /></button>
+                <td className="px-4 py-3.5 text-xs text-gray-600">{item.form}</td>
+                <td className="px-4 py-3.5 text-xs text-gray-600 whitespace-nowrap">{item.date}</td>
+                <td className="px-4 py-3.5 text-xs text-gray-600">{item.user}</td>
+                <td className="px-4 py-3.5">
+                  {/* ✅ Expenses-style action buttons */}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => openUploadModal(item)}
+                      title="Upload Leads"
+                      className="w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors shadow-sm"
+                    >
+                      <FaCloudUploadAlt size={14} />
+                    </button>
+                    <button
+                      onClick={() => openAddDrawer()}
+                      title="Add to Campaign"
+                      className="w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors shadow-sm"
+                    >
+                      <FaPlus size={12} />
+                    </button>
+                    <button
+                      onClick={() => openEditDrawer(item)}
+                      title="Edit Campaign"
+                      className="w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors shadow-sm"
+                    >
+                      <Edit size={15} />
+                    </button>
+                    <button
+                      onClick={() => openDeleteModal(item)}
+                      title="Delete Campaign"
+                      className="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-sm"
+                    >
+                      <Trash2 size={15} />
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -264,29 +281,66 @@ function Campaigns() {
         </table>
       </div>
 
-      <div className="grid gap-4 md:hidden">
+      {/* ── MOBILE CARDS ── */}
+      <div className="flex flex-col gap-3 md:hidden">
         {filteredList.length === 0 ? (
-          <div className="text-center text-gray-400 py-8">No campaigns found.</div>
+          <div className="text-center text-gray-400 py-8 bg-white rounded-xl border border-gray-100">No campaigns found.</div>
         ) : filteredList.map((item) => (
-          <div key={item.id} className="border rounded-lg p-4 shadow-sm bg-white">
-            <div className="flex items-start justify-between mb-2">
-              <h3 className="font-semibold text-base leading-tight pr-2">{item.name}</h3>
-              <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full whitespace-nowrap">{item.progress}%</span>
+          <div key={item.id} className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+
+            {/* Card header */}
+            <div className="flex items-start justify-between px-4 py-3 border-b border-gray-100 bg-gray-50 gap-2">
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-sm text-gray-800 leading-tight">{item.name}</h3>
+                <span className="text-xs text-blue-600 font-medium">{item.progress}%</span>
+              </div>
+              {/* ✅ Expenses-style action buttons */}
+              <div className="flex gap-2 flex-shrink-0">
+                <button
+                  onClick={() => openUploadModal(item)}
+                  className="w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors shadow-sm"
+                >
+                  <FaCloudUploadAlt size={14} />
+                </button>
+                <button
+                  onClick={() => openAddDrawer()}
+                  className="w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors shadow-sm"
+                >
+                  <FaPlus size={12} />
+                </button>
+                <button
+                  onClick={() => openEditDrawer(item)}
+                  className="w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors shadow-sm"
+                >
+                  <Edit size={15} />
+                </button>
+                <button
+                  onClick={() => openDeleteModal(item)}
+                  className="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-sm"
+                >
+                  <Trash2 size={15} />
+                </button>
+              </div>
             </div>
-            <div className="mb-3">
-              <div className="w-full bg-gray-200 h-1.5 rounded"><div className="bg-blue-500 h-1.5 rounded" style={{ width: `${item.progress}%` }}></div></div>
-              <p className="text-xs text-gray-400 mt-1">Remaining Leads: {item.leads}</p>
+
+            <div className="px-4 py-3 border-b border-gray-100">
+              <div className="w-full bg-gray-200 h-1.5 rounded mb-1"><div className="bg-blue-500 h-1.5 rounded" style={{ width: `${item.progress}%` }}></div></div>
+              <p className="text-xs text-gray-400">Remaining Leads: {item.leads}</p>
             </div>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs mb-3">
-              <p><span className="font-medium text-gray-600">Form:</span> <span className="text-gray-500">{item.form}</span></p>
-              <p><span className="font-medium text-gray-600">User:</span> <span className="text-gray-500">{item.user}</span></p>
-              <p className="col-span-2"><span className="font-medium text-gray-600">Started:</span> <span className="text-gray-500">{item.date}</span></p>
+
+            <div className="flex flex-col px-4 py-3 border-b border-gray-100">
+              <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wide mb-1">Form</span>
+              <span className="text-sm text-gray-700">{item.form}</span>
             </div>
-            <div className="grid grid-cols-4 gap-2">
-              <button className="bg-blue-500 text-white p-2.5 rounded flex justify-center hover:bg-blue-600 transition-colors" onClick={() => openUploadModal(item)}><FaCloudUploadAlt size={14} /></button>
-              <button className="bg-blue-500 text-white p-2.5 rounded flex justify-center hover:bg-blue-600 transition-colors" onClick={() => openAddDrawer()}><FaPlus size={14} /></button>
-              <button className="bg-yellow-500 text-white p-2.5 rounded flex justify-center hover:bg-yellow-600 transition-colors" onClick={() => openEditDrawer(item)}><FaEdit size={14} /></button>
-              <button className="bg-red-500 text-white p-2.5 rounded flex justify-center hover:bg-red-600 transition-colors" onClick={() => openDeleteModal(item)}><FaTrash size={14} /></button>
+
+            <div className="flex flex-col px-4 py-3 border-b border-gray-100">
+              <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wide mb-1">Last Actioner</span>
+              <span className="text-sm text-gray-700">{item.user}</span>
+            </div>
+
+            <div className="flex flex-col px-4 py-3">
+              <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wide mb-1">Started On</span>
+              <span className="text-sm text-gray-700">{item.date}</span>
             </div>
           </div>
         ))}
@@ -302,6 +356,7 @@ function Campaigns() {
         <button className="border px-3 py-1 rounded bg-blue-500 text-white text-xs">1</button>
       </div>
 
+      {/* ── DELETE MODAL ── */}
       {deleteModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4">
           <div className="bg-white w-full max-w-sm rounded-xl shadow-2xl p-6 text-center">
@@ -320,6 +375,7 @@ function Campaigns() {
         </div>
       )}
 
+      {/* ── UPLOAD MODAL ── */}
       {uploadModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[90] p-4">
           <div className="bg-white w-full max-w-lg rounded-xl shadow-2xl flex flex-col">
@@ -331,13 +387,7 @@ function Campaigns() {
               <button onClick={() => setUploadModalOpen(false)} className="text-gray-400 hover:text-black transition-colors"><FaTimes /></button>
             </div>
             <div className="p-6 space-y-4">
-              <input
-                type="file"
-                accept="*"
-                className="hidden"
-                ref={leadsFileRef}
-                onChange={handleLeadsFileChange}
-              />
+              <input type="file" accept="*" className="hidden" ref={leadsFileRef} onChange={handleLeadsFileChange} />
               <div
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={handleLeadsDrop}
@@ -348,24 +398,14 @@ function Campaigns() {
                     <FaFileCsv className="text-4xl text-blue-500" />
                     <p className="text-sm font-semibold text-gray-700">{uploadedFile.name}</p>
                     <p className="text-xs text-gray-400">{(uploadedFile.size / 1024).toFixed(1)} KB</p>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); setUploadedFile(null); }}
-                      className="text-xs text-red-500 hover:underline mt-1"
-                    >
-                      Remove file
-                    </button>
+                    <button onClick={(e) => { e.stopPropagation(); setUploadedFile(null); }} className="text-xs text-red-500 hover:underline mt-1">Remove file</button>
                   </div>
                 ) : (
                   <div className="flex flex-col items-center gap-2 text-gray-400">
                     <FaCloudUploadAlt className="text-4xl" />
                     <p className="text-sm font-medium text-gray-600">Drag & drop your file here</p>
                     <p className="text-xs text-gray-400">or</p>
-                    <button
-                      onClick={handleLeadsUploadClick}
-                      className="text-xs bg-blue-50 border border-blue-300 text-blue-600 font-semibold px-4 py-1.5 rounded-md hover:bg-blue-100 transition-all"
-                    >
-                      Browse File
-                    </button>
+                    <button onClick={handleLeadsUploadClick} className="text-xs bg-blue-50 border border-blue-300 text-blue-600 font-semibold px-4 py-1.5 rounded-md hover:bg-blue-100 transition-all">Browse File</button>
                     <p className="text-xs text-gray-400 mt-1">Supported: All file types (csv, xlsx, images, etc.)</p>
                   </div>
                 )}
@@ -387,6 +427,7 @@ function Campaigns() {
         </div>
       )}
 
+      {/* ── ADD / EDIT DRAWER ── */}
       {drawerOpen && (
         <div className="fixed inset-0 bg-black/40 flex justify-end z-40">
           <div className="bg-white w-full sm:w-[90vw] md:w-[650px] h-full overflow-auto shadow-2xl flex flex-col">
@@ -409,7 +450,6 @@ function Campaigns() {
             </div>
 
             <div className="flex-1 overflow-auto px-4 sm:px-6 pb-4">
-
               {step === 1 && (
                 <div className="space-y-4">
                   <div>
@@ -461,62 +501,34 @@ function Campaigns() {
               {step === 3 && (
                 <div className="space-y-4">
                   <p className="text-gray-500 text-sm">Upload CSV or Lead data for this campaign.</p>
-
-                  <input
-                    type="file"
-                    accept="*"
-                    className="hidden"
-                    ref={drawerImportRef}
-                    onChange={handleDrawerImportFileChange}
-                  />
+                  <input type="file" accept="*" className="hidden" ref={drawerImportRef} onChange={handleDrawerImportFileChange} />
                   <div
                     onDragOver={handleDrawerImportDragOver}
                     onDrop={handleDrawerImportDrop}
-                    className={`border-2 border-dashed rounded-xl p-10 text-center transition-all ${
-                      drawerImportFile
-                        ? "border-blue-400 bg-blue-50"
-                        : "border-gray-300 hover:border-blue-400 hover:bg-blue-50"
-                    }`}
+                    className={`border-2 border-dashed rounded-xl p-10 text-center transition-all ${drawerImportFile ? "border-blue-400 bg-blue-50" : "border-gray-300 hover:border-blue-400 hover:bg-blue-50"}`}
                   >
                     {drawerImportFile ? (
                       <div className="flex flex-col items-center gap-2">
                         <FaFileCsv className="text-5xl text-blue-500" />
                         <p className="text-sm font-semibold text-gray-700">{drawerImportFile.name}</p>
                         <p className="text-xs text-gray-400">{(drawerImportFile.size / 1024).toFixed(1)} KB</p>
-                        <button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            setDrawerImportFile(null);
-                            setDrawerImportSuccess(false);
-                          }}
-                          className="text-xs text-red-500 hover:underline mt-1"
-                        >
-                          Remove file
-                        </button>
+                        <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDrawerImportFile(null); setDrawerImportSuccess(false); }} className="text-xs text-red-500 hover:underline mt-1">Remove file</button>
                       </div>
                     ) : (
                       <div className="flex flex-col items-center gap-2 text-gray-400">
                         <FaCloudUploadAlt className="text-5xl" />
                         <p className="text-sm font-medium text-gray-600">Drag & drop your file here</p>
                         <p className="text-xs text-gray-400">or</p>
-                        <button
-                          onClick={handleDrawerImportClick}
-                          className="text-xs bg-blue-50 border border-blue-300 text-blue-600 font-semibold px-4 py-1.5 rounded-md hover:bg-blue-100 transition-all"
-                        >
-                          Browse File
-                        </button>
+                        <button onClick={handleDrawerImportClick} className="text-xs bg-blue-50 border border-blue-300 text-blue-600 font-semibold px-4 py-1.5 rounded-md hover:bg-blue-100 transition-all">Browse File</button>
                         <p className="text-xs text-gray-400 mt-1">Supported: All file types (csv, xlsx, images, etc.)</p>
                       </div>
                     )}
                   </div>
-
                   {drawerImportSuccess && (
                     <div className="flex items-center gap-2 text-green-600 bg-green-50 border border-green-200 rounded-lg px-4 py-2.5 text-sm font-medium">
                       <FaCheckCircle /> File ready to import!
                     </div>
                   )}
-
                   {drawerImportFile && !drawerImportSuccess && (
                     <div className="flex items-center gap-2 text-blue-600 bg-blue-50 border border-blue-200 rounded-lg px-4 py-2.5 text-sm">
                       <FaCheckCircle size={14} />
@@ -544,6 +556,7 @@ function Campaigns() {
         </div>
       )}
 
+      {/* ── FORM MODAL ── */}
       {formModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[70] p-4">
           <div className="bg-white w-full max-w-2xl rounded-lg shadow-2xl flex flex-col max-h-[90vh]">
@@ -593,6 +606,7 @@ function Campaigns() {
         </div>
       )}
 
+      {/* ── EMAIL TEMPLATE MODAL ── */}
       {emailTemplateModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[80] p-4">
           <div className="bg-white w-full max-w-2xl rounded-lg shadow-2xl flex flex-col max-h-[95vh]">
@@ -646,6 +660,7 @@ function Campaigns() {
         </div>
       )}
 
+      {/* ── STAFF MODAL ── */}
       {staffModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white w-full max-w-2xl rounded-lg shadow-xl flex flex-col max-h-[90vh]">
@@ -697,6 +712,7 @@ function Campaigns() {
         </div>
       )}
 
+      {/* ── ROLE MODAL ── */}
       {roleModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4">
           <div className="bg-white w-full max-w-2xl rounded-lg shadow-2xl flex flex-col max-h-[90vh]">

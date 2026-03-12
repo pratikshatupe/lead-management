@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { Edit, Trash2 } from "lucide-react";
 
 function Salesman() {
   const [showDrawer, setShowDrawer] = useState(false);
   const [editId, setEditId] = useState(null);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
 
   const generateDummyData = () => [
     {
@@ -28,60 +30,36 @@ function Salesman() {
   const [salesmanList, setSalesmanList] = useState(generateDummyData());
 
   const [formData, setFormData] = useState({
-    profileImage: "",
-    name: "",
-    email: "",
-    phone: "",
-    status: "Enabled",
-    address: "",
+    profileImage: "", name: "", email: "",
+    phone: "", status: "Enabled", address: "",
   });
 
   const getAvatarUrl = (name) =>
     `https://ui-avatars.com/api/?name=${encodeURIComponent(name || "User")}&background=4F46E5&color=fff&size=60`;
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setFormData({ ...formData, profileImage: imageUrl });
-    }
+    if (file) setFormData({ ...formData, profileImage: URL.createObjectURL(file) });
   };
 
   const handleSubmit = () => {
     if (editId) {
-      const updated = salesmanList.map((item) =>
+      setSalesmanList(salesmanList.map((item) =>
         item.id === editId
-          ? {
-              ...item,
-              ...formData,
-              profileImage: formData.profileImage || getAvatarUrl(formData.name),
-            }
+          ? { ...item, ...formData, profileImage: formData.profileImage || getAvatarUrl(formData.name) }
           : item
-      );
-      setSalesmanList(updated);
+      ));
       setEditId(null);
     } else {
-      const newItem = {
-        id: salesmanList.length + 1,
-        ...formData,
+      setSalesmanList([...salesmanList, {
+        id: Date.now(), ...formData,
         profileImage: formData.profileImage || getAvatarUrl(formData.name),
-      };
-      setSalesmanList([...salesmanList, newItem]);
+      }]);
     }
-
     setShowDrawer(false);
-    setFormData({
-      profileImage: "",
-      name: "",
-      email: "",
-      phone: "",
-      status: "Enabled",
-      address: "",
-    });
+    setFormData({ profileImage: "", name: "", email: "", phone: "", status: "Enabled", address: "" });
   };
 
   const handleEdit = (item) => {
@@ -92,61 +70,86 @@ function Salesman() {
 
   const handleDelete = (id) => {
     setSalesmanList(salesmanList.filter((item) => item.id !== id));
+    setDeleteConfirm(null);
   };
 
   return (
-    <div className="p-4 sm:p-6">
+    <div className="p-4 sm:p-6 bg-gray-50 min-h-screen">
 
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-center gap-3 mb-5">
-        <h2 className="text-2xl font-semibold">Salesmans</h2>
+      {/* ── Header ── */}
+      <div className="flex items-center justify-between gap-3 mb-5">
+        <div>
+          <h2 className="text-xl font-bold text-gray-800 m-0">Salesmans</h2>
+          <p className="text-xs text-gray-400 mt-0.5">Dashboard — Salesmans</p>
+        </div>
         <button
-          onClick={() => { setEditId(null); setShowDrawer(true); }}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg w-full sm:w-auto"
+          onClick={() => {
+            setFormData({ profileImage: "", name: "", email: "", phone: "", status: "Enabled", address: "" });
+            setEditId(null);
+            setShowDrawer(true);
+          }}
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white
+            text-sm font-semibold px-4 py-2 rounded-lg transition-colors shadow-sm whitespace-nowrap flex-shrink-0"
         >
-          + Add New Salesman
+          <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          Add New Salesman
         </button>
       </div>
 
-      {/* Desktop Table */}
-      <div className="hidden md:block bg-white shadow rounded-lg overflow-x-auto">
-        <table className="w-full text-sm text-left">
-          <thead className="bg-gray-100 text-xs uppercase text-gray-600">
+      {/* ── DESKTOP TABLE ── */}
+      <div className="hidden sm:block bg-white shadow-sm rounded-xl border border-gray-100 overflow-hidden">
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 border-b border-gray-100">
             <tr>
-              <th className="p-3">Profile</th>
-              <th className="p-3">Name</th>
-              <th className="p-3">Email</th>
-              <th className="p-3">Phone</th>
-              <th className="p-3">Status</th>
-              <th className="p-3">Action</th>
+              {["Profile", "Name", "Email", "Phone", "Status", "Action"].map((h) => (
+                <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  {h}
+                </th>
+              ))}
             </tr>
           </thead>
-          <tbody>
-            {salesmanList.map((item) => (
-              <tr key={item.id} className="border-t hover:bg-gray-50">
-                <td className="p-3">
+          <tbody className="divide-y divide-gray-50">
+            {salesmanList.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="text-center py-12 text-gray-400 text-sm">No Data Available</td>
+              </tr>
+            ) : salesmanList.map((item) => (
+              <tr key={item.id} className="hover:bg-gray-50 transition-colors">
+                <td className="px-4 py-3.5">
                   <img
                     src={item.profileImage || getAvatarUrl(item.name)}
-                    className="w-10 h-10 rounded-full object-cover border border-gray-200"
+                    className="w-10 h-10 rounded-full object-cover border border-gray-100"
                     alt={item.name}
                     onError={(e) => { e.target.src = getAvatarUrl(item.name); }}
                   />
                 </td>
-                <td className="p-3 font-medium">{item.name}</td>
-                <td className="p-3 text-gray-500">{item.email}</td>
-                <td className="p-3">{item.phone}</td>
-                <td className="p-3">
-                  <span className={`px-2 py-1 text-xs rounded-full font-medium ${
-                    item.status === "Enabled"
-                      ? "bg-green-100 text-green-600"
-                      : "bg-red-100 text-red-600"
-                  }`}>
+                <td className="px-4 py-3.5 font-medium text-gray-800">{item.name}</td>
+                <td className="px-4 py-3.5 text-gray-500">{item.email}</td>
+                <td className="px-4 py-3.5 text-gray-600">{item.phone}</td>
+                <td className="px-4 py-3.5">
+                  <span className={`px-2.5 py-1 text-xs rounded-full font-medium
+                    ${item.status === "Enabled" ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"}`}>
                     {item.status}
                   </span>
                 </td>
-                <td className="p-3 space-x-2">
-                  <button onClick={() => handleEdit(item)} className="bg-blue-500 text-white px-2 py-1 rounded text-xs">Edit</button>
-                  <button onClick={() => handleDelete(item.id)} className="bg-red-500 text-white px-2 py-1 rounded text-xs">Delete</button>
+                <td className="px-4 py-3.5">
+                  {/* ✅ Expenses-style icon buttons */}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleEdit(item)}
+                      className="w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors shadow-sm"
+                    >
+                      <Edit size={16} />
+                    </button>
+                    <button
+                      onClick={() => setDeleteConfirm(item)}
+                      className="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-sm"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -154,100 +157,221 @@ function Salesman() {
         </table>
       </div>
 
-      {/* Mobile Cards */}
-      <div className="md:hidden space-y-4">
-        {salesmanList.map((item) => (
-          <div key={item.id} className="bg-white shadow rounded-xl p-4">
-            <div className="flex items-center gap-3 mb-3">
+      {/* ── MOBILE CARDS ── */}
+      <div className="sm:hidden flex flex-col gap-2.5">
+        {salesmanList.length === 0 ? (
+          <div className="text-center py-10 text-gray-400 bg-white rounded-xl border border-gray-100 shadow-sm text-sm">
+            No Data Available
+          </div>
+        ) : salesmanList.map((item) => (
+          <div key={item.id} className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+
+            {/* Card Header — avatar + name + status + action buttons */}
+            <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100 bg-gray-50">
               <img
                 src={item.profileImage || getAvatarUrl(item.name)}
-                className="w-14 h-14 rounded-full object-cover border-2 border-gray-100"
+                className="w-10 h-10 rounded-full object-cover border-2 border-gray-100 shadow-sm flex-shrink-0"
                 alt={item.name}
                 onError={(e) => { e.target.src = getAvatarUrl(item.name); }}
               />
-              <div>
-                <h3 className="font-semibold">{item.name}</h3>
-                <p className="text-sm text-gray-500">{item.email}</p>
+              <div className="flex-1 min-w-0">
+                <div className="font-semibold text-gray-800 text-sm truncate">{item.name}</div>
+                <div className="text-xs text-gray-400 mt-0.5 truncate">{item.email}</div>
+              </div>
+              <span className={`px-2 py-1 text-xs rounded-full font-medium flex-shrink-0
+                ${item.status === "Enabled" ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"}`}>
+                {item.status}
+              </span>
+              {/* ✅ Expenses-style icon buttons */}
+              <div className="flex gap-2 flex-shrink-0">
+                <button
+                  onClick={() => handleEdit(item)}
+                  className="w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors shadow-sm"
+                >
+                  <Edit size={16} />
+                </button>
+                <button
+                  onClick={() => setDeleteConfirm(item)}
+                  className="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-sm"
+                >
+                  <Trash2 size={16} />
+                </button>
               </div>
             </div>
 
-            <div className="text-sm space-y-1">
-              <p><strong>Phone:</strong> {item.phone}</p>
-              <p className="flex items-center gap-2">
-                <strong>Status:</strong>
-                <span className={`px-2 py-1 text-xs rounded-full font-medium ${
-                  item.status === "Enabled"
-                    ? "bg-green-100 text-green-600"
-                    : "bg-red-100 text-red-600"
-                }`}>
-                  {item.status}
-                </span>
-              </p>
-              <p><strong>Address:</strong> {item.address}</p>
+            {/* Card Body */}
+            <div className="divide-y divide-gray-50">
+              {[
+                { label: "Phone",   value: item.phone },
+                { label: "Address", value: item.address },
+              ].map(({ label, value }) => (
+                <div key={label} className="flex flex-col px-4 py-3">
+                  <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wide mb-1">{label}</span>
+                  <span className="text-sm text-gray-700">{value}</span>
+                </div>
+              ))}
             </div>
 
-            <div className="mt-3 flex gap-2">
-              <button onClick={() => handleEdit(item)} className="bg-blue-500 text-white px-3 py-1 rounded text-xs w-full">Edit</button>
-              <button onClick={() => handleDelete(item.id)} className="bg-red-500 text-white px-3 py-1 rounded text-xs w-full">Delete</button>
-            </div>
           </div>
         ))}
       </div>
 
-      {/* Drawer */}
-      {showDrawer && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-end z-50">
-          <div className="w-full sm:w-[400px] bg-white h-full p-6 overflow-y-auto">
-            <h3 className="text-xl font-semibold mb-4">
-              {editId ? "Edit Salesman" : "Add New Salesman"}
-            </h3>
+      {/* ── Delete Confirm Modal ── */}
+      {deleteConfirm && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+          onClick={() => setDeleteConfirm(null)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 border border-gray-100"
+            style={{ animation: "popIn .2s ease" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-base font-bold text-gray-800">Delete Salesman</h3>
+              <button onClick={() => setDeleteConfirm(null)} className="text-gray-400 hover:text-gray-600 transition-colors">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                </svg>
+              </button>
+            </div>
+            <p className="text-sm text-gray-600 mb-6">
+              Are you sure you want to delete{" "}
+              <strong className="text-gray-800">"{deleteConfirm.name}"</strong>? This action cannot be undone.
+            </p>
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={() => setDeleteConfirm(null)}
+                className="px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors"
+              >Cancel</button>
+              <button
+                onClick={() => handleDelete(deleteConfirm.id)}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white bg-red-500 hover:bg-red-600 transition-colors"
+              >
+                <Trash2 size={14} /> Delete
+              </button>
+            </div>
+          </div>
+          <style>{`@keyframes popIn{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:scale(1)}}`}</style>
+        </div>
+      )}
 
-            {/* Profile Preview */}
-            <div className="flex justify-center mb-4">
-              <img
-                src={formData.profileImage || getAvatarUrl(formData.name)}
-                className="w-20 h-20 rounded-full object-cover border-2 border-blue-200"
-                alt="Preview"
-                onError={(e) => { e.target.src = getAvatarUrl(formData.name); }}
-              />
+      {/* ── Add / Edit Drawer ── */}
+      {showDrawer && (
+        <div className="fixed inset-0 z-50 flex">
+          <div
+            className="flex-1 bg-black/40 backdrop-blur-sm"
+            onClick={() => { setShowDrawer(false); setEditId(null); }}
+          />
+          <div
+            className="w-full sm:w-[420px] bg-white h-full p-6 overflow-y-auto shadow-2xl"
+            style={{ animation: "slideIn .3s ease" }}
+          >
+            <div className="flex items-center justify-between mb-5 pb-4 border-b border-gray-100">
+              <h3 className="text-lg font-semibold text-gray-800">
+                {editId ? "Edit Salesman" : "Add New Salesman"}
+              </h3>
+              <button
+                onClick={() => { setShowDrawer(false); setEditId(null); }}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                </svg>
+              </button>
             </div>
 
-            <label className="block text-xs text-gray-500 mb-1">Upload Profile Photo</label>
-            <input type="file" accept="image/*" onChange={handleImageUpload} className="mb-3 w-full text-sm" />
+            {/* Profile image preview */}
+            <div className="flex items-center gap-4 mb-5 p-3 bg-gray-50 rounded-xl">
+              <img
+                src={formData.profileImage || getAvatarUrl(formData.name)}
+                className="w-14 h-14 rounded-full object-cover border-2 border-white shadow-md flex-shrink-0"
+                alt="preview"
+                onError={(e) => { e.target.src = getAvatarUrl(formData.name); }}
+              />
+              <div>
+                <p className="text-xs font-semibold text-gray-500 mb-1.5">Profile Photo</p>
+                <label className="cursor-pointer inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  Upload Photo
+                  <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                </label>
+              </div>
+            </div>
 
-            <input type="text" name="name" placeholder="Enter Name"
-              value={formData.name} onChange={handleChange}
-              className="w-full mb-3 p-2 border rounded" />
+            {/* Form Fields */}
+            <div className="space-y-3.5">
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 mb-1.5">
+                  Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text" name="name" placeholder="Enter Name"
+                  value={formData.name} onChange={handleChange}
+                  className="w-full border border-gray-200 p-2.5 rounded-lg text-sm outline-none focus:border-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 mb-1.5">
+                  Email <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="email" name="email" placeholder="Enter Email"
+                  value={formData.email} onChange={handleChange}
+                  className="w-full border border-gray-200 p-2.5 rounded-lg text-sm outline-none focus:border-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 mb-1.5">Phone</label>
+                <input
+                  type="text" name="phone" placeholder="Enter Phone"
+                  value={formData.phone} onChange={handleChange}
+                  className="w-full border border-gray-200 p-2.5 rounded-lg text-sm outline-none focus:border-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 mb-1.5">Status</label>
+                <select
+                  name="status" value={formData.status} onChange={handleChange}
+                  className="w-full border border-gray-200 p-2.5 rounded-lg text-sm outline-none focus:border-blue-500 bg-white"
+                >
+                  <option value="Enabled">Enabled</option>
+                  <option value="Disabled">Disabled</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 mb-1.5">Address</label>
+                <textarea
+                  name="address" placeholder="Enter Address"
+                  value={formData.address} onChange={handleChange}
+                  rows={3}
+                  className="w-full border border-gray-200 p-2.5 rounded-lg text-sm outline-none focus:border-blue-500 resize-none"
+                />
+              </div>
+            </div>
 
-            <input type="email" name="email" placeholder="Enter Email"
-              value={formData.email} onChange={handleChange}
-              className="w-full mb-3 p-2 border rounded" />
-
-            <input type="text" name="phone" placeholder="Enter Phone"
-              value={formData.phone} onChange={handleChange}
-              className="w-full mb-3 p-2 border rounded" />
-
-            <select name="status" value={formData.status} onChange={handleChange}
-              className="w-full mb-3 p-2 border rounded">
-              <option value="Enabled">Enabled</option>
-              <option value="Disabled">Disabled</option>
-            </select>
-
-            <textarea name="address" placeholder="Enter Address"
-              value={formData.address} onChange={handleChange}
-              className="w-full mb-4 p-2 border rounded" />
-
-            <div className="flex justify-between">
-              <button onClick={handleSubmit} className="bg-blue-600 text-white px-4 py-2 rounded">
+            {/* Footer */}
+            <div className="flex gap-3 mt-6 pt-4 border-t border-gray-100">
+              <button
+                onClick={handleSubmit}
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg font-semibold text-sm transition-colors shadow-sm"
+              >
                 {editId ? "Update" : "Create"}
               </button>
-              <button onClick={() => setShowDrawer(false)} className="bg-gray-400 text-white px-4 py-2 rounded">
+              <button
+                onClick={() => { setShowDrawer(false); setEditId(null); }}
+                className="flex-1 border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 py-2.5 rounded-lg font-semibold text-sm transition-colors"
+              >
                 Cancel
               </button>
             </div>
           </div>
+          <style>{`@keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}`}</style>
         </div>
       )}
+
     </div>
   );
 }

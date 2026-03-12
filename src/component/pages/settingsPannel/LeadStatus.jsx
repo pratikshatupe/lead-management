@@ -1,18 +1,9 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import { Edit, Trash2 } from "lucide-react";
 
 const PlusIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
     <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-  </svg>
-);
-const EditIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z" />
-  </svg>
-);
-const DeleteIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
   </svg>
 );
 const SearchIcon = () => (
@@ -26,13 +17,16 @@ const CloseIcon = () => (
   </svg>
 );
 
-// ─── Modal ───────────────────────────────────────────────────────────────────
-function Modal({ title, value, onChange, onConfirm, onCancel, confirmLabel, confirmColor }) {
+function Modal({ title, initialValue, onConfirm, onCancel, confirmLabel, confirmColor }) {
+  const [value, setValue] = useState(initialValue || "");
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: "rgba(0,0,0,0.45)", backdropFilter: "blur(4px)" }}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: "rgba(0,0,0,0.45)", backdropFilter: "blur(4px)" }}
+    >
       <div
-        className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-sm p-6 border border-gray-100 dark:border-slate-700"
+        className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-[calc(100vw-2rem)] sm:max-w-sm p-5 sm:p-6 border border-gray-100 dark:border-slate-700"
         style={{ animation: "modalIn 0.18s cubic-bezier(.4,0,.2,1)" }}
       >
         <div className="flex items-center justify-between mb-5">
@@ -41,15 +35,19 @@ function Modal({ title, value, onChange, onConfirm, onCancel, confirmLabel, conf
             <CloseIcon />
           </button>
         </div>
-        <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1.5">Status Name</label>
+
+        <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1.5">
+          Status Name
+        </label>
         <input
           autoFocus
           value={value}
-          onChange={(e) => onChange(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && onConfirm()}
+          onChange={(e) => setValue(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && value.trim() && onConfirm(value)}
           placeholder="e.g. Interested"
           className="w-full border border-gray-200 dark:border-slate-600 rounded-lg px-3 py-2.5 text-sm dark:bg-slate-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 mb-5"
         />
+
         <div className="flex gap-2 justify-end">
           <button
             onClick={onCancel}
@@ -58,7 +56,7 @@ function Modal({ title, value, onChange, onConfirm, onCancel, confirmLabel, conf
             Cancel
           </button>
           <button
-            onClick={onConfirm}
+            onClick={() => value.trim() && onConfirm(value)}
             disabled={!value.trim()}
             className={`px-4 py-2 rounded-lg text-sm font-semibold text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${confirmColor}`}
           >
@@ -71,13 +69,14 @@ function Modal({ title, value, onChange, onConfirm, onCancel, confirmLabel, conf
   );
 }
 
-// ─── Delete Confirm Modal ─────────────────────────────────────────────────────
 function DeleteModal({ name, onConfirm, onCancel }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: "rgba(0,0,0,0.45)", backdropFilter: "blur(4px)" }}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: "rgba(0,0,0,0.45)", backdropFilter: "blur(4px)" }}
+    >
       <div
-        className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-sm p-6 border border-gray-100 dark:border-slate-700"
+        className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-[calc(100vw-2rem)] sm:max-w-sm p-5 sm:p-6 border border-gray-100 dark:border-slate-700"
         style={{ animation: "modalIn 0.18s cubic-bezier(.4,0,.2,1)" }}
       >
         <div className="flex items-center justify-between mb-4">
@@ -87,7 +86,8 @@ function DeleteModal({ name, onConfirm, onCancel }) {
           </button>
         </div>
         <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
-          Are you sure you want to delete <span className="font-semibold text-gray-800 dark:text-white">"{name}"</span>? This action cannot be undone.
+          Are you sure you want to delete{" "}
+          <span className="font-semibold text-gray-800 dark:text-white">"{name}"</span>? This action cannot be undone.
         </p>
         <div className="flex gap-2 justify-end">
           <button
@@ -109,7 +109,6 @@ function DeleteModal({ name, onConfirm, onCancel }) {
   );
 }
 
-// ─── Main Component ───────────────────────────────────────────────────────────
 export default function LeadStatus() {
   const [statuses, setStatuses] = useState([
     { id: 1, name: "Unreachable" },
@@ -119,15 +118,9 @@ export default function LeadStatus() {
 
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState([]);
-
-  // Modal state
   const [addModal, setAddModal] = useState(false);
-  const [addValue, setAddValue] = useState("");
-
-  const [editModal, setEditModal] = useState(null); // { id, name }
-  const [editValue, setEditValue] = useState("");
-
-  const [deleteModal, setDeleteModal] = useState(null); // { id, name }
+  const [editModal, setEditModal] = useState(null);
+  const [deleteModal, setDeleteModal] = useState(null);
 
   const filtered = statuses.filter((s) =>
     s.name.toLowerCase().includes(search.toLowerCase())
@@ -141,42 +134,38 @@ export default function LeadStatus() {
   const toggleAll = () => {
     const filteredIds = filtered.map((s) => s.id);
     const allSelected = filteredIds.every((id) => selected.includes(id));
-    setSelected(allSelected ? selected.filter((id) => !filteredIds.includes(id)) : [...new Set([...selected, ...filteredIds])]);
+    setSelected(
+      allSelected
+        ? selected.filter((id) => !filteredIds.includes(id))
+        : [...new Set([...selected, ...filteredIds])]
+    );
   };
 
-  // Add
-  const openAdd = () => { setAddValue(""); setAddModal(true); };
-  const confirmAdd = () => {
-    if (!addValue.trim()) return;
-    setStatuses((prev) => [...prev, { id: Date.now(), name: addValue.trim() }]);
+  const confirmAdd = useCallback((value) => {
+    setStatuses((prev) => [...prev, { id: Date.now(), name: value.trim() }]);
     setAddModal(false);
-  };
+  }, []);
 
-  // Edit
-  const openEdit = (s) => { setEditModal(s); setEditValue(s.name); };
-  const confirmEdit = () => {
-    if (!editValue.trim()) return;
+  const confirmEdit = useCallback((value) => {
     setStatuses((prev) =>
-      prev.map((s) => s.id === editModal.id ? { ...s, name: editValue.trim() } : s)
+      prev.map((s) => (s.id === editModal.id ? { ...s, name: value.trim() } : s))
     );
     setEditModal(null);
-  };
+  }, [editModal]);
 
-  // Delete single
-  const openDelete = (s) => setDeleteModal(s);
-  const confirmDelete = () => {
+  const confirmDelete = useCallback(() => {
     setStatuses((prev) => prev.filter((s) => s.id !== deleteModal.id));
     setSelected((prev) => prev.filter((id) => id !== deleteModal.id));
     setDeleteModal(null);
-  };
+  }, [deleteModal]);
 
-  // Bulk delete
   const bulkDelete = () => {
     setStatuses((prev) => prev.filter((s) => !selected.includes(s.id)));
     setSelected([]);
   };
 
-  const allFilteredSelected = filtered.length > 0 && filtered.every((s) => selected.includes(s.id));
+  const allFilteredSelected =
+    filtered.length > 0 && filtered.every((s) => selected.includes(s.id));
 
   return (
     <div className="p-4 dark:bg-slate-900 min-h-screen">
@@ -186,7 +175,7 @@ export default function LeadStatus() {
       <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2 mb-4">
         <div className="flex gap-2 w-full sm:w-auto">
           <button
-            onClick={openAdd}
+            onClick={() => setAddModal(true)}
             className="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex-1 sm:flex-none"
           >
             <PlusIcon /> Add Lead Status
@@ -196,7 +185,7 @@ export default function LeadStatus() {
               onClick={bulkDelete}
               className="flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
             >
-              <DeleteIcon /> Delete ({selected.length})
+              <Trash2 size={14} /> Delete ({selected.length})
             </button>
           )}
         </div>
@@ -218,9 +207,10 @@ export default function LeadStatus() {
       <div className="flex flex-col gap-3 sm:hidden">
         {filtered.length > 0 ? (
           filtered.map((s) => (
-            <div key={s.id} className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl shadow-sm p-4 w-full">
-
-              {/* Checkbox + Name */}
+            <div
+              key={s.id}
+              className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl shadow-sm p-4 w-full"
+            >
               <div className="flex items-center gap-3 mb-3">
                 <input
                   type="checkbox"
@@ -233,30 +223,27 @@ export default function LeadStatus() {
                   <p className="text-sm font-semibold text-gray-800 dark:text-white">{s.name}</p>
                 </div>
               </div>
-
-              {/* Divider */}
               <div className="border-t border-gray-100 dark:border-slate-700 mb-3" />
-
-              {/* Action Buttons - full width */}
               <div className="flex gap-2">
                 <button
-                  onClick={() => openEdit(s)}
-                  className="flex-1 flex items-center justify-center gap-1.5 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white py-2 rounded-lg text-xs font-semibold transition-colors"
+                  onClick={() => setEditModal(s)}
+                  className="flex-1 flex items-center justify-center gap-1.5 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg text-xs font-semibold transition-colors shadow-sm"
                 >
-                  <EditIcon /> Edit
+                  <Edit size={13} /> Edit
                 </button>
                 <button
-                  onClick={() => openDelete(s)}
-                  className="flex-1 flex items-center justify-center gap-1.5 bg-red-500 hover:bg-red-600 active:bg-red-700 text-white py-2 rounded-lg text-xs font-semibold transition-colors"
+                  onClick={() => setDeleteModal(s)}
+                  className="flex-1 flex items-center justify-center gap-1.5 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg text-xs font-semibold transition-colors shadow-sm"
                 >
-                  <DeleteIcon /> Delete
+                  <Trash2 size={13} /> Delete
                 </button>
               </div>
-
             </div>
           ))
         ) : (
-          <div className="text-center py-10 text-gray-400 dark:text-gray-500 text-sm">No results found</div>
+          <div className="text-center py-10 text-gray-400 dark:text-gray-500 text-sm">
+            No results found
+          </div>
         )}
       </div>
 
@@ -280,7 +267,10 @@ export default function LeadStatus() {
           <tbody>
             {filtered.length > 0 ? (
               filtered.map((s) => (
-                <tr key={s.id} className="border-t dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
+                <tr
+                  key={s.id}
+                  className="border-t dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
+                >
                   <td className="p-3">
                     <input
                       type="checkbox"
@@ -293,16 +283,16 @@ export default function LeadStatus() {
                   <td className="p-3">
                     <div className="flex justify-end gap-2 pr-2">
                       <button
-                        onClick={() => openEdit(s)}
-                        className="flex items-center gap-1.5 bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg text-sm transition-colors"
+                        onClick={() => setEditModal(s)}
+                        className="w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors shadow-sm"
                       >
-                        <EditIcon /> Edit
+                        <Edit size={15} />
                       </button>
                       <button
-                        onClick={() => openDelete(s)}
-                        className="flex items-center gap-1.5 bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg text-sm transition-colors"
+                        onClick={() => setDeleteModal(s)}
+                        className="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-sm"
                       >
-                        <DeleteIcon /> Delete
+                        <Trash2 size={15} />
                       </button>
                     </div>
                   </td>
@@ -319,12 +309,10 @@ export default function LeadStatus() {
         </table>
       </div>
 
-      {/* Modals */}
       {addModal && (
         <Modal
           title="Add Lead Status"
-          value={addValue}
-          onChange={setAddValue}
+          initialValue=""
           onConfirm={confirmAdd}
           onCancel={() => setAddModal(false)}
           confirmLabel="Add"
@@ -334,8 +322,7 @@ export default function LeadStatus() {
       {editModal && (
         <Modal
           title="Edit Lead Status"
-          value={editValue}
-          onChange={setEditValue}
+          initialValue={editModal.name}
           onConfirm={confirmEdit}
           onCancel={() => setEditModal(null)}
           confirmLabel="Save Changes"

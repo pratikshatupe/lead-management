@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, memo, useCallback } from "react";
 
 const PlusIcon = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>;
 const EditIcon = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>;
@@ -13,27 +13,28 @@ const RefreshIcon = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="
 const CameraIcon = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z"/><path d="M9 3L7.17 5H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2h-3.17L15 3H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>;
 const ArrowLeftIcon = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>;
 const ChevronDownIcon = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>;
-const CheckIcon = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>;
+const SaveIcon = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>;
 
-const btnPrimary = { display:'flex', alignItems:'center', gap:7, background:'#3b82f6', color:'#fff', border:'none', padding:'9px 14px', borderRadius:8, fontSize:13, fontWeight:600, cursor:'pointer', whiteSpace:'nowrap' };
-const btnSecondary = { display:'flex', alignItems:'center', gap:7, background:'#f3f4f6', color:'#374151', border:'none', padding:'9px 14px', borderRadius:8, fontSize:13, fontWeight:600, cursor:'pointer', whiteSpace:'nowrap' };
+const btnPrimary = { display:'flex', alignItems:'center', gap:5, background:'#3b82f6', color:'#fff', border:'none', padding:'9px 12px', borderRadius:8, fontSize:13, fontWeight:600, cursor:'pointer', whiteSpace:'nowrap', minWidth:0 };
+const btnSecondary = { display:'flex', alignItems:'center', gap:5, background:'#f3f4f6', color:'#374151', border:'none', padding:'9px 12px', borderRadius:8, fontSize:13, fontWeight:600, cursor:'pointer', whiteSpace:'nowrap', minWidth:0 };
 
 const Toast = ({ show, message }) => (
-  <div style={{ position:'fixed', bottom:28, right:28, zIndex:9999, background:'#fff', borderRadius:12, boxShadow:'0 8px 32px rgba(0,0,0,0.15)', padding:'14px 20px', display:'flex', alignItems:'center', gap:12, border:'1.5px solid #d1fae5', transform: show ? 'translateY(0)' : 'translateY(80px)', opacity: show ? 1 : 0, transition:'all 0.35s cubic-bezier(.4,2,.6,1)' }}>
-    <div style={{ color:'#10b981' }}><CheckCircleIcon /></div>
-    <div><div style={{ fontSize:14, fontWeight:700, color:'#065f46' }}>Success</div><div style={{ fontSize:12, color:'#6b7280' }}>{message}</div></div>
-  </div>
+  <div style={{ position:'fixed', bottom:16, left:16, right:16, zIndex:9999, background:'#fff', borderRadius:12, boxShadow:'0 8px 32px rgba(0,0,0,0.15)', padding:'12px 16px', display:'flex', alignItems:'center', gap:10, border:'1.5px solid #d1fae5', transform: show ? 'translateY(0)' : 'translateY(80px)', opacity: show ? 1 : 0, transition:'all 0.35s cubic-bezier(.4,2,.6,1)', maxWidth:360, marginLeft:'auto' }}>
+  <div style={{ color:'#10b981' }}><CheckCircleIcon /></div>
+  <div><div style={{ fontSize:14, fontWeight:700, color:'#065f46' }}>Success</div><div style={{ fontSize:12, color:'#6b7280' }}>{message}</div></div>
+</div>
 );
 
+// ✅ Modal — wrapper, children render करतो
 const Modal = ({ title, onClose, children, footer, width=480 }) => (
-  <div style={{ position:'fixed', inset:0, zIndex:1000, background:'rgba(0,0,0,0.4)', backdropFilter:'blur(2px)', display:'flex', alignItems:'center', justifyContent:'center', padding:16 }} onClick={onClose}>
-    <div style={{ background:'#fff', borderRadius:14, boxShadow:'0 20px 60px rgba(0,0,0,0.2)', width:'100%', maxWidth:width, animation:'popIn .25s cubic-bezier(.4,0,.2,1)' }} onClick={e=>e.stopPropagation()}>
-      <div style={{ padding:'18px 24px', borderBottom:'1px solid #f3f4f6', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-        <h3 style={{ margin:0, fontSize:17, fontWeight:700, color:'#1f2937' }}>{title}</h3>
+  <div style={{ position:'fixed', inset:0, zIndex:1000, background:'rgba(0,0,0,0.4)', backdropFilter:'blur(2px)', display:'flex', alignItems:'center', justifyContent:'center', padding:12 }} onClick={onClose}>
+    <div style={{ background:'#fff', borderRadius:14, boxShadow:'0 20px 60px rgba(0,0,0,0.2)', width:'100%', maxWidth:Math.min(width, window.innerWidth - 24), animation:'popIn .25s cubic-bezier(.4,0,.2,1)' }} onClick={e=>e.stopPropagation()}>
+      <div style={{ padding:'16px 18px', borderBottom:'1px solid #f3f4f6', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+        <h3 style={{ margin:0, fontSize:16, fontWeight:700, color:'#1f2937' }}>{title}</h3>
         <button onClick={onClose} style={{ background:'none', border:'none', cursor:'pointer', color:'#9ca3af', display:'flex', padding:4, borderRadius:6 }}><XIcon /></button>
       </div>
-      <div style={{ padding:'22px 24px' }}>{children}</div>
-      {footer && <div style={{ padding:'14px 24px', borderTop:'1px solid #f3f4f6', display:'flex', justifyContent:'flex-end', gap:10 }}>{footer}</div>}
+      <div style={{ padding:'18px' }}>{children}</div>
+      {footer && <div style={{ padding:'14px 18px', borderTop:'1px solid #f3f4f6', display:'flex', justifyContent:'flex-end', gap:10, flexWrap:'wrap' }}>{footer}</div>}
     </div>
     <style>{`@keyframes popIn{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}`}</style>
   </div>
@@ -42,16 +43,6 @@ const Modal = ({ title, onClose, children, footer, width=480 }) => (
 const Toggle = ({ checked, onChange }) => (
   <div onClick={()=>onChange(!checked)} style={{ width:44, height:24, borderRadius:12, background: checked?'#3b82f6':'#d1d5db', cursor:'pointer', position:'relative', transition:'background .2s', flexShrink:0 }}>
     <div style={{ position:'absolute', top:2, left: checked?22:2, width:20, height:20, borderRadius:'50%', background:'#fff', boxShadow:'0 1px 3px rgba(0,0,0,.2)', transition:'left .2s' }}/>
-  </div>
-);
-
-const Field = ({ label, required, ...props }) => (
-  <div style={{ marginBottom:16 }}>
-    <label style={{ display:'block', fontSize:13, fontWeight:600, color:'#374151', marginBottom:5 }}>
-      {required && <span style={{ color:'#ef4444' }}>* </span>}{label}
-    </label>
-    <input {...props} style={{ width:'100%', border:'1.5px solid #e5e7eb', borderRadius:8, padding:'10px 14px', fontSize:13, outline:'none', background:'#fff', boxSizing:'border-box', fontFamily:'inherit' }}
-      onFocus={e=>e.target.style.borderColor='#3b82f6'} onBlur={e=>e.target.style.borderColor='#e5e7eb'}/>
   </div>
 );
 
@@ -70,8 +61,8 @@ const FlagUpload = ({ value, onChange }) => (
   </div>
 );
 
-const GROUPS = ['common','menu','dashboard','user','salesman','role','notes','campaign'];
-const BASE_ROWS = [
+const TRANSLATION_GROUPS = ['common','menu','dashboard','user','salesman','role','notes','campaign'];
+const TRANSLATION_BASE_ROWS = [
   { group:'common', key:'enabled', en:'Enabled' },
   { group:'common', key:'disabled', en:'Disabled' },
   { group:'common', key:'id', en:'Id' },
@@ -88,6 +79,71 @@ const BASE_ROWS = [
   { group:'campaign', key:'subject', en:'Subject' },
 ];
 
+// ✅ LangModal — स्वतःची LOCAL state ठेवतो त्यामुळे typing blink होत नाही
+function LangModal({ initialItem, isEdit, onClose, onSubmit }) {
+  const [item, setItem] = useState(() => ({
+    name: initialItem.name || '',
+    key: initialItem.key || '',
+    flag: initialItem.flag || null,
+  }));
+
+  return (
+    <Modal
+      title={isEdit ? 'Edit Language' : 'Add New Language'}
+      onClose={onClose}
+      footer={<>
+        <button style={btnSecondary} onClick={onClose}>Cancel</button>
+        <button style={btnPrimary} onClick={() => item.name.trim() && item.key.trim() && onSubmit(item)}>
+          <SaveIcon/> {isEdit ? 'Update' : 'Create'}
+        </button>
+      </>}
+    >
+      {/* ✅ Local controlled inputs — no parent re-render */}
+      <div style={{ marginBottom:16 }}>
+        <label style={{ display:'block', fontSize:13, fontWeight:600, color:'#374151', marginBottom:5 }}>
+          <span style={{ color:'#ef4444' }}>* </span>Name
+        </label>
+        <input
+          autoFocus
+          value={item.name}
+          onChange={e => setItem(p => ({ ...p, name: e.target.value }))}
+          placeholder="Please Enter Name"
+          style={{ width:'100%', border:'1.5px solid #e5e7eb', borderRadius:8, padding:'10px 14px', fontSize:13, outline:'none', background:'#fff', boxSizing:'border-box', fontFamily:'inherit' }}
+          onFocus={e=>e.target.style.borderColor='#3b82f6'} onBlur={e=>e.target.style.borderColor='#e5e7eb'}
+        />
+      </div>
+      <div style={{ marginBottom:16 }}>
+        <label style={{ display:'block', fontSize:13, fontWeight:600, color:'#374151', marginBottom:5 }}>
+          <span style={{ color:'#ef4444' }}>* </span>Key
+        </label>
+        <input
+          value={item.key}
+          onChange={e => setItem(p => ({ ...p, key: e.target.value }))}
+          placeholder="e.g. en, hi, mr"
+          style={{ width:'100%', border:'1.5px solid #e5e7eb', borderRadius:8, padding:'10px 14px', fontSize:13, outline:'none', background:'#fff', boxSizing:'border-box', fontFamily:'inherit' }}
+          onFocus={e=>e.target.style.borderColor='#3b82f6'} onBlur={e=>e.target.style.borderColor='#e5e7eb'}
+        />
+      </div>
+      <FlagUpload value={item.flag} onChange={v => setItem(p => ({ ...p, flag: v }))} />
+    </Modal>
+  );
+}
+
+// ✅ TranslationInput — memo + local state — table मध्ये typing blink नाही
+const TranslationInput = memo(function TranslationInput({ initialValue, onCommit, style }) {
+  const [val, setVal] = useState(initialValue);
+  return (
+    <input
+      value={val}
+      onChange={e => setVal(e.target.value)}
+      onBlur={() => onCommit(val)}
+      style={style}
+      onFocus={e=>e.target.style.borderColor='#3b82f6'}
+    />
+  );
+});
+
+// ─── Languages Sub-View ───────────────────────────────────────────────────────
 function LanguagesView({ languages, onBack, onAdd, onEdit, onDelete, onToggle }) {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState([]);
@@ -99,11 +155,12 @@ function LanguagesView({ languages, onBack, onAdd, onEdit, onDelete, onToggle })
   const toggleAll = () => setSelected(selected.length === filtered.length ? [] : filtered.map(l=>l.id));
 
   return (
-    <div style={{ padding:16 }}>
+    <div style={{ padding:10 }}>
       <style>{`
         @media(min-width:640px){.lv-mobile{display:none!important}}
         @media(max-width:639px){.lv-desktop{display:none!important}}
         @media(min-width:640px){.lv-header{flex-direction:row!important;justify-content:space-between!important}.lv-toolbar{flex-direction:row!important;justify-content:space-between!important}.lv-toolbar-btns{flex-wrap:wrap!important}.lv-search-wrap{width:200px!important}}
+        @media(max-width:359px){.lv-header-btns button{font-size:12px!important;padding:8px 10px!important;gap:4px!important}.lv-card-actions button{font-size:11px!important;padding:7px 6px!important;gap:3px!important}}
       `}</style>
 
       <div className="lv-header" style={{ display:'flex', flexDirection:'column', gap:12, marginBottom:16 }}>
@@ -114,14 +171,13 @@ function LanguagesView({ languages, onBack, onAdd, onEdit, onDelete, onToggle })
             <p style={{ margin:'2px 0 0', fontSize:12, color:'#9ca3af' }}>Dashboard - Settings - Translations - <span style={{ color:'#6b7280' }}>Languages</span></p>
           </div>
         </div>
-        <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
+        <div className="lv-header-btns" style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
           <button style={{ ...btnSecondary, flex:1, justifyContent:'center' }}><ImportIcon/> Import</button>
           <button style={{ ...btnPrimary, flex:1, justifyContent:'center' }} onClick={onAdd}><PlusIcon/> Add Language</button>
         </div>
       </div>
 
       <div style={{ background:'#fff', borderRadius:14, boxShadow:'0 1px 6px rgba(0,0,0,.06)', border:'1.5px solid #f1f5f9', overflow:'hidden' }}>
-
         <div className="lv-toolbar" style={{ padding:'12px 14px', display:'flex', flexDirection:'column', gap:10, borderBottom:'1px solid #f3f4f6' }}>
           <div className="lv-toolbar-btns" style={{ display:'flex', gap:8 }}>
             <button style={btnPrimary} onClick={onAdd}><PlusIcon/> Add New Language</button>
@@ -135,6 +191,7 @@ function LanguagesView({ languages, onBack, onAdd, onEdit, onDelete, onToggle })
           </div>
         </div>
 
+        {/* Mobile Cards */}
         <div className="lv-mobile" style={{ padding:12, display:'flex', flexDirection:'column', gap:12 }}>
           {filtered.length === 0
             ? <div style={{ padding:32, textAlign:'center', color:'#9ca3af', fontSize:14 }}>No languages found</div>
@@ -142,51 +199,31 @@ function LanguagesView({ languages, onBack, onAdd, onEdit, onDelete, onToggle })
               <div key={lang.id} style={{
                 background: selected.includes(lang.id) ? '#eff6ff' : '#fff',
                 border:`1.5px solid ${selected.includes(lang.id)?'#bfdbfe':'#e5e7eb'}`,
-                borderRadius:12, overflow:'hidden',
-                boxShadow:'0 1px 4px rgba(0,0,0,0.06)'
+                borderRadius:12, overflow:'hidden', boxShadow:'0 1px 4px rgba(0,0,0,0.06)'
               }}>
-                <div style={{
-                  background: selected.includes(lang.id) ? '#dbeafe' : '#f8fafc',
-                  padding:'10px 14px',
-                  display:'flex', alignItems:'center', justifyContent:'space-between',
-                  borderBottom:`1px solid ${selected.includes(lang.id)?'#bfdbfe':'#e5e7eb'}`
-                }}>
+                <div style={{ background: selected.includes(lang.id) ? '#dbeafe' : '#f8fafc', padding:'10px 14px', display:'flex', alignItems:'center', justifyContent:'space-between', borderBottom:`1px solid ${selected.includes(lang.id)?'#bfdbfe':'#e5e7eb'}` }}>
                   <div style={{ display:'flex', alignItems:'center', gap:8 }}>
                     <input type="checkbox" checked={selected.includes(lang.id)} onChange={()=>setSelected(p=>p.includes(lang.id)?p.filter(x=>x!==lang.id):[...p,lang.id])} style={{ cursor:'pointer', width:15, height:15 }}/>
                     <span style={{ fontSize:12, fontWeight:700, color:'#6b7280', textTransform:'uppercase', letterSpacing:'0.5px' }}>Language</span>
                   </div>
                   <Toggle checked={lang.enabled} onChange={v=>onToggle(lang.id,v)}/>
                 </div>
-
                 <div style={{ padding:'14px' }}>
                   <div style={{ marginBottom:12 }}>
                     <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#9ca3af', textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:6 }}>Name</label>
                     <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-                      {lang.flag
-                        ? <img src={lang.flag} alt="" style={{ width:32, height:22, objectFit:'cover', borderRadius:4, border:'1px solid #e5e7eb', flexShrink:0 }}/>
-                        : <div style={{ width:32, height:22, background:'#e5e7eb', borderRadius:4, display:'flex', alignItems:'center', justifyContent:'center', fontSize:9, color:'#9ca3af', flexShrink:0 }}>IMG</div>
-                      }
-                      <div style={{ flex:1, border:'1.5px solid #e5e7eb', borderRadius:8, padding:'9px 12px', fontSize:14, background:'#f9fafb', color:'#1f2937', fontWeight:500 }}>
-                        {lang.name}
-                      </div>
+                      {lang.flag ? <img src={lang.flag} alt="" style={{ width:32, height:22, objectFit:'cover', borderRadius:4, border:'1px solid #e5e7eb', flexShrink:0 }}/> : <div style={{ width:32, height:22, background:'#e5e7eb', borderRadius:4, display:'flex', alignItems:'center', justifyContent:'center', fontSize:9, color:'#9ca3af', flexShrink:0 }}>IMG</div>}
+                      <div style={{ flex:1, border:'1.5px solid #e5e7eb', borderRadius:8, padding:'9px 12px', fontSize:14, background:'#f9fafb', color:'#1f2937', fontWeight:500 }}>{lang.name}</div>
                     </div>
                   </div>
                   <div style={{ marginBottom: lang.isDefault ? 0 : 14 }}>
                     <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#9ca3af', textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:6 }}>Key</label>
-                    <div style={{ border:'1.5px solid #e5e7eb', borderRadius:8, padding:'9px 12px', fontSize:13, background:'#f9fafb', color:'#6b7280', fontFamily:'monospace' }}>
-                      {lang.key}
-                    </div>
+                    <div style={{ border:'1.5px solid #e5e7eb', borderRadius:8, padding:'9px 12px', fontSize:13, background:'#f9fafb', color:'#6b7280', fontFamily:'monospace' }}>{lang.key}</div>
                   </div>
-                   {!lang.isDefault && (
-                    <div style={{ display:'flex', gap:8, paddingTop:12, borderTop:'1px solid #f3f4f6' }}>
-                      <button onClick={()=>onEdit(lang)} style={{ ...btnPrimary, flex:1, justifyContent:'center', padding:'8px' }}
-                        onMouseEnter={e=>e.currentTarget.style.background='#2563eb'} onMouseLeave={e=>e.currentTarget.style.background='#3b82f6'}>
-                        <EditIcon/> Edit
-                      </button>
-                      <button onClick={()=>onDelete(lang)} style={{ ...btnPrimary, flex:1, justifyContent:'center', padding:'8px', background:'#ef4444' }}
-                        onMouseEnter={e=>e.currentTarget.style.background='#dc2626'} onMouseLeave={e=>e.currentTarget.style.background='#ef4444'}>
-                        <TrashIcon/> Delete
-                      </button>
+                  {!lang.isDefault && (
+                    <div className="lv-card-actions" style={{ display:'flex', gap:6, paddingTop:12, borderTop:'1px solid #f3f4f6' }}>
+                      <button onClick={()=>onEdit(lang)} style={{ ...btnPrimary, flex:1, justifyContent:'center', padding:'8px' }} onMouseEnter={e=>e.currentTarget.style.background='#2563eb'} onMouseLeave={e=>e.currentTarget.style.background='#3b82f6'}><EditIcon/> Edit</button>
+                      <button onClick={()=>onDelete(lang)} style={{ ...btnPrimary, flex:1, justifyContent:'center', padding:'8px', background:'#ef4444' }} onMouseEnter={e=>e.currentTarget.style.background='#dc2626'} onMouseLeave={e=>e.currentTarget.style.background='#ef4444'}><TrashIcon/> Delete</button>
                       <button style={{ ...btnSecondary, flex:1, justifyContent:'center', padding:'8px' }}><DownloadIcon/> Export</button>
                     </div>
                   )}
@@ -196,7 +233,7 @@ function LanguagesView({ languages, onBack, onAdd, onEdit, onDelete, onToggle })
           }
         </div>
 
-        {/* ── DESKTOP: Table ── */}
+        {/* Desktop Table */}
         <table className="lv-desktop" style={{ width:'100%', borderCollapse:'collapse' }}>
           <thead>
             <tr style={{ background:'#f9fafb' }}>
@@ -248,6 +285,7 @@ function LanguagesView({ languages, onBack, onAdd, onEdit, onDelete, onToggle })
   );
 }
 
+// ─── Import Modal ─────────────────────────────────────────────────────────────
 function ImportModal({ onClose, onImport }) {
   const [file, setFile] = useState(null);
   const inputRef = useRef();
@@ -275,73 +313,98 @@ function ImportModal({ onClose, onImport }) {
   );
 }
 
+// ─── Main Translations Export ─────────────────────────────────────────────────
 export default function Translations() {
   const [languages, setLanguages] = useState([
     { id:1, name:'cfvgb', key:'vc', enabled:true, flag:null, isDefault:false },
     { id:2, name:'pratu', key:'ADSFGHJ', enabled:true, flag:null, isDefault:false },
     { id:3, name:'English', key:'en', enabled:true, flag:'https://flagcdn.com/w40/gb.png', isDefault:true },
   ]);
-  const [rows] = useState(BASE_ROWS);
+  const [rows] = useState(TRANSLATION_BASE_ROWS);
   const [translations, setTranslations] = useState(() => {
     const t = {};
-    BASE_ROWS.forEach(r => { t[r.key] = { pratu: r.en, vc: r.en }; });
+    TRANSLATION_BASE_ROWS.forEach(r => { t[r.key] = { pratu: r.en, vc: r.en }; });
     return t;
   });
   const [view, setView] = useState('main');
   const [selectedGroup, setSelectedGroup] = useState('common');
   const [groupOpen, setGroupOpen] = useState(false);
-  const [showAddLang, setShowAddLang] = useState(false);
-  const [showEditLang, setShowEditLang] = useState(null);
-  const [showDeleteLang, setShowDeleteLang] = useState(null);
-  const [showImport, setShowImport] = useState(false);
-  const [newLang, setNewLang] = useState({ name:'', key:'', flag:null });
-  const [toast, setToast] = useState({ show:false, message:'' });
 
+  // Modal states — फक्त open/close + initial data
+  const [showAddLang, setShowAddLang]       = useState(false);
+  const [showEditLang, setShowEditLang]     = useState(null); // lang object
+  const [showDeleteLang, setShowDeleteLang] = useState(null);
+  const [showImport, setShowImport]         = useState(false);
+
+  const [toast, setToast] = useState({ show:false, message:'' });
   const showToast = (message) => { setToast({ show:true, message }); setTimeout(()=>setToast(t=>({...t,show:false})), 3000); };
 
   const langKeys = languages.filter(l=>!l.isDefault).map(l=>l.key);
   const filteredRows = rows.filter(r => r.group === selectedGroup);
 
-  const handleAddLang = () => {
-    if (!newLang.name.trim() || !newLang.key.trim()) return;
-    setLanguages(prev=>[...prev, { id:Date.now(), ...newLang, enabled:true, isDefault:false }]);
-    setNewLang({ name:'', key:'', flag:null }); setShowAddLang(false);
+  // ✅ onSubmit ला LangModal च्या local state मधून final data येतो
+  const handleAddLang = useCallback((item) => {
+    setLanguages(prev=>[...prev, { id:Date.now(), ...item, enabled:true, isDefault:false }]);
+    setShowAddLang(false);
     showToast('Language added successfully!');
-  };
-  const handleEditLang = () => {
-    if (!showEditLang.name.trim()) return;
-    setLanguages(prev=>prev.map(l=>l.id===showEditLang.id?showEditLang:l));
-    setShowEditLang(null); showToast('Language updated successfully!');
-  };
-  const handleDeleteLang = () => {
+  }, []);
+
+  const handleEditLang = useCallback((item) => {
+    setLanguages(prev=>prev.map(l=>l.id===showEditLang.id ? { ...l, ...item } : l));
+    setShowEditLang(null);
+    showToast('Language updated successfully!');
+  }, [showEditLang]);
+
+  const handleDeleteLang = useCallback(() => {
     setLanguages(prev=>prev.filter(l=>l.id!==showDeleteLang.id));
-    setShowDeleteLang(null); showToast('Language deleted!');
-  };
+    setShowDeleteLang(null);
+    showToast('Language deleted!');
+  }, [showDeleteLang]);
+
   const handleToggle = (id, val) => setLanguages(prev=>prev.map(l=>l.id===id?{...l,enabled:val}:l));
   const handleFetch = () => showToast('Translations Fetch Successfully');
   const handleImport = () => { setShowImport(false); showToast('Translations imported successfully!'); };
 
+  // ✅ Translation input commit — only on blur, no per-keystroke parent update
+  const handleTranslationCommit = useCallback((rowKey, langKey, val) => {
+    setTranslations(prev => ({ ...prev, [rowKey]: { ...(prev[rowKey]||{}), [langKey]: val } }));
+  }, []);
+
+  // Languages sub-view
   if (view === 'languages') {
     return (
       <>
         <Toast show={toast.show} message={toast.message}/>
-        <LanguagesView languages={languages} onBack={()=>setView('main')} onAdd={()=>setShowAddLang(true)} onEdit={l=>setShowEditLang({...l})} onDelete={l=>setShowDeleteLang(l)} onToggle={handleToggle}/>
+        <LanguagesView
+          languages={languages}
+          onBack={()=>setView('main')}
+          onAdd={()=>setShowAddLang(true)}
+          onEdit={l=>setShowEditLang({...l})}
+          onDelete={l=>setShowDeleteLang(l)}
+          onToggle={handleToggle}
+        />
         {showAddLang && (
-          <Modal title="Add New Language" onClose={()=>setShowAddLang(false)} footer={<><button style={btnSecondary} onClick={()=>setShowAddLang(false)}>Cancel</button><button style={btnPrimary} onClick={handleAddLang}><PlusIcon/> Create</button></>}>
-            <Field label="Name" required value={newLang.name} onChange={e=>setNewLang(p=>({...p,name:e.target.value}))} placeholder="Please Enter Name" autoFocus/>
-            <Field label="Key" required value={newLang.key} onChange={e=>setNewLang(p=>({...p,key:e.target.value}))} placeholder="e.g. en, hi, mr"/>
-            <FlagUpload value={newLang.flag} onChange={v=>setNewLang(p=>({...p,flag:v}))}/>
-          </Modal>
+          <LangModal
+            initialItem={{ name:'', key:'', flag:null }}
+            isEdit={false}
+            onClose={()=>setShowAddLang(false)}
+            onSubmit={handleAddLang}
+          />
         )}
         {showEditLang && (
-          <Modal title="Edit Language" onClose={()=>setShowEditLang(null)} footer={<><button style={btnSecondary} onClick={()=>setShowEditLang(null)}>Cancel</button><button style={btnPrimary} onClick={handleEditLang}><EditIcon/> Update</button></>}>
-            <Field label="Name" required value={showEditLang.name} onChange={e=>setShowEditLang(p=>({...p,name:e.target.value}))} autoFocus/>
-            <Field label="Key" required value={showEditLang.key} onChange={e=>setShowEditLang(p=>({...p,key:e.target.value}))}/>
-            <FlagUpload value={showEditLang.flag} onChange={v=>setShowEditLang(p=>({...p,flag:v}))}/>
-          </Modal>
+          <LangModal
+            initialItem={showEditLang}
+            isEdit={true}
+            onClose={()=>setShowEditLang(null)}
+            onSubmit={handleEditLang}
+          />
         )}
         {showDeleteLang && (
-          <Modal title="Confirm Delete" onClose={()=>setShowDeleteLang(null)} footer={<><button style={btnSecondary} onClick={()=>setShowDeleteLang(null)}>Cancel</button><button style={{...btnPrimary,background:'#ef4444'}} onClick={handleDeleteLang}><TrashIcon/> Delete</button></>}>
+          <Modal title="Confirm Delete" onClose={()=>setShowDeleteLang(null)}
+            footer={<>
+              <button style={btnSecondary} onClick={()=>setShowDeleteLang(null)}>Cancel</button>
+              <button style={{...btnPrimary,background:'#ef4444'}} onClick={handleDeleteLang}><TrashIcon/> Delete</button>
+            </>}>
             <p style={{ margin:0, color:'#374151', fontSize:14 }}>Are you sure you want to delete <strong>"{showDeleteLang.name}"</strong>?</p>
           </Modal>
         )}
@@ -349,6 +412,7 @@ export default function Translations() {
     );
   }
 
+  // Main translations view
   return (
     <>
       <Toast show={toast.show} message={toast.message}/>
@@ -356,40 +420,40 @@ export default function Translations() {
         @media(min-width:640px){.tr-mobile{display:none!important}}
         @media(max-width:639px){.tr-desktop{display:none!important}}
         @media(min-width:640px){.tr-toolbar{flex-direction:row!important;align-items:center!important}.tr-toolbar-right{margin-left:auto!important}}
+        @media(max-width:359px){.tr-toolbar-btn{font-size:11px!important;padding:8px 8px!important;gap:4px!important}.tr-card-field input{font-size:12px!important;padding:8px 10px!important}}
       `}</style>
 
       {showAddLang && (
-        <Modal title="Add New Language" onClose={()=>setShowAddLang(false)} footer={<><button style={btnSecondary} onClick={()=>setShowAddLang(false)}>Cancel</button><button style={btnPrimary} onClick={handleAddLang}><PlusIcon/> Create</button></>}>
-          <Field label="Name" required value={newLang.name} onChange={e=>setNewLang(p=>({...p,name:e.target.value}))} placeholder="Please Enter Name" autoFocus/>
-          <Field label="Key" required value={newLang.key} onChange={e=>setNewLang(p=>({...p,key:e.target.value}))} placeholder="e.g. en, hi, mr"/>
-          <FlagUpload value={newLang.flag} onChange={v=>setNewLang(p=>({...p,flag:v}))}/>
-        </Modal>
+        <LangModal
+          initialItem={{ name:'', key:'', flag:null }}
+          isEdit={false}
+          onClose={()=>setShowAddLang(false)}
+          onSubmit={handleAddLang}
+        />
       )}
       {showImport && <ImportModal onClose={()=>setShowImport(false)} onImport={handleImport}/>}
 
-      {/* Header */}
-      <div style={{ padding:'16px 16px 0', marginBottom:8 }}>
+      <div style={{ padding:'16px 10px 0', marginBottom:8 }}>
         <h2 style={{ margin:0, fontSize:20, fontWeight:700, color:'#1f2937' }}>Translations</h2>
         <p style={{ margin:'3px 0 0', fontSize:12, color:'#9ca3af' }}>Dashboard - Settings - <span style={{ color:'#6b7280' }}>Translations</span></p>
       </div>
 
-      <div style={{ margin:'12px 16px 16px', background:'#fff', borderRadius:14, boxShadow:'0 1px 6px rgba(0,0,0,.06)', border:'1.5px solid #f1f5f9', overflow:'hidden' }}>
-
+      <div style={{ margin:'12px 10px 16px', background:'#fff', borderRadius:14, boxShadow:'0 1px 6px rgba(0,0,0,.06)', border:'1.5px solid #f1f5f9', overflow:'hidden' }}>
         {/* Toolbar */}
         <div className="tr-toolbar" style={{ padding:'12px 14px', display:'flex', flexDirection:'column', gap:10, borderBottom:'1px solid #f3f4f6', flexWrap:'wrap' }}>
-          <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
-            <button style={{ ...btnPrimary, flex:'1 1 auto', justifyContent:'center', minWidth:0 }} onClick={()=>setShowAddLang(true)}><PlusIcon/> Add Language</button>
-            <button style={{ ...btnSecondary, flex:'1 1 auto', justifyContent:'center', minWidth:0 }} onClick={()=>setShowImport(true)}><ImportIcon/> Import</button>
-            <button style={{ ...btnSecondary, flex:'1 1 auto', justifyContent:'center', minWidth:0 }} onClick={()=>setView('languages')}><EyeIcon/> View Languages</button>
+          <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+            <button className="tr-toolbar-btn" style={{ ...btnPrimary, flex:'1 1 auto', justifyContent:'center', minWidth:0 }} onClick={()=>setShowAddLang(true)}><PlusIcon/> Add Language</button>
+            <button className="tr-toolbar-btn" style={{ ...btnSecondary, flex:'1 1 auto', justifyContent:'center', minWidth:0 }} onClick={()=>setShowImport(true)}><ImportIcon/> Import</button>
+            <button className="tr-toolbar-btn" style={{ ...btnSecondary, flex:'1 1 auto', justifyContent:'center', minWidth:0 }} onClick={()=>setView('languages')}><EyeIcon/> View Languages</button>
           </div>
-          <div className="tr-toolbar-right" style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
+          <div className="tr-toolbar-right" style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
             <div style={{ position:'relative', flex:'1 1 auto' }}>
-              <button style={{ ...btnSecondary, width:'100%', justifyContent:'space-between' }} onClick={()=>setGroupOpen(o=>!o)}>
+              <button className="tr-toolbar-btn" style={{ ...btnSecondary, width:'100%', justifyContent:'space-between' }} onClick={()=>setGroupOpen(o=>!o)}>
                 {selectedGroup} <ChevronDownIcon/>
               </button>
               {groupOpen && (
                 <div style={{ position:'absolute', top:'110%', left:0, right:0, zIndex:200, background:'#fff', border:'1px solid #e5e7eb', borderRadius:10, boxShadow:'0 8px 24px rgba(0,0,0,.12)', overflow:'hidden' }}>
-                  {GROUPS.map(g=>(
+                  {TRANSLATION_GROUPS.map(g=>(
                     <button key={g} onClick={()=>{ setSelectedGroup(g); setGroupOpen(false); }}
                       style={{ display:'block', width:'100%', padding:'9px 16px', textAlign:'left', fontSize:13, border:'none', cursor:'pointer', fontFamily:'inherit', background: g===selectedGroup?'#eff6ff':'#fff', color: g===selectedGroup?'#3b82f6':'#374151', fontWeight: g===selectedGroup?600:400 }}>
                       {g}
@@ -398,54 +462,34 @@ export default function Translations() {
                 </div>
               )}
             </div>
-            <button style={{ ...btnSecondary, flex:'1 1 auto', justifyContent:'center' }} onClick={handleFetch}><RefreshIcon/> Fetch Translations</button>
+            <button className="tr-toolbar-btn" style={{ ...btnSecondary, flex:'1 1 auto', justifyContent:'center' }} onClick={handleFetch}><RefreshIcon/> Fetch Translations</button>
           </div>
         </div>
 
+        {/* Mobile Cards */}
         <div className="tr-mobile" style={{ padding:12, display:'flex', flexDirection:'column', gap:12 }}>
           {filteredRows.length === 0
             ? <div style={{ padding:32, textAlign:'center', color:'#9ca3af', fontSize:14 }}>No translations found</div>
-            : filteredRows.map((r, i) => (
-              <div key={r.key} style={{
-                background:'#fff',
-                border:'1.5px solid #e5e7eb',
-                borderRadius:12,
-                overflow:'hidden',
-                boxShadow:'0 1px 4px rgba(0,0,0,0.05)'
-              }}>
-                {/* Card Header */}
-                <div style={{
-                  background:'#f8fafc',
-                  padding:'10px 14px',
-                  display:'flex', alignItems:'center', justifyContent:'space-between',
-                  borderBottom:'1px solid #e5e7eb'
-                }}>
-                  <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                    <span style={{ background:'#eff6ff', color:'#3b82f6', fontSize:11, fontWeight:700, padding:'3px 8px', borderRadius:20 }}>{r.group}</span>
-                  </div>
+            : filteredRows.map((r) => (
+              <div key={r.key} style={{ background:'#fff', border:'1.5px solid #e5e7eb', borderRadius:12, overflow:'hidden', boxShadow:'0 1px 4px rgba(0,0,0,0.05)' }}>
+                <div style={{ background:'#f8fafc', padding:'10px 14px', display:'flex', alignItems:'center', justifyContent:'space-between', borderBottom:'1px solid #e5e7eb' }}>
+                  <span style={{ background:'#eff6ff', color:'#3b82f6', fontSize:11, fontWeight:700, padding:'3px 8px', borderRadius:20 }}>{r.group}</span>
                   <span style={{ fontSize:12, color:'#9ca3af', fontFamily:'monospace' }}>{r.key}</span>
                 </div>
-
                 <div style={{ padding:'14px' }}>
                   <div style={{ marginBottom:12 }}>
-                    <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#9ca3af', textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:6 }}>
-                      English
-                    </label>
-                    <div style={{ border:'1.5px solid #e5e7eb', borderRadius:8, padding:'9px 12px', fontSize:13, background:'#f9fafb', color:'#374151', fontWeight:500 }}>
-                      {r.en}
-                    </div>
+                    <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#9ca3af', textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:6 }}>English</label>
+                    <div style={{ border:'1.5px solid #e5e7eb', borderRadius:8, padding:'9px 12px', fontSize:13, background:'#f9fafb', color:'#374151', fontWeight:500 }}>{r.en}</div>
                   </div>
-
                   {langKeys.map((k, ki) => (
-                    <div key={k} style={{ marginBottom: ki === langKeys.length - 1 ? 0 : 12 }}>
-                      <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#9ca3af', textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:6 }}>
-                        {k}
-                      </label>
-                      <input
-                        value={translations[r.key]?.[k] ?? r.en}
-                        onChange={e=>setTranslations(prev=>({ ...prev, [r.key]:{ ...(prev[r.key]||{}), [k]:e.target.value } }))}
+                    <div key={k} className="tr-card-field" style={{ marginBottom: ki === langKeys.length - 1 ? 0 : 12 }}>
+                      <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#9ca3af', textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:6 }}>{k}</label>
+                      {/* ✅ TranslationInput — memo + local state + onBlur commit */}
+                      <TranslationInput
+                        key={`${r.key}-${k}`}
+                        initialValue={translations[r.key]?.[k] ?? r.en}
+                        onCommit={(val) => handleTranslationCommit(r.key, k, val)}
                         style={{ width:'100%', border:'1.5px solid #e5e7eb', borderRadius:8, padding:'9px 12px', fontSize:13, outline:'none', boxSizing:'border-box', background:'#fff', color:'#1f2937' }}
-                        onFocus={e=>e.target.style.borderColor='#3b82f6'} onBlur={e=>e.target.style.borderColor='#e5e7eb'}
                       />
                     </div>
                   ))}
@@ -455,6 +499,7 @@ export default function Translations() {
           }
         </div>
 
+        {/* Desktop Table */}
         <div className="tr-desktop" style={{ overflowX:'auto' }}>
           <table style={{ width:'100%', borderCollapse:'collapse', minWidth:600 }}>
             <thead>
@@ -473,11 +518,12 @@ export default function Translations() {
                   <td style={{ padding:'12px 16px', fontSize:13, color:'#374151' }}>{r.en}</td>
                   {langKeys.map(k=>(
                     <td key={k} style={{ padding:'8px 16px' }}>
-                      <input
-                        value={translations[r.key]?.[k] ?? r.en}
-                        onChange={e=>setTranslations(prev=>({ ...prev, [r.key]:{ ...(prev[r.key]||{}), [k]:e.target.value } }))}
+                      {/* ✅ TranslationInput — memo + local state + onBlur commit */}
+                      <TranslationInput
+                        key={`${r.key}-${k}`}
+                        initialValue={translations[r.key]?.[k] ?? r.en}
+                        onCommit={(val) => handleTranslationCommit(r.key, k, val)}
                         style={{ width:'100%', border:'1.5px solid #e5e7eb', borderRadius:6, padding:'7px 10px', fontSize:12, outline:'none', background:'#fff', boxSizing:'border-box', minWidth:100 }}
-                        onFocus={e=>e.target.style.borderColor='#3b82f6'} onBlur={e=>e.target.style.borderColor='#e5e7eb'}
                       />
                     </td>
                   ))}

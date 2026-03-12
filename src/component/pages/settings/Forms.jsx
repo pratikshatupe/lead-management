@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import { FaPlus, FaTimes, FaTrash, FaEdit, FaChevronDown, FaSearch } from "react-icons/fa";
+import { FaPlus, FaTimes, FaChevronDown, FaSearch } from "react-icons/fa";
+import { Edit, Trash2 } from "lucide-react";
 
 const FILTER_OPTIONS = [
   { value: "name", label: "Name" },
@@ -46,7 +47,7 @@ function FieldRow({ field, index, onChange, onRemove }) {
         />
       </div>
       <button onClick={() => onRemove(index)} className="text-gray-400 hover:text-red-500 transition p-1.5 rounded-lg hover:bg-red-50">
-        <FaTrash size={12} />
+        <Trash2 size={12} />
       </button>
     </div>
   );
@@ -253,6 +254,7 @@ function Forms() {
         </div>
       </div>
 
+      {/* Mobile Cards */}
       <div className="flex flex-col gap-3 md:hidden">
         {filtered.length === 0 ? (
           <div className="text-center py-12 text-gray-400 text-sm bg-white rounded-xl border border-gray-200">No forms found.</div>
@@ -279,11 +281,17 @@ function Forms() {
                   <ToggleSwitch checked={f.status === "active"} onChange={() => handleToggleStatus(f.id)} />
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={() => openEdit(f)} className="flex items-center gap-1.5 bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition">
-                    <FaEdit size={11} /> Edit
+                  <button
+                    onClick={() => openEdit(f)}
+                    className="w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors shadow-sm"
+                  >
+                    <Edit size={15} />
                   </button>
-                  <button onClick={() => handleDelete(f.id)} className="flex items-center gap-1.5 bg-blue-500 hover:bg-red-500 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition">
-                    <FaTrash size={11} /> Delete
+                  <button
+                    onClick={() => handleDelete(f.id)}
+                    className="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-sm"
+                  >
+                    <Trash2 size={15} />
                   </button>
                 </div>
               </div>
@@ -292,6 +300,7 @@ function Forms() {
         )}
       </div>
 
+      {/* Desktop Table */}
       <div className="hidden md:block bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <table className="w-full text-sm">
           <thead>
@@ -329,12 +338,19 @@ function Forms() {
                     <ToggleSwitch checked={f.status === "active"} onChange={() => handleToggleStatus(f.id)} />
                   </td>
                   <td className="px-4 py-4 align-top">
+                    {/* ✅ Updated: Products-style w-9 h-9 desktop buttons */}
                     <div className="flex gap-2">
-                      <button onClick={() => openEdit(f)} className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg transition" title="Edit">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                      <button
+                        onClick={() => openEdit(f)}
+                        className="w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors shadow-sm"
+                      >
+                        <Edit size={15} />
                       </button>
-                      <button onClick={() => handleDelete(f.id)} className="bg-blue-500 hover:bg-red-500 text-white p-2 rounded-lg transition" title="Delete">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                      <button
+                        onClick={() => handleDelete(f.id)}
+                        className="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-sm"
+                      >
+                        <Trash2 size={15} />
                       </button>
                     </div>
                   </td>

@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import { FaPlus, FaEdit, FaTrash, FaSearch, FaChevronDown, FaTimes, FaExclamationTriangle, FaToggleOn, FaToggleOff } from "react-icons/fa";
+import { FaPlus, FaSearch, FaChevronDown, FaTimes, FaExclamationTriangle, FaToggleOn, FaToggleOff } from "react-icons/fa";
+import { Edit, Trash2 } from "lucide-react";
 
 const FILTER_OPTIONS = [
   { value: "fieldName", label: "Field Name" },
@@ -113,7 +114,6 @@ export default function LeadTableFields() {
       </div>
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-
         <button
           onClick={openAddDrawer}
           className="flex items-center gap-2 justify-center sm:justify-start bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow text-sm transition-all w-full sm:w-auto"
@@ -122,7 +122,6 @@ export default function LeadTableFields() {
         </button>
 
         <div className="flex items-center gap-0 border rounded bg-white shadow-sm overflow-visible w-full sm:w-auto">
-
           <div className="relative flex-shrink-0" ref={dropdownRef}>
             <button
               onClick={() => setDropdownOpen((v) => !v)}
@@ -172,6 +171,7 @@ export default function LeadTableFields() {
         </div>
       </div>
 
+      {/* MOBILE CARDS */}
       <div className="flex flex-col gap-3 md:hidden">
         {filteredData.length > 0 && (
           <div className="flex items-center gap-2 px-1">
@@ -225,21 +225,22 @@ export default function LeadTableFields() {
             <div className="flex gap-2">
               <button
                 onClick={() => openEditDrawer(item)}
-                className="flex-1 flex items-center justify-center gap-1.5 bg-yellow-500 hover:bg-yellow-600 text-white py-2 rounded text-xs font-medium transition-all"
+                className="w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors shadow-sm"
               >
-                <FaEdit size={11} /> Edit
+                <Edit size={15} />
               </button>
               <button
                 onClick={() => openDeleteModal(item)}
-                className="flex-1 flex items-center justify-center gap-1.5 bg-red-500 hover:bg-red-600 text-white py-2 rounded text-xs font-medium transition-all"
+                className="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-sm"
               >
-                <FaTrash size={11} /> Delete
+                <Trash2 size={15} />
               </button>
             </div>
           </div>
         ))}
       </div>
 
+      {/* DESKTOP TABLE */}
       <div className="hidden md:block overflow-auto border rounded bg-white shadow-sm">
         <table className="min-w-[700px] w-full text-sm text-left">
           <thead className="bg-gray-100 border-b">
@@ -283,8 +284,12 @@ export default function LeadTableFields() {
                 </td>
                 <td className="p-3">
                   <div className="flex gap-2">
-                    <button onClick={() => openEditDrawer(item)} className="bg-yellow-500 hover:bg-yellow-600 text-white p-2 rounded transition-all" title="Edit"><FaEdit size={12} /></button>
-                    <button onClick={() => openDeleteModal(item)} className="bg-red-500 hover:bg-red-600 text-white p-2 rounded transition-all" title="Delete"><FaTrash size={12} /></button>
+                    <button onClick={() => openEditDrawer(item)} className="w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors shadow-sm" title="Edit">
+                      <Edit size={15} />
+                    </button>
+                    <button onClick={() => openDeleteModal(item)} className="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-sm" title="Delete">
+                      <Trash2 size={15} />
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -298,6 +303,7 @@ export default function LeadTableFields() {
         <button className="border px-3 py-1 rounded bg-blue-500 text-white text-xs">1</button>
       </div>
 
+      {/* DELETE MODAL */}
       {deleteModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4">
           <div className="bg-white w-full max-w-sm rounded-xl shadow-2xl p-6 text-center">
@@ -316,6 +322,7 @@ export default function LeadTableFields() {
         </div>
       )}
 
+      {/* DRAWER */}
       {drawerOpen && (
         <div className="fixed inset-0 bg-black/40 flex justify-end z-40">
           <div className="bg-white w-full sm:w-[420px] h-full flex flex-col shadow-2xl">
