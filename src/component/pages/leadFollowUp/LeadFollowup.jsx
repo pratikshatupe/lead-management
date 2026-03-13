@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from "react";
-import { MdKeyboardDoubleArrowRight } from "react-icons/md";
-import { Trash2, ChevronDown } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Trash2, ChevronDown, Eye } from "lucide-react";
 
-// ── Custom Dropdown Component ──────────────────────────────────────────────
+// ── Custom Dropdown ────────────────────────────────────────────────────────
 function CustomDropdown({ options, value, onChange, placeholder, width = "w-full md:w-48" }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
@@ -17,8 +17,6 @@ function CustomDropdown({ options, value, onChange, placeholder, width = "w-full
 
   return (
     <div ref={ref} className={`relative ${width}`}>
-
-      {/* Trigger Button */}
       <button
         type="button"
         onClick={() => setOpen((p) => !p)}
@@ -33,10 +31,8 @@ function CustomDropdown({ options, value, onChange, placeholder, width = "w-full
         />
       </button>
 
-      {/* Dropdown Menu */}
       {open && (
         <ul className="absolute left-0 top-[calc(100%+4px)] w-full bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-lg shadow-xl z-[9999] max-h-52 overflow-y-auto">
-          {/* Placeholder option */}
           <li
             onClick={() => { onChange(""); setOpen(false); }}
             className="px-3 py-2 text-sm text-gray-400 hover:bg-gray-50 dark:hover:bg-slate-600 cursor-pointer"
@@ -64,40 +60,63 @@ function CustomDropdown({ options, value, onChange, placeholder, width = "w-full
 
 // ── Main Component ─────────────────────────────────────────────────────────
 export default function LeadFollowup() {
+  const navigate  = useNavigate();
+  const location  = useLocation();
 
-  const [showPopup, setShowPopup] = useState(false);
-  const [campaign, setCampaign]   = useState("");
-  const [user, setUser]           = useState("Admin");
+  // URL वरून role automatically detect होतो:
+  // /admin/follow-up   → "admin"
+  // /manager/follow-up → "manager"
+  // /member/follow-up  → "member"
+  const currentRole = location.pathname.startsWith("/manager")
+    ? "manager"
+    : location.pathname.startsWith("/member")
+    ? "member"
+    : "admin";
 
-  const data = [
-    {
-      id: 1,
-      ref: "---",
-      campaign: "Jillian Stanley",
-      time: "06-03-2026 10:07 am",
-      follow: "Admin"
-    }
-  ];
+  const [deletePopup, setDeletePopup] = useState(null);
+  const [campaign, setCampaign]       = useState("");
+  const [user, setUser]               = useState("Admin");
+
+  const [data, setData] = useState([
+    { id: 1, ref: "---",     campaign: "Jillian Stanley", time: "06-03-2026 10:07 am", follow: "Admin"   },
+    { id: 2, ref: "REF-002", campaign: "Summer Campaign",  time: "07-03-2026 11:00 am", follow: "Manager" },
+    { id: 3, ref: "REF-003", campaign: "Winter Promo",     time: "08-03-2026 02:30 pm", follow: "Test1"   },
+  ]);
+
+  // ── View: URL वरून role detect करून navigate ──────────────────────────
+  // Admin   /admin/follow-up   → navigate to /admin/leads
+  // Manager /manager/follow-up → navigate to /manager/leads
+  // Member  /member/follow-up  → navigate to /member/leads
+  const handleView = (item) => {
+    sessionStorage.setItem("selectedLead", JSON.stringify(item));
+
+    const routeMap = {
+      admin:   "/admin/leads",
+      manager: "/manager/leads",
+      member:  "/member/leads",
+    };
+
+    navigate(routeMap[currentRole], { state: { lead: item } });
+  };
+
+  // ── Delete: confirm नंतर row remove ───────────────────────────────────
+  const confirmDelete = () => {
+    setData((prev) => prev.filter((d) => d.id !== deletePopup));
+    setDeletePopup(null);
+  };
 
   return (
     <div className="p-4 md:p-6">
-
-      <h1 className="text-2xl font-bold mb-4 dark:text-white">
-        Lead Follow Up
-      </h1>
+      <h1 className="text-2xl font-bold mb-4 dark:text-white">Lead Follow Up</h1>
 
       {/* ── Filters ── */}
       <div className="flex flex-col md:flex-row md:flex-wrap md:justify-end gap-3 mb-4">
-
-        {/* Campaign Dropdown */}
         <CustomDropdown
           options={["Campaign 1", "Campaign 2"]}
           value={campaign}
           onChange={setCampaign}
           placeholder="Select Campaign..."
         />
-
-        {/* User Dropdown */}
         <CustomDropdown
           options={["Admin", "Test1", "Test2", "Team Leader"]}
           value={user}
@@ -105,19 +124,14 @@ export default function LeadFollowup() {
           placeholder="Select User..."
           width="w-full md:w-40"
         />
-
-        {/* Start Date — separate box */}
         <input
           type="date"
           className="w-full md:w-auto border rounded-lg px-3 py-2 text-sm outline-none bg-white dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-blue-400"
         />
-
-        {/* End Date — separate box */}
         <input
           type="date"
           className="w-full md:w-auto border rounded-lg px-3 py-2 text-sm outline-none bg-white dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-blue-400"
         />
-
       </div>
 
       {/* ── Desktop Table ── */}
@@ -143,13 +157,20 @@ export default function LeadFollowup() {
                 <td className="p-3 dark:text-white">{item.follow}</td>
                 <td className="p-3">
                   <div className="flex gap-2">
+                    {/* View Button */}
                     <button
-                      onClick={() => setShowPopup(true)}
+                      onClick={() => handleView(item)}
+                      title="View Lead"
                       className="w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors shadow-sm"
                     >
-                      <MdKeyboardDoubleArrowRight size={16} />
+                      <Eye size={15} />
                     </button>
-                    <button className="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-sm">
+                    {/* Delete Button */}
+                    <button
+                      onClick={() => setDeletePopup(item.id)}
+                      title="Delete Lead"
+                      className="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-sm"
+                    >
                       <Trash2 size={15} />
                     </button>
                   </div>
@@ -158,6 +179,10 @@ export default function LeadFollowup() {
             ))}
           </tbody>
         </table>
+
+        {data.length === 0 && (
+          <div className="text-center py-12 text-gray-400 text-sm">No leads found.</div>
+        )}
       </div>
 
       {/* ── Mobile Cards ── */}
@@ -182,45 +207,54 @@ export default function LeadFollowup() {
             </div>
             <div className="flex gap-2">
               <button
-                onClick={() => setShowPopup(true)}
+                onClick={() => handleView(item)}
                 className="w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors shadow-sm"
               >
-                <MdKeyboardDoubleArrowRight size={16} />
+                <Eye size={15} />
               </button>
-              <button className="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-sm">
+              <button
+                onClick={() => setDeletePopup(item.id)}
+                className="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-sm"
+              >
                 <Trash2 size={15} />
               </button>
             </div>
           </div>
         ))}
+
+        {data.length === 0 && (
+          <div className="text-center py-12 text-gray-400 text-sm">No leads found.</div>
+        )}
       </div>
 
-      {/* ── Confirm Popup ── */}
-      {showPopup && (
+      {/* ── Delete Confirm Popup ── */}
+      {deletePopup && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4">
           <div className="bg-white dark:bg-slate-800 rounded-xl p-6 w-full max-w-sm text-center shadow-xl">
-            <h2 className="text-lg font-semibold mb-2 dark:text-white">Start?</h2>
+            <div className="w-12 h-12 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center mx-auto mb-3">
+              <Trash2 size={22} className="text-red-500" />
+            </div>
+            <h2 className="text-lg font-semibold mb-2 dark:text-white">Delete Lead?</h2>
             <p className="text-gray-500 mb-6 text-sm">
-              Are you sure you want to start this follow up lead...
+              Are you sure you want to delete this lead? This action cannot be undone.
             </p>
             <div className="flex justify-center gap-4">
               <button
-                onClick={() => setShowPopup(false)}
-                className="px-5 py-2 border rounded-lg text-sm hover:bg-gray-50 dark:text-white dark:border-slate-600"
+                onClick={() => setDeletePopup(null)}
+                className="px-5 py-2 border rounded-lg text-sm hover:bg-gray-50 dark:text-white dark:border-slate-600 transition-colors"
               >
-                No
+                Cancel
               </button>
               <button
-                onClick={() => setShowPopup(false)}
-                className="px-5 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm"
+                onClick={confirmDelete}
+                className="px-5 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm transition-colors"
               >
-                Yes
+                Delete
               </button>
             </div>
           </div>
         </div>
       )}
-
     </div>
   );
 }
