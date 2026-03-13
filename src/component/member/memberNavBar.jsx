@@ -1,4 +1,4 @@
-import { FaBars, FaMoon, FaSun, FaUserCircle, FaGlobe, FaSignOutAlt } from "react-icons/fa";
+import { FaBars, FaMoon, FaSun, FaUserCircle, FaSignOutAlt } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -43,9 +43,6 @@ export default function MemberNavbar({ setSidebarOpen, setCollapsed, collapsed }
         <button onClick={() => setIsDarkMode(!isDarkMode)} className="text-gray-600 dark:text-yellow-400">
           {isDarkMode ? <FaSun size={20} /> : <FaMoon size={20} />}
         </button>
-        <div className="flex items-center gap-1 text-gray-600 dark:text-gray-300 cursor-pointer">
-          <FaGlobe /> <span className="text-sm font-medium uppercase">en</span>
-        </div>
         <div
           className="flex items-center gap-2 cursor-pointer text-gray-700 dark:text-gray-200 hover:text-blue-600"
           onClick={() => navigate("/member/profile")}

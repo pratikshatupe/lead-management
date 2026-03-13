@@ -1,4 +1,4 @@
-import { FaBars, FaMoon, FaSun, FaUserCircle, FaGlobe } from "react-icons/fa";
+import { FaBars, FaMoon, FaSun, FaUserCircle } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -43,11 +43,6 @@ export default function Navbar({ setSidebarOpen, setCollapsed, collapsed }) {
         <button onClick={() => setIsDarkMode(!isDarkMode)} className="text-gray-600 dark:text-yellow-400">
           {isDarkMode ? <FaSun size={20} /> : <FaMoon size={20} />}
         </button>
-
-        {/* Language Selection */}
-        <div className="flex items-center gap-1 text-gray-600 dark:text-gray-300 cursor-pointer">
-          <FaGlobe /> <span className="text-sm font-medium uppercase">en</span>
-        </div>
 
         {/* Profile Section */}
         <div 

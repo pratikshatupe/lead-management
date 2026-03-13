@@ -211,32 +211,36 @@ export default function LeadStatus() {
               key={s.id}
               className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl shadow-sm p-4 w-full"
             >
-              <div className="flex items-center gap-3 mb-3">
-                <input
-                  type="checkbox"
-                  checked={selected.includes(s.id)}
-                  onChange={() => toggleSelect(s.id)}
-                  className="w-4 h-4 accent-blue-500 flex-shrink-0"
-                />
-                <div>
-                  <p className="text-xs text-gray-400 dark:text-gray-500 mb-0.5">Name</p>
-                  <p className="text-sm font-semibold text-gray-800 dark:text-white">{s.name}</p>
+              {/* Name row */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    checked={selected.includes(s.id)}
+                    onChange={() => toggleSelect(s.id)}
+                    className="w-4 h-4 accent-blue-500 flex-shrink-0"
+                  />
+                  <div>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mb-0.5">Name</p>
+                    <p className="text-sm font-semibold text-gray-800 dark:text-white">{s.name}</p>
+                  </div>
                 </div>
-              </div>
-              <div className="border-t border-gray-100 dark:border-slate-700 mb-3" />
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setEditModal(s)}
-                  className="flex-1 flex items-center justify-center gap-1.5 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg text-xs font-semibold transition-colors shadow-sm"
-                >
-                  <Edit size={13} /> Edit
-                </button>
-                <button
-                  onClick={() => setDeleteModal(s)}
-                  className="flex-1 flex items-center justify-center gap-1.5 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg text-xs font-semibold transition-colors shadow-sm"
-                >
-                  <Trash2 size={13} /> Delete
-                </button>
+
+                {/* ✅ Desktop style icon-only buttons */}
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setEditModal(s)}
+                    className="w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors shadow-sm"
+                  >
+                    <Edit size={15} />
+                  </button>
+                  <button
+                    onClick={() => setDeleteModal(s)}
+                    className="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-sm"
+                  >
+                    <Trash2 size={15} />
+                  </button>
+                </div>
               </div>
             </div>
           ))

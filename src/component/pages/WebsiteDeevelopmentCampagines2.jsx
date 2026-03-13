@@ -54,17 +54,24 @@ function WebsiteDevelopmentCampaign2() {
   const [seconds, setSeconds] = useState(0);
   const [activeTab, setActiveTab] = useState("details");
 
-  // Lead form state
   const [formData, setFormData] = useState(defaultFormData);
   const [savedData, setSavedData] = useState(null);
   const [isEditing, setIsEditing] = useState(true);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
-  // Notes state
   const [noteText, setNoteText] = useState("");
   const [notesList, setNotesList] = useState([]);
 
-  // Load saved data on mount
+  // Get current user role from localStorage
+  const userRole = localStorage.getItem("userRole") || "admin";
+
+  // Role based lead-details path
+  const getLeadDetailsPath = () => {
+    if (userRole === "manager") return "/manager/lead-details";
+    if (userRole === "member") return "/member/lead-details";
+    return "/admin/lead-details";
+  };
+
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
@@ -144,10 +151,18 @@ function WebsiteDevelopmentCampaign2() {
             <p className="text-xs md:text-sm text-gray-500">Dashboard - Call Manager - Website Development Campaign</p>
           </div>
         </div>
+
         <div className="flex gap-2 flex-shrink-0">
-          <button onClick={() => navigate("/WebsiteDevelopmentCampaign1")}
-            className="bg-yellow-400 hover:bg-yellow-500 px-3 md:px-4 py-2 rounded text-white text-sm transition-colors">← Previous Lead</button>
-          <button className="bg-green-500 hover:bg-green-600 px-3 md:px-4 py-2 rounded text-white text-sm transition-colors">Next Lead →</button>
+          {/* Previous Lead — role based lead-details path */}
+          <button
+            onClick={() => navigate(getLeadDetailsPath())}
+            className="bg-yellow-400 hover:bg-yellow-500 px-3 md:px-4 py-2 rounded text-white text-sm transition-colors"
+          >
+            ← Previous Lead
+          </button>
+          <button className="bg-green-500 hover:bg-green-600 px-3 md:px-4 py-2 rounded text-white text-sm transition-colors">
+            Next Lead →
+          </button>
         </div>
       </div>
 
@@ -160,9 +175,9 @@ function WebsiteDevelopmentCampaign2() {
             <ClockIcon /> {formatTime()}
           </div>
           <div className="flex flex-col sm:flex-row lg:flex-col gap-2 mb-4">
-            <button onClick={() => navigate("/admin/follow-up", { state: { from: location.pathname } })}
+            <button onClick={() => navigate(`/${userRole}/follow-up`, { state: { from: location.pathname } })}
               className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded text-sm transition-colors w-full">Lead Follow Up</button>
-            <button onClick={() => navigate("/admin/salesman-bookings", { state: { from: location.pathname } })}
+            <button onClick={() => navigate(`/${userRole}/salesman-bookings`, { state: { from: location.pathname } })}
               className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded text-sm transition-colors w-full">Salesman Bookings</button>
           </div>
           <h3 className="font-semibold mb-3">Lead Details</h3>
@@ -195,14 +210,12 @@ function WebsiteDevelopmentCampaign2() {
           {/* ── LEAD DETAILS TAB ── */}
           {activeTab === "details" && (
             <div>
-              {/* Save success banner */}
               {saveSuccess && (
                 <div className="mb-4 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-2 rounded-lg">
                   <CheckIcon /> Data saved successfully!
                 </div>
               )}
 
-              {/* Saved data view */}
               {!isEditing && savedData && (
                 <div className="mb-6">
                   <div className="flex items-center justify-between mb-3">
@@ -236,7 +249,6 @@ function WebsiteDevelopmentCampaign2() {
                 </div>
               )}
 
-              {/* Edit / Add form */}
               {isEditing && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>

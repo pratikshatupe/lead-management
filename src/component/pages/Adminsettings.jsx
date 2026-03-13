@@ -320,15 +320,7 @@ function AddStatusModal({ onConfirm, onClose }) {
   return (
     <ModalShell title="Add Lead Status" onClose={onClose}>
       <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#6b7280', marginBottom:6 }}>Status Name</label>
-      <input
-        autoFocus
-        value={value}
-        onChange={e => setValue(e.target.value)}
-        onKeyDown={e => e.key === 'Enter' && value.trim() && onConfirm(value)}
-        placeholder="e.g. Interested"
-        className="field-input"
-        style={{ marginBottom:20 }}
-      />
+      <input autoFocus value={value} onChange={e => setValue(e.target.value)} onKeyDown={e => e.key === 'Enter' && value.trim() && onConfirm(value)} placeholder="e.g. Interested" className="field-input" style={{ marginBottom:20 }}/>
       <div style={{ display:'flex', gap:8, justifyContent:'flex-end' }}>
         <button onClick={onClose} style={{ padding:'8px 16px', borderRadius:8, border:'1px solid #e5e7eb', background:'#fff', fontSize:13, fontWeight:500, cursor:'pointer', color:'#374151' }}>Cancel</button>
         <button onClick={() => value.trim() && onConfirm(value)} disabled={!value.trim()} style={{ padding:'8px 16px', borderRadius:8, border:'none', background:'#3b82f6', color:'#fff', fontSize:13, fontWeight:600, cursor:'pointer', opacity:value.trim()?1:0.4 }}>Add</button>
@@ -342,14 +334,7 @@ function EditStatusModal({ initialName, onConfirm, onClose }) {
   return (
     <ModalShell title="Edit Lead Status" onClose={onClose}>
       <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#6b7280', marginBottom:6 }}>Status Name</label>
-      <input
-        autoFocus
-        value={value}
-        onChange={e => setValue(e.target.value)}
-        onKeyDown={e => e.key === 'Enter' && value.trim() && onConfirm(value)}
-        className="field-input"
-        style={{ marginBottom:20, borderColor:'#3b82f6' }}
-      />
+      <input autoFocus value={value} onChange={e => setValue(e.target.value)} onKeyDown={e => e.key === 'Enter' && value.trim() && onConfirm(value)} className="field-input" style={{ marginBottom:20, borderColor:'#3b82f6' }}/>
       <div style={{ display:'flex', gap:8, justifyContent:'flex-end' }}>
         <button onClick={onClose} style={{ padding:'8px 16px', borderRadius:8, border:'1px solid #e5e7eb', background:'#fff', fontSize:13, fontWeight:500, cursor:'pointer', color:'#374151' }}>Cancel</button>
         <button onClick={() => value.trim() && onConfirm(value)} disabled={!value.trim()} style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 16px', borderRadius:8, border:'none', background:'#3b82f6', color:'#fff', fontSize:13, fontWeight:600, cursor:'pointer', opacity:value.trim()?1:0.4 }}><SaveIcon/> Save Changes</button>
@@ -390,8 +375,8 @@ function LeadStatus() {
           <p style={{ fontSize:14, color:'#6b7280', margin:'0 0 20px' }}>Are you sure you want to delete <strong style={{ color:'#1f2937' }}>"{deleteModal.name}"</strong>? This action cannot be undone.</p>
           <div style={{ display:'flex', gap:8, justifyContent:'flex-end' }}>
             <button onClick={()=>setDeleteModal(null)} style={{ padding:'8px 16px', borderRadius:8, border:'1px solid #e5e7eb', background:'#fff', fontSize:13, fontWeight:500, cursor:'pointer', color:'#374151' }}>Cancel</button>
-            <button onClick={confirmDelete} className="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-sm" style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 16px', width:'auto', height:'auto' }}>
-              <Trash2 size={13} /> Delete
+            <button onClick={confirmDelete} style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 16px', borderRadius:8, border:'none', background:'#ef4444', color:'#fff', fontSize:13, fontWeight:600, cursor:'pointer' }}>
+              <Trash2 size={13}/> Delete
             </button>
           </div>
         </ModalShell>
@@ -420,35 +405,36 @@ function LeadStatus() {
         </div>
       </div>
 
-      {/* Mobile Cards */}
+      {/* ✅ Mobile Cards — icon-only w-9 h-9 buttons, name left + buttons right */}
       <div className="sm-hide" style={{ flexDirection:'column', gap:12 }}>
         {filtered.length === 0
           ? <div style={{ textAlign:'center', padding:'40px 0', color:'#9ca3af', fontSize:14 }}>No results found</div>
           : filtered.map(s=>(
             <div key={s.id} style={{ background:'#fff', border:'1.5px solid #e5e7eb', borderRadius:14, overflow:'hidden', boxShadow:'0 1px 4px rgba(0,0,0,0.06)' }}>
-              <div style={{ padding:'12px 16px', display:'flex', alignItems:'center', gap:12 }}>
-                <input type="checkbox" checked={selected.includes(s.id)} onChange={()=>toggleSelect(s.id)} style={{ width:16, height:16, cursor:'pointer', accentColor:'#3b82f6', flexShrink:0 }}/>
-                <div>
-                  <p style={{ margin:0, fontSize:11, color:'#9ca3af', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:3 }}>Name</p>
-                  <p style={{ margin:0, fontSize:14, fontWeight:600, color:'#1f2937' }}>{s.name}</p>
+              <div style={{ padding:'12px 16px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                {/* Left: checkbox + name */}
+                <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+                  <input type="checkbox" checked={selected.includes(s.id)} onChange={()=>toggleSelect(s.id)} style={{ width:16, height:16, cursor:'pointer', accentColor:'#3b82f6', flexShrink:0 }}/>
+                  <div>
+                    <p style={{ margin:0, fontSize:11, color:'#9ca3af', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:3 }}>Name</p>
+                    <p style={{ margin:0, fontSize:14, fontWeight:600, color:'#1f2937' }}>{s.name}</p>
+                  </div>
                 </div>
-              </div>
-              <div style={{ borderTop:'1px solid #f3f4f6', padding:'10px 16px', display:'flex', gap:8 }}>
-                {/* ✅ Updated: Products-style buttons */}
-                <button
-                  onClick={() => setEditModal(s)}
-                  className="flex-1 flex items-center justify-center gap-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors shadow-sm"
-                  style={{ padding:'8px', fontSize:12, fontWeight:600, border:'none', cursor:'pointer' }}
-                >
-                  <Edit size={13}/> Edit
-                </button>
-                <button
-                  onClick={()=>setDeleteModal(s)}
-                  className="flex-1 flex items-center justify-center gap-1.5 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-sm"
-                  style={{ padding:'8px', fontSize:12, fontWeight:600, border:'none', cursor:'pointer' }}
-                >
-                  <Trash2 size={13}/> Delete
-                </button>
+                {/* ✅ Right: icon-only buttons — same as desktop */}
+                <div style={{ display:'flex', gap:8 }}>
+                  <button
+                    onClick={() => setEditModal(s)}
+                    style={{ width:36, height:36, display:'flex', alignItems:'center', justifyContent:'center', background:'#3b82f6', border:'none', borderRadius:8, cursor:'pointer', color:'#fff', boxShadow:'0 1px 3px rgba(0,0,0,0.15)', flexShrink:0 }}
+                  >
+                    <Edit size={15}/>
+                  </button>
+                  <button
+                    onClick={()=>setDeleteModal(s)}
+                    style={{ width:36, height:36, display:'flex', alignItems:'center', justifyContent:'center', background:'#ef4444', border:'none', borderRadius:8, cursor:'pointer', color:'#fff', boxShadow:'0 1px 3px rgba(0,0,0,0.15)', flexShrink:0 }}
+                  >
+                    <Trash2 size={15}/>
+                  </button>
+                </div>
               </div>
             </div>
           ))
@@ -475,19 +461,16 @@ function LeadStatus() {
                   <td style={{ padding:'12px 14px' }}><input type="checkbox" checked={selected.includes(s.id)} onChange={()=>toggleSelect(s.id)} style={{ width:15, height:15, cursor:'pointer', accentColor:'#3b82f6' }}/></td>
                   <td style={{ padding:'12px 14px', fontSize:14, color:'#374151' }}>{s.name}</td>
                   <td style={{ padding:'12px 14px' }}>
-                    {/* ✅ Updated: Products-style w-9 h-9 buttons */}
                     <div style={{ display:'flex', gap:8, justifyContent:'flex-end' }}>
                       <button
                         onClick={() => setEditModal(s)}
-                        className="w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors shadow-sm"
-                        style={{ border:'none', cursor:'pointer' }}
+                        style={{ width:36, height:36, display:'flex', alignItems:'center', justifyContent:'center', background:'#3b82f6', border:'none', borderRadius:8, cursor:'pointer', color:'#fff', boxShadow:'0 1px 3px rgba(0,0,0,0.15)' }}
                       >
                         <Edit size={15}/>
                       </button>
                       <button
                         onClick={()=>setDeleteModal(s)}
-                        className="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-sm"
-                        style={{ border:'none', cursor:'pointer' }}
+                        style={{ width:36, height:36, display:'flex', alignItems:'center', justifyContent:'center', background:'#ef4444', border:'none', borderRadius:8, cursor:'pointer', color:'#fff', boxShadow:'0 1px 3px rgba(0,0,0,0.15)' }}
                       >
                         <Trash2 size={15}/>
                       </button>
@@ -553,7 +536,6 @@ const PermRow = ({ section, perms, onChange }) => (
   </div>
 );
 
-// ─── DrawerComp — OUTSIDE RolePermission ─────────────────────────────────────
 function DrawerComp({ title, role, onChange, onClose, onSubmit, label }) {
   return (
     <div style={{ position:'fixed', inset:0, zIndex:1000, background:'rgba(0,0,0,0.35)', backdropFilter:'blur(2px)', display:'flex', justifyContent:'flex-end' }} onClick={onClose}>
@@ -616,26 +598,8 @@ function RolePermission() {
   return (
     <div style={{ padding:24 }}>
       <Toast show={toast.show} message={toast.message} type={toast.type}/>
-      {addDrawer && (
-        <DrawerComp
-          title="Add New Role"
-          role={newRole}
-          onChange={(f,v) => setNewRole(p=>({...p,[f]:v}))}
-          onClose={() => setAddDrawer(false)}
-          onSubmit={handleAdd}
-          label="Create"
-        />
-      )}
-      {editDrawer && (
-        <DrawerComp
-          title={`Edit Role — ${editDrawer.name}`}
-          role={editDrawer}
-          onChange={(f,v) => setEditDrawer(p=>({...p,[f]:v}))}
-          onClose={() => setEditDrawer(null)}
-          onSubmit={handleEdit}
-          label="Update"
-        />
-      )}
+      {addDrawer && <DrawerComp title="Add New Role" role={newRole} onChange={(f,v) => setNewRole(p=>({...p,[f]:v}))} onClose={() => setAddDrawer(false)} onSubmit={handleAdd} label="Create"/>}
+      {editDrawer && <DrawerComp title={`Edit Role — ${editDrawer.name}`} role={editDrawer} onChange={(f,v) => setEditDrawer(p=>({...p,[f]:v}))} onClose={() => setEditDrawer(null)} onSubmit={handleEdit} label="Update"/>}
       {deleteModal && (
         <div style={{ position:'fixed', inset:0, zIndex:2000, background:'rgba(0,0,0,0.4)', backdropFilter:'blur(2px)', display:'flex', alignItems:'center', justifyContent:'center', padding:16 }} onClick={()=>setDeleteModal(null)}>
           <div style={{ background:'#fff', borderRadius:16, boxShadow:'0 20px 60px rgba(0,0,0,.2)', width:'100%', maxWidth:440, animation:'popIn .25s ease' }} onClick={e=>e.stopPropagation()}>
@@ -648,12 +612,7 @@ function RolePermission() {
             </div>
             <div style={{ padding:'14px 24px', borderTop:'1px solid #f3f4f6', display:'flex', justifyContent:'flex-end', gap:10 }}>
               <button onClick={()=>setDeleteModal(null)} style={{ padding:'9px 20px', borderRadius:8, border:'1px solid #e5e7eb', background:'#fff', fontSize:13, fontWeight:600, cursor:'pointer', color:'#374151' }}>Cancel</button>
-              {/* ✅ Updated: Products-style delete button */}
-              <button
-                onClick={handleDelete}
-                className="flex items-center gap-1.5 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-sm"
-                style={{ padding:'9px 20px', border:'none', fontSize:13, fontWeight:600, cursor:'pointer', display:'flex', alignItems:'center', gap:6 }}
-              >
+              <button onClick={handleDelete} style={{ display:'flex', alignItems:'center', gap:6, padding:'9px 20px', borderRadius:8, border:'none', background:'#ef4444', color:'#fff', fontSize:13, fontWeight:600, cursor:'pointer' }}>
                 <Trash2 size={13}/> Delete
               </button>
             </div>
@@ -674,7 +633,7 @@ function RolePermission() {
           </button>
         </div>
 
-        {/* Mobile Cards */}
+        {/* ✅ Mobile Cards — icon-only w-9 h-9 buttons */}
         <div className="sm-hide2" style={{ flexDirection:'column', gap:10, padding:12 }}>
           {paginated.length === 0
             ? <p style={{ textAlign:'center', color:'#9ca3af', fontSize:14, padding:'32px 0' }}>No roles found</p>
@@ -694,20 +653,18 @@ function RolePermission() {
                 <div style={{ padding:'10px 14px', display:'flex', alignItems:'center', gap:10 }} onClick={e=>e.stopPropagation()}>
                   <div style={{ width:15, flexShrink:0 }}/>
                   <span style={{ fontSize:11, fontWeight:700, color:'#9ca3af', textTransform:'uppercase', letterSpacing:'0.5px', width:90, flexShrink:0 }}>Action</span>
-                  {/* ✅ Updated: Products-style w-9 h-9 buttons */}
+                  {/* ✅ icon-only buttons */}
                   <div style={{ display:'flex', gap:8 }}>
                     <button
                       onClick={()=>setEditDrawer({...role,perms:{...role.perms}})}
-                      className="w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors shadow-sm"
-                      style={{ border:'none', cursor:'pointer' }}
+                      style={{ width:36, height:36, display:'flex', alignItems:'center', justifyContent:'center', background:'#3b82f6', border:'none', borderRadius:8, cursor:'pointer', color:'#fff', boxShadow:'0 1px 3px rgba(0,0,0,0.15)', flexShrink:0 }}
                     >
                       <Edit size={15}/>
                     </button>
                     {!role.isDefault && (
                       <button
                         onClick={()=>setDeleteModal(role)}
-                        className="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-sm"
-                        style={{ border:'none', cursor:'pointer' }}
+                        style={{ width:36, height:36, display:'flex', alignItems:'center', justifyContent:'center', background:'#ef4444', border:'none', borderRadius:8, cursor:'pointer', color:'#fff', boxShadow:'0 1px 3px rgba(0,0,0,0.15)', flexShrink:0 }}
                       >
                         <Trash2 size={15}/>
                       </button>
@@ -742,20 +699,17 @@ function RolePermission() {
                     <td style={{ padding:'13px 16px', fontSize:14, fontWeight:500, color:'#1f2937' }}>{role.name}</td>
                     <td style={{ padding:'13px 16px', fontSize:13, color:'#6b7280', maxWidth:400 }}><span style={{ overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', display:'block' }}>{role.description}</span></td>
                     <td style={{ padding:'13px 16px' }} onClick={e=>e.stopPropagation()}>
-                      {/* ✅ Updated: Products-style w-9 h-9 buttons */}
                       <div style={{ display:'flex', gap:8, justifyContent:'flex-end' }}>
                         <button
                           onClick={()=>setEditDrawer({...role,perms:{...role.perms}})}
-                          className="w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors shadow-sm"
-                          style={{ border:'none', cursor:'pointer' }}
+                          style={{ width:36, height:36, display:'flex', alignItems:'center', justifyContent:'center', background:'#3b82f6', border:'none', borderRadius:8, cursor:'pointer', color:'#fff', boxShadow:'0 1px 3px rgba(0,0,0,0.15)' }}
                         >
                           <Edit size={15}/>
                         </button>
                         {!role.isDefault && (
                           <button
                             onClick={()=>setDeleteModal(role)}
-                            className="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-sm"
-                            style={{ border:'none', cursor:'pointer' }}
+                            style={{ width:36, height:36, display:'flex', alignItems:'center', justifyContent:'center', background:'#ef4444', border:'none', borderRadius:8, cursor:'pointer', color:'#fff', boxShadow:'0 1px 3px rgba(0,0,0,0.15)' }}
                           >
                             <Trash2 size={15}/>
                           </button>

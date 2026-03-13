@@ -28,7 +28,6 @@ import WebsiteDeevelopmentCampagines2 from "./component/pages/WebsiteDeevelopmen
 import CallManager from "./component/pages/leadManager/CallManager";
 import Campaigns from "./component/pages/leadManager/Campaigns";
 
-// ✅ दोन्ही Social Media pages import
 import SocialMediaCampagiens from "./component/pages/SocialMediaCampagiens";
 import SocialMediaCampagins2 from "./component/pages/SocialMediaCampagins2";
 
@@ -59,6 +58,11 @@ function App() {
         {/* ✅ Social Media Campaign pages — Layout बाहेर (no sidebar/navbar) */}
         <Route path="/socialmedia"  element={<SocialMediaCampagiens />} />
         <Route path="/socialmedia2" element={<SocialMediaCampagins2 />} />
+
+        {/* ✅ Role based lead-details — Campaign 2 (no sidebar/navbar) */}
+        <Route path="/admin/lead-details"   element={<WebsiteDevelopmentCampagines />} />
+        <Route path="/manager/lead-details" element={<WebsiteDevelopmentCampagines />} />
+        <Route path="/member/lead-details"  element={<WebsiteDevelopmentCampagines />} />
 
         {/* ✅ Sale Home Loan — Layout बाहेर (no sidebar/navbar) */}
         <Route path="/admin/sale-home-loan"   element={<SaleHomeLoneCampagins />} />
